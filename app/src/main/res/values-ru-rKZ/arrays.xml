@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tabs_name">
+        <item>Главная</item>
+        <item>Занятия</item>
+        <item>Календарь</item>
+        <item>Графики</item>
+    </string-array>
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">SensePlanner</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="facebook_application_id" translatable="false">227710321193986</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">f892f5c073196988b8108d60d65c863b</string>
+    <!-- Twitter consumer key and secret -->
+    <string name="twitter_consumer_key" translatable="false">u4Mput5tsnvdPeeKZtR9I6fbv</string>
+    <string name="twitter_consumer_secret" translatable="false">HS4kMuXxDwTUcP8lgOwehopHv1r5NkQP28ZSVxhthcBTIzV1mO</string>
+
+</resources>

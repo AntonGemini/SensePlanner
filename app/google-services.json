@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "410084564768",
+    "firebase_url": "https://senseplanner-156ab.firebaseio.com",
+    "project_id": "senseplanner-156ab",
+    "storage_bucket": "senseplanner-156ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410084564768:android:231c228d8c0c3d1a",
+        "android_client_info": {
+          "package_name": "com.sassaworks.senseplanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410084564768-440g6fudh6u879cch9lddes505e9ebgq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sassaworks.senseplanner",
+            "certificate_hash": "35e175d05314785556015f66ac75b3c346f1369c"
+          }
+        },
+        {
+          "client_id": "410084564768-b1999r25u58vlmgkeevn4nkbsu6jmiqs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC55JXn5NATTdXN2g64IYmuNkd8QXPVB_U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410084564768-b1999r25u58vlmgkeevn4nkbsu6jmiqs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

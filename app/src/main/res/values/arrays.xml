@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tabs_name">
+        <item>Home</item>
+        <item>Activities</item>
+        <item>Calendar</item>
+        <item>Charts</item>
+    </string-array>
+</resources>
