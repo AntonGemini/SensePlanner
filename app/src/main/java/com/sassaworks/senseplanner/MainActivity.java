@@ -1,6 +1,9 @@
 package com.sassaworks.senseplanner;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,15 +26,21 @@ import android.widget.TextView;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.ui.ActivityTypeFragment;
+import com.sassaworks.senseplanner.ui.CalendarFragment;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ActivityTypeFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity
+        implements ActivityTypeFragment.OnListFragmentInteractionListener,
+        CalendarFragment.OnFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -48,23 +57,16 @@ public class MainActivity extends AppCompatActivity implements ActivityTypeFragm
      */
     private ViewPager mViewPager;
     private String[] tabNames;
-    List<AuthUI.IdpConfig> providers;
-    FirebaseUser user;
 
-    private static final int RC_SIGN_IN = 123;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        //setting up providers for authorization
-        providers = Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build(),
-                                new AuthUI.IdpConfig.PhoneBuilder().build(),
-                                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                new AuthUI.IdpConfig.TwitterBuilder().build());
 
         Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,20 +79,7 @@ public class MainActivity extends AppCompatActivity implements ActivityTypeFragm
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabNames = getResources().getStringArray(R.array.tabs_name);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
-        if (user == null)
-        {
-            startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
-                    .setAvailableProviders(providers).build(),RC_SIGN_IN);
-        }
 
     }
 
@@ -110,9 +99,18 @@ public class MainActivity extends AppCompatActivity implements ActivityTypeFragm
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_sign_out)
+        {
+            AuthUI.getInstance().signOut(this)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                        }
+                    });
         }
+
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -123,19 +121,17 @@ public class MainActivity extends AppCompatActivity implements ActivityTypeFragm
     }
 
 
+
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onDestroy() {
+        super.onDestroy();
+        //Save user id to shared preferences.
+    }
 
-        if (requestCode == RC_SIGN_IN)
-        {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-            if (resultCode == RESULT_OK)
-            {
-                user = FirebaseAuth.getInstance().getCurrentUser();
-            }
-        }
     }
 
     /**
@@ -190,6 +186,8 @@ public class MainActivity extends AppCompatActivity implements ActivityTypeFragm
             switch (position) {
                 case 0:
                     return ActivityTypeFragment.newInstance(position);
+                case 1:
+                    return CalendarFragment.newInstance();
                 default:
                     return PlaceholderFragment.newInstance(position + 1);
             }

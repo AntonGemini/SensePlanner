@@ -2,6 +2,8 @@ package com.sassaworks.senseplanner.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,14 +12,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.sassaworks.senseplanner.MainActivity;
 import com.sassaworks.senseplanner.adapter.MyActivityTypeRecyclerViewAdapter;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.data.Activity;
+import com.sassaworks.senseplanner.data.User;
 
 import java.util.ArrayList;
 
@@ -37,6 +45,8 @@ public class ActivityTypeFragment extends Fragment {
 
     private ArrayList<Activity> activities;
     private MyActivityTypeRecyclerViewAdapter adapter;
+
+    FirebaseUser user;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -63,7 +73,6 @@ public class ActivityTypeFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
 
-
     }
 
     @Override
@@ -77,9 +86,12 @@ public class ActivityTypeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activitytype_list, container, false);
-
+        user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference dbRef = db.getReference("activities");
+
+
+
+        DatabaseReference dbRef = db.getReference("planner").child(user.getUid()).child("activities");
         activities = new ArrayList<>();
         final RecyclerView recyclerView;
         if (view instanceof RecyclerView) {
