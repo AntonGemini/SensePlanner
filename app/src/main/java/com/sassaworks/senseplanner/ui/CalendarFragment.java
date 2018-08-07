@@ -2,6 +2,7 @@ package com.sassaworks.senseplanner.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,11 +15,26 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.sassaworks.senseplanner.CreateTaskActivity;
 import com.sassaworks.senseplanner.R;
+import com.sassaworks.senseplanner.data.ActivityRecord;
+import com.sassaworks.senseplanner.decorators.EventDecorator;
+import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.stream.Collectors;
+import java8.util.stream.IntStreams;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,7 +46,7 @@ import com.sassaworks.senseplanner.R;
  */
 
 
-public class CalendarFragment extends Fragment implements OnDateSelectedListener {
+public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper.OnEventsGetCompleted {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -40,8 +56,12 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     private String mParam1;
     private String mParam2;
 
+    FirebaseUser user;
+    FirebaseDatabase db;
+    DatabaseReference refEvents;
+
     //@BindView(R.id.calendar)
-    MaterialCalendarView calendar;
+    MaterialCalendarView mCalendarView;
 
     private OnFragmentInteractionListener mListener;
 
@@ -96,7 +116,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
         Animation mHideLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_layout);
 
 
-        calendar = view.findViewById(R.id.calendar);
+        mCalendarView = view.findViewById(R.id.calendar);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,6 +148,12 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
                 startActivity(intent);
             }
         });
+        db = FirebaseDatabase.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        refEvents = db.getReference("planner").child(user.getUid()).child("activity_records");
+        FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(refEvents,this);
+        helper.getActivityRecords(refEvents);
+
         //Inflate the layout for this fragment
         return view;
     }
@@ -157,10 +183,42 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     }
 
     @Override
-    public void onDateSelected(@NonNull MaterialCalendarView materialCalendarView, @NonNull CalendarDay calendarDay, boolean b) {
+    public void onEventsGet(ArrayList<ActivityRecord> events) {
 
+        //events.stream().filter(s -> s.getJobAddiction().equals("Low")).collect(Collectors.toList());
+        //i equals number of job appealings of user
+
+        for (int i=0; i<1; i++)
+        {
+            //query ActivityRecords where jobAppealing equals i
+
+            //convert all this days to CalendarDay list
+            //get colour for this type of jobAppealing
+            //create an EventDecorator and add it to the calendar
+
+            mCalendarView.addDecorator(new EventDecorator(getDaysByMood("Bad",events),getContext(),
+                    new ColorDrawable(getContext().getResources().getColor(R.color.low_mood))));
+            mCalendarView.addDecorator(new EventDecorator(getDaysByMood("Good",events),getContext(),
+                    new ColorDrawable(getContext().getResources().getColor(R.color.high_mood))));
+            //calendar.addDecorator();
+        }
+        ArrayList<ActivityRecord> userEvents = events;
     }
 
+    public ArrayList<CalendarDay> getDaysByMood(String type, ArrayList<ActivityRecord> events)
+    {
+        ArrayList<CalendarDay> days = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        for (ActivityRecord ac :events) {
+            if (ac.getMoodType().equals(type))
+            {
+                calendar.setTimeInMillis(ac.getTimestamp());
+                CalendarDay cd = CalendarDay.from(calendar);
+                days.add(cd);
+            }
+        }
+        return days;
+    }
 
     /**
      * This interface must be implemented by activities that contain this

@@ -1,15 +1,23 @@
 package com.sassaworks.senseplanner.ui;
 
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,9 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
+import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -38,6 +48,8 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     private String mParam1;
     private String mParam2;
     FirebaseUser user;
+    FirebaseDatabase db;
+    DatabaseReference refCategories;
 
     Spinner mCategorySpinner;
     Spinner mAppealingSpinner;
@@ -51,6 +63,23 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     CategoriesAdapter mAppealingAdapter;
     CategoriesAdapter mMoodAdapter;
 
+    EditText mNameText;
+    EditText mDescrText;
+
+    EditText mDateText;
+    EditText mTimeText;
+    CheckBox mNotifyCheckbox;
+
+    Button mSaveButton;
+
+
+    int mYear;
+    int mMonth;
+    int mDayOfMonth;
+    int mHour;
+    int mMinute;
+
+    Calendar selectedTimestamp;
 
 
     public CreateTaskFragment() {
@@ -89,6 +118,61 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         mAppealingSpinner = view.findViewById(R.id.sp_appealing);
         mMoodSpinner = view.findViewById(R.id.sp_mood);
 
+        mDateText = view.findViewById(R.id.et_date);
+        mTimeText = view.findViewById(R.id.et_time);
+        mNameText = view.findViewById(R.id.et_name);
+        mDescrText = view.findViewById(R.id.et_description);
+
+        mNotifyCheckbox = view.findViewById(R.id.cb_notify);
+        mSaveButton = view.findViewById(R.id.bt_save_event);
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                SaveEvent();
+            }
+        });
+
+
+        mDateText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar calendar = Calendar.getInstance();
+                EditText mDateText = getActivity().findViewById(R.id.et_date);
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        mDateText.setText(dayOfMonth + "-" + (month +1)+ "-"+year);
+                        mYear = year;
+                        mMonth = month;
+                        mDayOfMonth = dayOfMonth;
+                    }
+                },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+
+                dialog.show();
+            }
+        });
+
+        mTimeText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar calendar = Calendar.getInstance();
+
+                EditText mDateText = getActivity().findViewById(R.id.et_date);
+                TimePickerDialog dialog = new TimePickerDialog(getActivity(),
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                mTimeText.setText(hourOfDay + ":" + minute);
+                                mHour = hourOfDay;
+                                mMinute = minute;
+                            }
+                        },calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE),true);
+                dialog.show();
+            }
+        });
+
+
         activities = new ArrayList<>();
         appealing = new ArrayList<>();
         mood = new ArrayList<>();
@@ -98,13 +182,12 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         mMoodAdapter = new CategoriesAdapter(getActivity(), mood);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference refCategories = db.getReference("planner").child(user.getUid());
+        db = FirebaseDatabase.getInstance();
+        refCategories = db.getReference("planner").child(user.getUid());
 
         FirebaseDatabaseHelper helperActivities = new FirebaseDatabaseHelper(refCategories,this, "activities");
         FirebaseDatabaseHelper helperAppealing = new FirebaseDatabaseHelper(refCategories,this, "appealing");
         FirebaseDatabaseHelper helperMood = new FirebaseDatabaseHelper(refCategories,this, "mood");
-        //mCategorySpinner.setAdapter(adapter);
 
         mCategorySpinner.setAdapter(mCategoryAdapter);
         mAppealingSpinner.setAdapter(mAppealingAdapter);
@@ -118,6 +201,9 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         // Inflate the layout for this fragment
         return view;
     }
+
+
+
 
     @Override
     public void getItem(String category, String type) {
@@ -137,4 +223,24 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             mMoodAdapter.updateData(mood);
         }
     }
+
+    public void SaveEvent()
+    {
+
+        String name = mNameText.getText().toString();
+        String desc = mDescrText.getText().toString();
+        selectedTimestamp = Calendar.getInstance();
+        selectedTimestamp.set(mYear,mMonth,mDayOfMonth,mHour,mMinute);
+        Long timespan = selectedTimestamp.getTimeInMillis();
+        String category = mCategorySpinner.getSelectedItem().toString();
+        String mood = mMoodSpinner.getSelectedItem().toString();
+        String appealing = mAppealingSpinner.getSelectedItem().toString();
+        boolean withNotify = mNotifyCheckbox.isChecked();
+
+        String key = refCategories.child("activity_records").push().getKey();
+        ActivityRecord record = new ActivityRecord(name,timespan,category,mood,appealing,desc,withNotify);
+        refCategories.child("activity_records").child(key).setValue(record);
+        getActivity().finish();
+    }
+
 }

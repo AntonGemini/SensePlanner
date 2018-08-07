@@ -9,16 +9,15 @@
     <!-- TODO: Update blank fragment layout -->
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/et_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="date"
         android:text="Name"
-        android:visibility="visible"
         tools:text="sdasdasd" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/et_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -41,18 +40,33 @@
         android:layout_height="wrap_content" />
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/et_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusableInTouchMode="false"
         android:ems="10"
         android:inputType="date" />
 
     <EditText
-        android:id="@+id/editText4"
+        android:id="@+id/et_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusableInTouchMode="false"
         android:ems="10"
         android:inputType="time" />
+
+    <CheckBox
+        android:text="Notify"
+        android:id="@+id/cb_notify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/bt_save_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        />
 
 
 </LinearLayout>

@@ -3,4 +3,15 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    
+    <!--Colors for job appealing-->
+    <color name="low_job">#db4643</color>
+    <color name="avg_job">#e5de50</color>
+    <color name="high_job">#55e881</color>
+
+    <!--Colors for mood-->
+    <color name="low_mood">#db4643</color>
+    <color name="avg_mood">#e5de50</color>
+    <color name="high_mood">#55e881</color>
+
 </resources>

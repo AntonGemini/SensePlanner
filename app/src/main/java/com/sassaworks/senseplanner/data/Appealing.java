@@ -1,18 +1,8 @@
 package com.sassaworks.senseplanner.data;
 
-public class Appealing {
-
-    private String name;
+public class Appealing  extends Category{
 
     public Appealing()
     {}
 
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
