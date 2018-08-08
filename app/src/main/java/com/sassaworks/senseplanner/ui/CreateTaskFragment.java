@@ -27,10 +27,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
 import com.sassaworks.senseplanner.data.ActivityRecord;
+import com.sassaworks.senseplanner.data.Category;
+import com.sassaworks.senseplanner.data.DayStatistics;
 import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,7 +42,7 @@ import java.util.List;
  * Use the {@link CreateTaskFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelper.OnGetItem {
+public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelper.OnGetItem, FirebaseDatabaseHelper.OnSingleDataLoaded {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -55,9 +59,9 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     Spinner mAppealingSpinner;
     Spinner mMoodSpinner;
 
-    ArrayList<String> activities;
-    ArrayList<String> appealing;
-    ArrayList<String> mood;
+    ArrayList<Category> activities;
+    ArrayList<Category> appealing;
+    ArrayList<Category> mood;
 
     CategoriesAdapter mCategoryAdapter;
     CategoriesAdapter mAppealingAdapter;
@@ -206,20 +210,21 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
 
 
     @Override
-    public void getItem(String category, String type) {
-        String st = category;
+    public void getItem(Category category, String type) {
+        //String st = category.getName();
 
         Log.d("CATEG",String.valueOf(activities.size()));
         if (type=="activities") {
-            activities.add(st);
+
+            activities.add(category);
             mCategoryAdapter.updateData(activities);
         }
         else if (type=="appealing") {
-            appealing.add(st);
+            appealing.add(category);
             mAppealingAdapter.updateData(appealing);
         }
         else if (type=="mood") {
-            mood.add(st);
+            mood.add(category);
             mMoodAdapter.updateData(mood);
         }
     }
@@ -227,20 +232,48 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     public void SaveEvent()
     {
 
+        DatabaseReference statRef = db.getReference().child("daystatistics").child(user.getUid());
+
+        selectedTimestamp = Calendar.getInstance();
+        Long timespan = selectedTimestamp.getTimeInMillis();
+
+
+        Date date = new Date(timespan);
+        String sdf = new SimpleDateFormat("dd.MM.yyyy").format(date);
+        FirebaseDatabaseHelper fbh = new FirebaseDatabaseHelper(statRef, this);
+        fbh.GetDayStat(sdf);
+
+        //Query from statistics where date = sfd
+        //if got nothing put new item
+        //else
+
+
+
+    }
+
+    @Override
+    public void onDataLoaded(DayStatistics ds) {
         String name = mNameText.getText().toString();
         String desc = mDescrText.getText().toString();
-        selectedTimestamp = Calendar.getInstance();
+
         selectedTimestamp.set(mYear,mMonth,mDayOfMonth,mHour,mMinute);
         Long timespan = selectedTimestamp.getTimeInMillis();
-        String category = mCategorySpinner.getSelectedItem().toString();
-        String mood = mMoodSpinner.getSelectedItem().toString();
-        String appealing = mAppealingSpinner.getSelectedItem().toString();
+        String categoryStr = mCategorySpinner.getSelectedItem().toString();
+        String moodStr = mMoodSpinner.getSelectedItem().toString();
+        String appealingStr = mAppealingSpinner.getSelectedItem().toString();
         boolean withNotify = mNotifyCheckbox.isChecked();
-
         String key = refCategories.child("activity_records").push().getKey();
-        ActivityRecord record = new ActivityRecord(name,timespan,category,mood,appealing,desc,withNotify);
+        ActivityRecord record = new ActivityRecord(name,timespan,categoryStr,moodStr,appealingStr,desc,withNotify);
+
+        if (ds == null)
+        {
+//            ds.setAppeal_avg(appealing.);
+//            ds.setMood_avg(mood);
+//            ds.setAppeal_num(1);
+//            ds.setMood_num(1);
+        }
+
         refCategories.child("activity_records").child(key).setValue(record);
         getActivity().finish();
     }
-
 }

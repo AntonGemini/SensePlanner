@@ -1,5 +1,6 @@
 package com.sassaworks.senseplanner.firebaseutils;
 
+import android.content.Context;
 import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.data.ActivityRecord;
+import com.sassaworks.senseplanner.data.Category;
+import com.sassaworks.senseplanner.data.DayStatistics;
 
 import java.util.ArrayList;
 
@@ -22,7 +25,7 @@ public class FirebaseDatabaseHelper {
 
     public interface OnGetItem
     {
-        void getItem(String categoryName, String type);
+        void getItem(Category category, String type);
     }
     private OnGetItem onGetItemInstance;
 
@@ -31,6 +34,12 @@ public class FirebaseDatabaseHelper {
         void onEventsGet(ArrayList<ActivityRecord> events);
     }
     private OnEventsGetCompleted onEventsGetinstance;
+
+    public interface OnSingleDataLoaded
+    {
+        void onDataLoaded(DayStatistics ds);
+    }
+    private OnSingleDataLoaded onSingleDataLoadedInstance;
 
     public FirebaseDatabaseHelper(DatabaseReference ref, OnGetItem getItem, String type)
     {
@@ -42,7 +51,13 @@ public class FirebaseDatabaseHelper {
     public FirebaseDatabaseHelper(DatabaseReference ref, OnEventsGetCompleted context)
     {
         this.dbRef = ref;
-        this.onEventsGetinstance = context;
+        this.onEventsGetinstance = (OnEventsGetCompleted) context;
+    }
+
+    public FirebaseDatabaseHelper(DatabaseReference ref, OnSingleDataLoaded context)
+    {
+        dbRef = ref;
+        this.onSingleDataLoadedInstance = context;
     }
 
     public void getCategoriesList()
@@ -52,8 +67,9 @@ public class FirebaseDatabaseHelper {
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Activity activity = dataSnapshot.getValue(Activity.class);
-                onGetItemInstance.getItem(activity.getName(),type);
+                Category category = dataSnapshot.getValue(Activity.class);
+
+                onGetItemInstance.getItem(category,type);
                 //categories.updateViewData(activities);
                 //getData(dataSnapshot, categories);
             }
@@ -103,6 +119,26 @@ public class FirebaseDatabaseHelper {
 
             }
         });
+    }
+
+
+    public DayStatistics GetDayStat(String date)
+    {
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DayStatistics ds = dataSnapshot.getValue(DayStatistics.class);
+                onSingleDataLoadedInstance.onDataLoaded(ds);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        DayStatistics stat = null;
+
+        return stat;
     }
 
 //    private void getData(DataSnapshot dataSnapshot, ArrayList<String> categories) {

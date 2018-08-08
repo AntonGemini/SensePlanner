@@ -11,18 +11,19 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.sassaworks.senseplanner.R;
+import com.sassaworks.senseplanner.data.Category;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CategoriesAdapter extends ArrayAdapter<String> {
 
-    ArrayList<String> categories = new ArrayList<String>();
+    ArrayList<Category> categories = new ArrayList();
     Context context;
 
 
-    public CategoriesAdapter(@NonNull Context context, ArrayList<String> data) {
-        super(context, R.layout.item_category,data);
+    public CategoriesAdapter(@NonNull Context context, ArrayList<Category> data) {
+        super(context, R.layout.item_category);
         this.categories = data;
         this.context = context;
         Log.d("Adap1","a1");
@@ -35,8 +36,8 @@ public class CategoriesAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.item_category,parent,false);
         TextView tv = view.findViewById(R.id.item_tv_category);
-        tv.setText(categories.get(position));
-        Log.d("Adap3",categories.get(position));
+        tv.setText(categories.get(position).getName());
+        Log.d("Adap3",categories.get(position).getName());
         return view;
     }
 
@@ -45,8 +46,8 @@ public class CategoriesAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.item_category,parent,false);
         TextView tv = view.findViewById(R.id.item_tv_category);
-        tv.setText(categories.get(position));
-        Log.d("Adap3",categories.get(position));
+        tv.setText(categories.get(position).getName());
+        Log.d("Adap3",categories.get(position).getName());
         return view;
     }
 
@@ -55,7 +56,7 @@ public class CategoriesAdapter extends ArrayAdapter<String> {
         return categories.size();
     }
 
-    public void updateData(ArrayList<String> data)
+    public void updateData(ArrayList<Category> data)
     {
         this.categories = data;
         notifyDataSetChanged();

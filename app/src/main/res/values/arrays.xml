@@ -6,7 +6,4 @@
         <item>Calendar</item>
         <item>Charts</item>
     </string-array>
-    <string-array name="category_name">
-        <item></item>
-    </string-array>
 </resources>

@@ -209,10 +209,13 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
     {
         ArrayList<CalendarDay> days = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
+
         for (ActivityRecord ac :events) {
+
             if (ac.getMoodType().equals(type))
             {
                 calendar.setTimeInMillis(ac.getTimestamp());
+                //calendar.
                 CalendarDay cd = CalendarDay.from(calendar);
                 days.add(cd);
             }

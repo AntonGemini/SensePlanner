@@ -4,6 +4,8 @@ public abstract class Category {
 
     private String name;
 
+    private int numValue;
+
     public Category()
     {}
 
@@ -14,5 +16,13 @@ public abstract class Category {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getNumValue() {
+        return numValue;
+    }
+
+    public void setNumValue(int numValue) {
+        this.numValue = numValue;
     }
 }
