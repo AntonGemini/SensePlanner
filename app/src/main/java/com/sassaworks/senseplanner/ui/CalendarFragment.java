@@ -28,6 +28,7 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.sassaworks.senseplanner.CreateTaskActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.data.ActivityRecord;
+import com.sassaworks.senseplanner.data.DayStatistics;
 import com.sassaworks.senseplanner.decorators.EventDecorator;
 import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
@@ -58,7 +59,7 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
 
     FirebaseUser user;
     FirebaseDatabase db;
-    DatabaseReference refEvents;
+    DatabaseReference refStat;
 
     //@BindView(R.id.calendar)
     MaterialCalendarView mCalendarView;
@@ -150,10 +151,9 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
         });
         db = FirebaseDatabase.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        refEvents = db.getReference("planner").child(user.getUid()).child("activity_records");
-        FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(refEvents,this);
-        helper.getActivityRecords(refEvents);
-
+        refStat = db.getReference("daystatistics").child(user.getUid());
+        FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(this);
+        helper.getActivityRecords(refStat);
         //Inflate the layout for this fragment
         return view;
     }
@@ -183,7 +183,7 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
     }
 
     @Override
-    public void onEventsGet(ArrayList<ActivityRecord> events) {
+    public void onEventsGet(ArrayList<DayStatistics> events) {
 
         //events.stream().filter(s -> s.getJobAddiction().equals("Low")).collect(Collectors.toList());
         //i equals number of job appealings of user
@@ -196,26 +196,31 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
             //get colour for this type of jobAppealing
             //create an EventDecorator and add it to the calendar
 
-            mCalendarView.addDecorator(new EventDecorator(getDaysByMood("Bad",events),getContext(),
+            mCalendarView.addDecorator(new EventDecorator(getDaysByMood(1,1.66f, events),getContext(),
                     new ColorDrawable(getContext().getResources().getColor(R.color.low_mood))));
-            mCalendarView.addDecorator(new EventDecorator(getDaysByMood("Good",events),getContext(),
+            mCalendarView.addDecorator(new EventDecorator(getDaysByMood(1.66f, 2.33f,events),getContext(),
+                    new ColorDrawable(getContext().getResources().getColor(R.color.avg_mood))));
+            mCalendarView.addDecorator(new EventDecorator(getDaysByMood(2.33f, 3f,events),getContext(),
                     new ColorDrawable(getContext().getResources().getColor(R.color.high_mood))));
             //calendar.addDecorator();
         }
-        ArrayList<ActivityRecord> userEvents = events;
+        ArrayList<DayStatistics> userEvents = events;
     }
 
-    public ArrayList<CalendarDay> getDaysByMood(String type, ArrayList<ActivityRecord> events)
+    public ArrayList<CalendarDay> getDaysByMood(float lowBound, float upperBound, ArrayList<DayStatistics> events)
     {
         ArrayList<CalendarDay> days = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
+        if (upperBound == 3)
+        {
+            upperBound = 2.99999f;
+        }
+        for (DayStatistics ac :events) {
 
-        for (ActivityRecord ac :events) {
 
-            if (ac.getMoodType().equals(type))
+            if (ac.getMood_avg() >= lowBound && ac.getMood_avg() < upperBound)
             {
                 calendar.setTimeInMillis(ac.getTimestamp());
-                //calendar.
                 CalendarDay cd = CalendarDay.from(calendar);
                 days.add(cd);
             }

@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -35,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -54,14 +56,15 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     FirebaseUser user;
     FirebaseDatabase db;
     DatabaseReference refCategories;
+    DatabaseReference statRef;
 
     Spinner mCategorySpinner;
     Spinner mAppealingSpinner;
     Spinner mMoodSpinner;
 
-    ArrayList<Category> activities;
-    ArrayList<Category> appealing;
-    ArrayList<Category> mood;
+    HashMap<String, Integer> activities;
+    HashMap<String, Integer> appealing;
+    HashMap<String, Integer> mood;
 
     CategoriesAdapter mCategoryAdapter;
     CategoriesAdapter mAppealingAdapter;
@@ -177,13 +180,13 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         });
 
 
-        activities = new ArrayList<>();
-        appealing = new ArrayList<>();
-        mood = new ArrayList<>();
+        activities = new HashMap<>();
+        appealing = new HashMap<>();
+        mood = new HashMap<>();
 
-        mCategoryAdapter = new CategoriesAdapter(getActivity(), activities);
-        mAppealingAdapter = new CategoriesAdapter(getActivity(), appealing);
-        mMoodAdapter = new CategoriesAdapter(getActivity(), mood);
+        mCategoryAdapter = new CategoriesAdapter(getActivity(), activities.keySet().toArray(new String[0]));
+        mAppealingAdapter = new CategoriesAdapter(getActivity(), appealing.keySet().toArray(new String[0]));
+        mMoodAdapter = new CategoriesAdapter(getActivity(), mood.keySet().toArray(new String[0]));
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseDatabase.getInstance();
@@ -216,30 +219,30 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         Log.d("CATEG",String.valueOf(activities.size()));
         if (type=="activities") {
 
-            activities.add(category);
-            mCategoryAdapter.updateData(activities);
+            activities.put(category.getName(),category.getNumValue());
+            mCategoryAdapter.updateData(activities.keySet().toArray(new String[0]));
         }
         else if (type=="appealing") {
-            appealing.add(category);
-            mAppealingAdapter.updateData(appealing);
+            appealing.put(category.getName(),category.getNumValue());
+            mAppealingAdapter.updateData(appealing.keySet().toArray(new String[0]));
         }
         else if (type=="mood") {
-            mood.add(category);
-            mMoodAdapter.updateData(mood);
+            mood.put(category.getName(),category.getNumValue());
+            mMoodAdapter.updateData(mood.keySet().toArray(new String[0]));
         }
     }
 
     public void SaveEvent()
     {
 
-        DatabaseReference statRef = db.getReference().child("daystatistics").child(user.getUid());
+
 
         selectedTimestamp = Calendar.getInstance();
-        Long timespan = selectedTimestamp.getTimeInMillis();
+        selectedTimestamp.set(mYear,mMonth,mDayOfMonth);
 
-
-        Date date = new Date(timespan);
-        String sdf = new SimpleDateFormat("dd.MM.yyyy").format(date);
+        //Date date = new Date(selectedTimestamp.getTimeInMillis());
+        String sdf = new SimpleDateFormat("dd-MM-yyyy").format(selectedTimestamp.getTime());
+        statRef = db.getReference().child("daystatistics").child(user.getUid()).child(sdf);
         FirebaseDatabaseHelper fbh = new FirebaseDatabaseHelper(statRef, this);
         fbh.GetDayStat(sdf);
 
@@ -258,22 +261,49 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
 
         selectedTimestamp.set(mYear,mMonth,mDayOfMonth,mHour,mMinute);
         Long timespan = selectedTimestamp.getTimeInMillis();
-        String categoryStr = mCategorySpinner.getSelectedItem().toString();
-        String moodStr = mMoodSpinner.getSelectedItem().toString();
-        String appealingStr = mAppealingSpinner.getSelectedItem().toString();
+
+//        Date date = new Date(timespan);
+//        String sdf = new SimpleDateFormat("dd-MM-yyyy").format(date);
+//        Calendar c = Calendar.getInstance();
+
+
+
+        String moodStr = ((TextView)mMoodSpinner.getSelectedView().findViewById(R.id.item_tv_category)).getText().toString();
+        String appealingStr = ((TextView)mAppealingSpinner.getSelectedView().findViewById(R.id.item_tv_category)).getText().toString();
+        String categoryStr = ((TextView)mCategorySpinner.getSelectedView().findViewById(R.id.item_tv_category)).getText().toString();
+
         boolean withNotify = mNotifyCheckbox.isChecked();
         String key = refCategories.child("activity_records").push().getKey();
         ActivityRecord record = new ActivityRecord(name,timespan,categoryStr,moodStr,appealingStr,desc,withNotify);
 
+        DayStatistics newDs = new DayStatistics();
         if (ds == null)
         {
-//            ds.setAppeal_avg(appealing.);
-//            ds.setMood_avg(mood);
-//            ds.setAppeal_num(1);
-//            ds.setMood_num(1);
+            newDs.setAppeal_avg(appealing.get(appealingStr));
+            newDs.setMood_avg(mood.get(moodStr));
+            newDs.setAppeal_num(1);
+            newDs.setMood_num(1);
+
         }
+        else {
+            int newMoodNum = ds.getMood_num()+1;
+            int newAppealNum = ds.getAppeal_num() + 1;
+            float oldTotalMood = ds.getMood_avg() * ds.getMood_num();
+            float oldTotalAppeal = ds.getAppeal_avg() * ds.getAppeal_num();
+
+            float newMoodAvg = (oldTotalMood + mood.get(moodStr))/newMoodNum;
+            float newAppealAvg = (oldTotalAppeal + appealing.get(appealingStr))/newAppealNum;
+
+            newDs.setMood_num(newMoodNum);
+            newDs.setAppeal_num(newAppealNum);
+            newDs.setMood_avg(newMoodAvg);
+            newDs.setAppeal_avg(newAppealAvg);
+        }
+        selectedTimestamp.set(mYear,mMonth,mDayOfMonth);
+        newDs.setTimestamp(selectedTimestamp.getTimeInMillis());
 
         refCategories.child("activity_records").child(key).setValue(record);
+        statRef.setValue(newDs);
         getActivity().finish();
     }
 }

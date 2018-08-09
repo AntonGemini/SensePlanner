@@ -31,7 +31,7 @@ public class FirebaseDatabaseHelper {
 
     public interface OnEventsGetCompleted
     {
-        void onEventsGet(ArrayList<ActivityRecord> events);
+        void onEventsGet(ArrayList<DayStatistics> events);
     }
     private OnEventsGetCompleted onEventsGetinstance;
 
@@ -48,9 +48,8 @@ public class FirebaseDatabaseHelper {
         this.type = type;
     }
 
-    public FirebaseDatabaseHelper(DatabaseReference ref, OnEventsGetCompleted context)
+    public FirebaseDatabaseHelper( OnEventsGetCompleted context)
     {
-        this.dbRef = ref;
         this.onEventsGetinstance = (OnEventsGetCompleted) context;
     }
 
@@ -98,7 +97,7 @@ public class FirebaseDatabaseHelper {
 
     public void getActivityRecords(DatabaseReference ref)
     {
-        ArrayList<ActivityRecord> events = new ArrayList<>();
+        ArrayList<DayStatistics> events = new ArrayList<>();
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -106,7 +105,7 @@ public class FirebaseDatabaseHelper {
                 int i = 1;
                 for(DataSnapshot ds:dataSnapshot.getChildren())
                 {
-                    ActivityRecord record = ds.getValue(ActivityRecord.class);
+                    DayStatistics record = ds.getValue(DayStatistics.class);
                     events.add(record);
                 }
                 Log.d("RSC3","Method called " + String.valueOf(i));

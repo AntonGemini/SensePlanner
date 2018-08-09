@@ -15,14 +15,15 @@ import com.sassaworks.senseplanner.data.Category;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CategoriesAdapter extends ArrayAdapter<String> {
 
-    ArrayList<Category> categories = new ArrayList();
+    String[] categories;
     Context context;
 
 
-    public CategoriesAdapter(@NonNull Context context, ArrayList<Category> data) {
+    public CategoriesAdapter(@NonNull Context context, String[] data) {
         super(context, R.layout.item_category);
         this.categories = data;
         this.context = context;
@@ -36,8 +37,8 @@ public class CategoriesAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.item_category,parent,false);
         TextView tv = view.findViewById(R.id.item_tv_category);
-        tv.setText(categories.get(position).getName());
-        Log.d("Adap3",categories.get(position).getName());
+        tv.setText(categories[position]);
+        Log.d("Adap3",categories[position]);
         return view;
     }
 
@@ -46,20 +47,20 @@ public class CategoriesAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.item_category,parent,false);
         TextView tv = view.findViewById(R.id.item_tv_category);
-        tv.setText(categories.get(position).getName());
-        Log.d("Adap3",categories.get(position).getName());
+        tv.setText(categories[position]);
+        Log.d("Adap3",categories[position]);
         return view;
     }
 
     @Override
     public int getCount() {
-        return categories.size();
+        return categories.length;
     }
 
-    public void updateData(ArrayList<Category> data)
+    public void updateData(String[] data)
     {
         this.categories = data;
         notifyDataSetChanged();
-        Log.d("upd1",String.valueOf(data.size()));
+        Log.d("upd1",String.valueOf(data.length));
     }
 }

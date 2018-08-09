@@ -14,6 +14,7 @@ public class DayStatistics {
     private int mood_num;
     private float appeal_avg;
     private int appeal_num;
+    private long timestamp;
 
     public int getMood_num() {
         return mood_num;
@@ -37,5 +38,13 @@ public class DayStatistics {
 
     public void setAppeal_num(int appeal_num) {
         this.appeal_num = appeal_num;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }
