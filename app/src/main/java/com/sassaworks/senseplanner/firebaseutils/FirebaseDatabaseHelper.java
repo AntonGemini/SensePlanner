@@ -10,6 +10,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.data.ActivityRecord;
@@ -22,6 +23,7 @@ public class FirebaseDatabaseHelper {
 
     DatabaseReference dbRef;
     String type;
+    Query query;
 
     public interface OnGetItem
     {
@@ -41,6 +43,13 @@ public class FirebaseDatabaseHelper {
     }
     private OnSingleDataLoaded onSingleDataLoadedInstance;
 
+    public interface OnActivityRecordsGetCompleted
+    {
+        void onActivityRecordsLoaded(ArrayList<ActivityRecord> data);
+    }
+
+    private OnActivityRecordsGetCompleted onActivityLoadedInstance;
+
     public FirebaseDatabaseHelper(DatabaseReference ref, OnGetItem getItem, String type)
     {
         this.dbRef = ref.child(type);
@@ -58,6 +67,12 @@ public class FirebaseDatabaseHelper {
         dbRef = ref;
         this.onSingleDataLoadedInstance = context;
     }
+
+    public FirebaseDatabaseHelper(Query dbRef)
+    {
+        this.query = dbRef;
+    }
+
 
     public void getCategoriesList()
     {
@@ -138,6 +153,60 @@ public class FirebaseDatabaseHelper {
         DayStatistics stat = null;
 
         return stat;
+    }
+
+
+    public void GetEvents(OnActivityRecordsGetCompleted context)
+    {
+        this.onActivityLoadedInstance = context;
+        ArrayList<ActivityRecord> records = new ArrayList<>();
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds:dataSnapshot.getChildren())
+                {
+                    ActivityRecord record = ds.getValue(ActivityRecord.class);
+                    records.add(record);
+                }
+                context.onActivityRecordsLoaded(records);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+//        query.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                for (DataSnapshot ds:dataSnapshot.getChildren())
+//                {
+//                    ActivityRecord record = ds.getValue(ActivityRecord.class);
+//                    records.add(record);
+//                }
+//                context.onActivityRecordsLoaded(records);
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
 //    private void getData(DataSnapshot dataSnapshot, ArrayList<String> categories) {

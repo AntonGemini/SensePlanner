@@ -210,13 +210,13 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
     public ArrayList<CalendarDay> getDaysByMood(float lowBound, float upperBound, ArrayList<DayStatistics> events)
     {
         ArrayList<CalendarDay> days = new ArrayList<>();
+
         Calendar calendar = Calendar.getInstance();
         if (upperBound == 3)
         {
             upperBound = 2.99999f;
         }
         for (DayStatistics ac :events) {
-
 
             if (ac.getMood_avg() >= lowBound && ac.getMood_avg() < upperBound)
             {

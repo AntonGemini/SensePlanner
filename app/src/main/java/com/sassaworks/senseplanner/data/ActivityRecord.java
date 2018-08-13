@@ -1,6 +1,14 @@
 package com.sassaworks.senseplanner.data;
 
-public class ActivityRecord extends Category {
+import com.google.firebase.database.Exclude;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class ActivityRecord extends Category implements CollectionItem {
+
+    @Exclude
+    private String key;
 
     private long timestamp;
 
@@ -73,5 +81,25 @@ public class ActivityRecord extends Category {
 
     public void setWithNotify(boolean withNotify) {
         this.withNotify = withNotify;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    @Override
+    public int getItemType() {
+        return CollectionItem.TYPE_DESC;
+    }
+
+    @Override
+    public String getFormattedDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        return new SimpleDateFormat("dd-MM-yyyy").format(calendar.getTime());
     }
 }
