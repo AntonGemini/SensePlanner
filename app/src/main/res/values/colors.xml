@@ -14,4 +14,11 @@
     <color name="avg_mood">#e5de50</color>
     <color name="high_mood">#55e881</color>
 
+
+    <color name="High">@color/high_mood</color>
+    <color name="Good">@color/high_mood</color>
+    <color name="Bad">@color/low_mood</color>
+    <color name="Low">@color/low_mood</color>
+    <color name="Average">@color/avg_mood</color>
+
 </resources>

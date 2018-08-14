@@ -1,6 +1,7 @@
 package com.sassaworks.senseplanner.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.PopupMenu;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,7 +22,7 @@ public class HeaderViewHolder extends BaseViewHolder {
     }
 
     @Override
-    public void bindValues(CollectionItem record, Context context) {
+    public void bindValues(CollectionItem record, Context context, ActivityViewHolder.OnMoreClickListener popupListener) {
         HeaderRecord headerRecord = (HeaderRecord)record;
         mHeaderTextView.setText(record.getFormattedDate());
     }

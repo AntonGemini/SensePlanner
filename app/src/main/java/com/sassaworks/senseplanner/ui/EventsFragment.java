@@ -4,8 +4,11 @@ package com.sassaworks.senseplanner.ui;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.ActivityRecordAdapter;
+import com.sassaworks.senseplanner.adapter.ActivityViewHolder;
 import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.data.CollectionItem;
 import com.sassaworks.senseplanner.data.HeaderRecord;
@@ -34,7 +38,7 @@ import butterknife.ButterKnife;
  * Use the {@link EventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.OnActivityRecordsGetCompleted {
+public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.OnActivityRecordsGetCompleted, ActivityViewHolder.OnMoreClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -116,9 +120,32 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
             formatedRecords.add(ac);
         }
 
-        ActivityRecordAdapter adapter = new ActivityRecordAdapter(getActivity(),formatedRecords);
+        ActivityRecordAdapter adapter = new ActivityRecordAdapter(getActivity(),formatedRecords,this);
         mEventRecyclerView.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         mEventRecyclerView.setLayoutManager(layoutManager);
+    }
+
+
+    @Override
+    public void onMoreClick(ActivityRecord record, View v) {
+        PopupMenu popup = new PopupMenu(getActivity(),v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_activity,popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.edit_activity)
+                {
+                    EditActivityRecord(record);
+                }
+                return true;
+            }
+        });
+        popup.show();
+    }
+
+    private void EditActivityRecord(ActivityRecord record) {
     }
 }
