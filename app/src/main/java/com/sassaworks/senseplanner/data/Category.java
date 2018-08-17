@@ -1,6 +1,9 @@
 package com.sassaworks.senseplanner.data;
 
-public abstract class Category {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public abstract class Category implements Parcelable {
 
     private String name;
 
@@ -8,6 +11,23 @@ public abstract class Category {
 
     public Category()
     {}
+
+
+    protected Category(Parcel in) {
+        name = in.readString();
+        numValue = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeInt(numValue);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
 
     public String getName() {

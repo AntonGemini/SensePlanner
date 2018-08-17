@@ -1,5 +1,8 @@
 package com.sassaworks.senseplanner.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.database.Exclude;
 
 import java.text.SimpleDateFormat;
@@ -34,6 +37,46 @@ public class ActivityRecord extends Category implements CollectionItem {
         this.withNotify = withNotify;
     }
 
+
+    protected ActivityRecord(Parcel in) {
+        super(in);
+        key = in.readString();
+        timestamp = in.readLong();
+        category = in.readString();
+        moodType = in.readString();
+        jobAddiction = in.readString();
+        desciption = in.readString();
+        withNotify = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest,flags);
+        dest.writeString(key);
+        dest.writeLong(timestamp);
+        dest.writeString(category);
+        dest.writeString(moodType);
+        dest.writeString(jobAddiction);
+        dest.writeString(desciption);
+        dest.writeByte((byte) (withNotify ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<ActivityRecord> CREATOR = new Creator<ActivityRecord>() {
+        @Override
+        public ActivityRecord createFromParcel(Parcel in) {
+            return new ActivityRecord(in);
+        }
+
+        @Override
+        public ActivityRecord[] newArray(int size) {
+            return new ActivityRecord[size];
+        }
+    };
 
     public long getTimestamp() {
         return timestamp;

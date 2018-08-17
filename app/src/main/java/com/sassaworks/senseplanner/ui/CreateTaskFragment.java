@@ -20,7 +20,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -34,33 +33,45 @@ import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link CreateTaskFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelper.OnGetItem, FirebaseDatabaseHelper.OnSingleDataLoaded {
+public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelper.OnGetItem,
+        FirebaseDatabaseHelper.OnSingleDataLoaded, FirebaseDatabaseHelper.OnRemoveFromStatistics {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static final String ACTIVITY_RECORD = "activity_record";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     FirebaseUser user;
     FirebaseDatabase db;
     DatabaseReference refCategories;
     DatabaseReference statRef;
 
-    Spinner mCategorySpinner;
-    Spinner mAppealingSpinner;
-    Spinner mMoodSpinner;
+
+
+    @BindView(R.id.sp_activities) Spinner mCategorySpinner;
+    @BindView(R.id.sp_appealing) Spinner mAppealingSpinner;
+    @BindView(R.id.sp_mood) Spinner mMoodSpinner;
 
     HashMap<String, Integer> activities;
     HashMap<String, Integer> appealing;
@@ -70,28 +81,33 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     CategoriesAdapter mAppealingAdapter;
     CategoriesAdapter mMoodAdapter;
 
-    EditText mNameText;
-    EditText mDescrText;
+    @BindView(R.id.et_name) EditText mNameText;
+    @BindView(R.id.et_description) EditText mDescrText;
 
-    EditText mDateText;
-    EditText mTimeText;
-    CheckBox mNotifyCheckbox;
+    @BindView(R.id.et_date) EditText mDateText;
+    @BindView(R.id.et_time) EditText mTimeText;
+    @BindView(R.id.et_date_f) EditText mDateTextF;
+    @BindView(R.id.et_time_f) EditText mTimeTextF;
+    @BindView(R.id.cb_notify) CheckBox mNotifyCheckbox;
 
-    Button mSaveButton;
+    @BindView(R.id.bt_save_event) Button mSaveButton;
 
 
-    int mYear;
-    int mMonth;
-    int mDayOfMonth;
-    int mHour;
-    int mMinute;
+    int mYear, mYearF;
+    int mMonth, mMonthF;
+    int mDayOfMonth, mDayOfMonthF;
+    int mHour, mHourF;
+    int mMinute, mMinuteF;
 
     Calendar selectedTimestamp;
+
+    ActivityRecord activityRecord;
 
 
     public CreateTaskFragment() {
         // Required empty public constructor
     }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -100,11 +116,15 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
      * @return A new instance of fragment CreateTaskFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CreateTaskFragment newInstance() {
+    public static CreateTaskFragment newInstance(ActivityRecord record) {
         CreateTaskFragment fragment = new CreateTaskFragment();
         Bundle args = new Bundle();
-        fragment.setArguments(args);
-        Log.d("RSC2","instance");
+        if (record != null)
+        {
+            args.putParcelable(ACTIVITY_RECORD,record);
+            fragment.setArguments(args);
+        }
+
         return fragment;
     }
 
@@ -112,26 +132,18 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            activityRecord = getArguments().getParcelable(ACTIVITY_RECORD);
+
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_create_task, container, false);
-        mCategorySpinner = view.findViewById(R.id.sp_activities);
-        mAppealingSpinner = view.findViewById(R.id.sp_appealing);
-        mMoodSpinner = view.findViewById(R.id.sp_mood);
+        ButterKnife.bind(this,view);
 
-        mDateText = view.findViewById(R.id.et_date);
-        mTimeText = view.findViewById(R.id.et_time);
-        mNameText = view.findViewById(R.id.et_name);
-        mDescrText = view.findViewById(R.id.et_description);
-
-        mNotifyCheckbox = view.findViewById(R.id.cb_notify);
-        mSaveButton = view.findViewById(R.id.bt_save_event);
         mSaveButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -140,45 +152,11 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             }
         });
 
+        mDateText.setOnClickListener(onDateClickListener);
+        mDateTextF.setOnClickListener(onDateClickListener);
 
-        mDateText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-                EditText mDateText = getActivity().findViewById(R.id.et_date);
-                DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        mDateText.setText(dayOfMonth + "-" + (month +1)+ "-"+year);
-                        mYear = year;
-                        mMonth = month;
-                        mDayOfMonth = dayOfMonth;
-                    }
-                },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
-
-                dialog.show();
-            }
-        });
-
-        mTimeText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-
-                EditText mDateText = getActivity().findViewById(R.id.et_date);
-                TimePickerDialog dialog = new TimePickerDialog(getActivity(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                mTimeText.setText(hourOfDay + ":" + minute);
-                                mHour = hourOfDay;
-                                mMinute = minute;
-                            }
-                        },calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE),true);
-                dialog.show();
-            }
-        });
-
+        mTimeText.setOnClickListener(onTimeClickListener);
+        mTimeTextF.setOnClickListener(onTimeClickListener);
 
         activities = new HashMap<>();
         appealing = new HashMap<>();
@@ -192,9 +170,9 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         db = FirebaseDatabase.getInstance();
         refCategories = db.getReference("planner").child(user.getUid());
 
-        FirebaseDatabaseHelper helperActivities = new FirebaseDatabaseHelper(refCategories,this, "activities");
-        FirebaseDatabaseHelper helperAppealing = new FirebaseDatabaseHelper(refCategories,this, "appealing");
-        FirebaseDatabaseHelper helperMood = new FirebaseDatabaseHelper(refCategories,this, "mood");
+        FirebaseDatabaseHelper helperActivities = new FirebaseDatabaseHelper(refCategories,this, "activities","name");
+        FirebaseDatabaseHelper helperAppealing = new FirebaseDatabaseHelper(refCategories,this, "appealing","numValue");
+        FirebaseDatabaseHelper helperMood = new FirebaseDatabaseHelper(refCategories,this, "mood", "numValue");
 
         mCategorySpinner.setAdapter(mCategoryAdapter);
         mAppealingSpinner.setAdapter(mAppealingAdapter);
@@ -204,6 +182,25 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         helperActivities.getCategoriesList();
         helperAppealing.getCategoriesList();
         helperMood.getCategoriesList();
+
+        if (activityRecord != null)
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(activityRecord.getTimestamp());
+            int recordYear = calendar.get(Calendar.YEAR);
+            int recordMonth = calendar.get(Calendar.MONTH);
+            int recordDay = calendar.get(Calendar.DAY_OF_MONTH);
+            int recordHour = calendar.get(Calendar.HOUR);
+            int recordMinute = calendar.get(Calendar.MINUTE);
+
+            mNameText.setText(activityRecord.getName());
+            mDescrText.setText(activityRecord.getDesciption());
+            mDateText.setText(getString(R.string.date_format,String.valueOf(recordDay),String.valueOf(recordMonth),String.valueOf(recordYear)));
+            mTimeText.setText(getString(R.string.time_format,String.valueOf(recordHour),String.valueOf(recordMinute)));
+
+            mNotifyCheckbox.setChecked(activityRecord.isWithNotify());
+
+        }
 
         // Inflate the layout for this fragment
         return view;
@@ -218,27 +215,57 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
 
         Log.d("CATEG",String.valueOf(activities.size()));
         if (type=="activities") {
-
             activities.put(category.getName(),category.getNumValue());
-            mCategoryAdapter.updateData(activities.keySet().toArray(new String[0]));
+            String[] a = activities.keySet().toArray(new String[0]);
+            Arrays.sort(a);
+            mCategoryAdapter.updateData(a);
+            if (activityRecord != null && category.getName().equals(activityRecord.getCategory()))
+            {
+                int position = mCategoryAdapter.getPosition(category.getName());
+                mCategorySpinner.setSelection(position);
+            }
+
         }
         else if (type=="appealing") {
             appealing.put(category.getName(),category.getNumValue());
+            appealing = sortHashByValue(appealing);
             mAppealingAdapter.updateData(appealing.keySet().toArray(new String[0]));
+            if (activityRecord != null && category.getName().equals(activityRecord.getJobAddiction()))
+            {
+                int position = mAppealingAdapter.getPosition(category.getName());
+                mAppealingSpinner.setSelection(position);
+            }
         }
         else if (type=="mood") {
             mood.put(category.getName(),category.getNumValue());
+            mood = sortHashByValue(mood);
             mMoodAdapter.updateData(mood.keySet().toArray(new String[0]));
+            if (activityRecord != null && category.getName().equals(activityRecord.getMoodType()))
+            {
+                int position = mMoodAdapter.getPosition(category.getName());
+                mMoodSpinner.setSelection(position);
+            }
         }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     public void SaveEvent()
     {
 
-
-
         selectedTimestamp = Calendar.getInstance();
-        selectedTimestamp.set(mYear,mMonth,mDayOfMonth);
+        if (mYear == 0 && mMonth == 0 && mDayOfMonth == 0 && activityRecord != null)
+        {
+            selectedTimestamp.setTimeInMillis(activityRecord.getTimestamp());
+        }
+        else
+        {
+            selectedTimestamp.set(mYear,mMonth,mDayOfMonth);
+        }
 
         //Date date = new Date(selectedTimestamp.getTimeInMillis());
         String sdf = new SimpleDateFormat("dd-MM-yyyy").format(selectedTimestamp.getTime());
@@ -259,7 +286,13 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         String name = mNameText.getText().toString();
         String desc = mDescrText.getText().toString();
 
-        selectedTimestamp.set(mYear,mMonth,mDayOfMonth,mHour,mMinute);
+        if (mYear == 0 && mMonth == 0 && mDayOfMonth == 0 && activityRecord != null) {
+            selectedTimestamp.setTimeInMillis(activityRecord.getTimestamp());
+        }
+        else
+        {
+            selectedTimestamp.set(mYear, mMonth, mDayOfMonth, mHour, mMinute);
+        }
         Long timespan = selectedTimestamp.getTimeInMillis();
 
 //        Date date = new Date(timespan);
@@ -273,7 +306,15 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         String categoryStr = ((TextView)mCategorySpinner.getSelectedView().findViewById(R.id.item_tv_category)).getText().toString();
 
         boolean withNotify = mNotifyCheckbox.isChecked();
-        String key = refCategories.child("activity_records").push().getKey();
+        String key;
+        if (activityRecord == null)
+        {
+            key = refCategories.child("activity_records").push().getKey();
+        }
+        else {
+            key = activityRecord.getKey();
+        }
+
         ActivityRecord record = new ActivityRecord(name,timespan,categoryStr,moodStr,appealingStr,desc,withNotify);
 
         DayStatistics newDs = new DayStatistics();
@@ -299,11 +340,132 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             newDs.setMood_avg(newMoodAvg);
             newDs.setAppeal_avg(newAppealAvg);
         }
-        selectedTimestamp.set(mYear,mMonth,mDayOfMonth);
+
+        if (mYear == 0 && mMonth == 0 && mDayOfMonth == 0 && activityRecord != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(activityRecord.getTimestamp());
+            mYear = calendar.get(Calendar.YEAR);
+            mMonth = calendar.get(Calendar.MONTH);
+            mDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+            selectedTimestamp.set(mYear,mMonth,mDayOfMonth);
+        }
+        else {
+            selectedTimestamp.set(mYear,mMonth,mDayOfMonth);
+        }
+
         newDs.setTimestamp(selectedTimestamp.getTimeInMillis());
 
         refCategories.child("activity_records").child(key).setValue(record);
         statRef.setValue(newDs);
+        if (activityRecord!=null)
+        {
+            removeFromStatistics(activityRecord);
+        }
+        else {
+            getActivity().finish();
+        }
+
+    }
+
+    private void removeFromStatistics(ActivityRecord removeRecord) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(removeRecord.getTimestamp());
+        String sdf = new SimpleDateFormat("dd-MM-yyyy").format(calendar.getTime());
+        statRef = db.getReference().child("daystatistics").child(user.getUid()).child(sdf);
+        FirebaseDatabaseHelper fbh = new FirebaseDatabaseHelper(statRef, this);
+        fbh.removeRecordFromStat(statRef,removeRecord,appealing,mood,this);
+    }
+
+    //callback from firebase
+
+
+    public void dateSelected(View v)
+    {
+        final Calendar calendar = Calendar.getInstance();
+
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                if (v.getId() == R.id.et_date) {
+                    //mDateText.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
+                    mDateText.setText(getString(R.string.date_format,String.valueOf(dayOfMonth),String.valueOf(month+1),String.valueOf(year)));
+                    mYear = year;
+                    mMonth = month;
+                    mDayOfMonth = dayOfMonth;
+                }
+                else if (v.getId() == R.id.et_date_f) {
+                    mDateTextF.setText(getString(R.string.date_format,String.valueOf(dayOfMonth),String.valueOf(month+1),String.valueOf(year)));
+                    mYearF = year;
+                    mMonthF = month;
+                    mDayOfMonthF = dayOfMonth;
+                }
+
+            }
+        },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+
+        dialog.show();
+    }
+
+    public void timeSelected(View v)
+    {
+        final Calendar calendar = Calendar.getInstance();
+
+        TimePickerDialog dialog = new TimePickerDialog(getActivity(),
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        if (v.getId() == R.id.et_time)
+                        {
+                            mTimeText.setText( hourOfDay + ":" + minute);
+                            mHour = hourOfDay;
+                            mMinute = minute;
+                        }
+                        else if (v.getId() == R.id.et_time_f)
+                        {
+                            mTimeTextF.setText(hourOfDay + ":" + minute);
+                            mHourF = hourOfDay;
+                            mMinuteF = minute;
+                        }
+
+                    }
+                },calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE),true);
+        dialog.show();
+    }
+
+    private View.OnClickListener onDateClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            dateSelected(v);
+        }
+    };
+
+    private View.OnClickListener onTimeClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            timeSelected(v);
+        }
+    };
+
+    public HashMap<String,Integer> sortHashByValue(HashMap<String,Integer> hash)
+    {
+        List<Map.Entry<String,Integer>> list = new LinkedList<Map.Entry<String, Integer>>(hash.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+        HashMap<String,Integer> sortedHash = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String,Integer> entry : list)
+        {
+            sortedHash.put(entry.getKey(),entry.getValue());
+        }
+        return sortedHash;
+    }
+
+    @Override
+    public void onRemoveStatisticsLoaded(DayStatistics ds) {
         getActivity().finish();
     }
 }

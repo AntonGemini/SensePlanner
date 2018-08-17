@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.CreateTaskFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -14,6 +15,8 @@
         android:layout_height="wrap_content"
         android:inputType="date"
         android:text="Name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="sdasdasd" />
 
     <EditText
@@ -22,51 +25,129 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name" />
+        android:text="Name"
+        app:layout_constraintStart_toStartOf="@+id/et_name"
+        app:layout_constraintTop_toBottomOf="@+id/et_name" />
 
     <Spinner
         android:id="@+id/sp_activities"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/et_description" />
 
     <Spinner
         android:id="@+id/sp_appealing"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sp_activities" />
 
     <Spinner
         android:id="@+id/sp_mood"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sp_appealing" />
+
+
+    <TextView
+        android:id="@+id/tv_time1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Time1"
+        app:layout_constraintStart_toStartOf="@+id/sp_mood"
+        app:layout_constraintTop_toBottomOf="@+id/sp_mood" />
 
     <EditText
         android:id="@+id/et_date"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:focusableInTouchMode="false"
         android:ems="10"
-        android:inputType="date" />
+        android:focusableInTouchMode="false"
+        android:inputType="date"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/et_time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_time1" />
 
     <EditText
         android:id="@+id/et_time"
-        android:layout_width="match_parent"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:focusableInTouchMode="false"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
-        android:inputType="time" />
+        android:focusableInTouchMode="false"
+        android:inputType="time"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_date" />
+
 
     <CheckBox
-        android:text="Notify"
         android:id="@+id/cb_notify"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Notify"
+        app:layout_constraintStart_toStartOf="@+id/et_time"
+        app:layout_constraintTop_toBottomOf="@+id/et_time" />
 
     <Button
         android:id="@+id/bt_save_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save"
-        />
+        app:layout_constraintStart_toStartOf="@+id/cb_notify"
+        app:layout_constraintTop_toBottomOf="@+id/cb_notify" />
+
+    <TextView
+        android:id="@+id/tv_time2"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/et_date"
+        app:layout_constraintTop_toBottomOf="@+id/sp_mood" />
+
+    <EditText
+        android:id="@+id/et_date_f"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:focusableInTouchMode="false"
+        android:inputType="date"
+        android:text="Name"
+        app:layout_constraintStart_toStartOf="@+id/tv_time2"
+        app:layout_constraintTop_toBottomOf="@+id/tv_time2" />
+
+    <EditText
+        android:id="@+id/et_time_f"
+        android:layout_width="216dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:focusableInTouchMode="false"
+        android:inputType="time"
+        android:text="Name"
+        app:layout_constraintStart_toStartOf="@+id/tv_time2"
+        app:layout_constraintTop_toBottomOf="@+id/et_date_f" />
 
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

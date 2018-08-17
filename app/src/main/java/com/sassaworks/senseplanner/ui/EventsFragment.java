@@ -1,6 +1,7 @@
 package com.sassaworks.senseplanner.ui;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,17 +12,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.sassaworks.senseplanner.CreateTaskActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.ActivityRecordAdapter;
 import com.sassaworks.senseplanner.adapter.ActivityViewHolder;
 import com.sassaworks.senseplanner.data.ActivityRecord;
+import com.sassaworks.senseplanner.data.Appealing;
+import com.sassaworks.senseplanner.data.Category;
 import com.sassaworks.senseplanner.data.CollectionItem;
+import com.sassaworks.senseplanner.data.DayStatistics;
 import com.sassaworks.senseplanner.data.HeaderRecord;
+import com.sassaworks.senseplanner.data.Mood;
 import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
 import java.text.DateFormat;
@@ -29,16 +37,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import durdinapps.rxfirebase2.DataSnapshotMapper;
+import durdinapps.rxfirebase2.RxFirebaseDatabase;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link EventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.OnActivityRecordsGetCompleted, ActivityViewHolder.OnMoreClickListener {
+public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.OnActivityRecordsGetCompleted,
+        ActivityViewHolder.OnMoreClickListener,
+        FirebaseDatabaseHelper.OnRemoveFromStatistics{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -49,6 +62,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private String mParam2;
     FirebaseDatabase db;
     FirebaseUser user;
+    ActivityRecord selectedRecord;
 
     @BindView(R.id.rv_events) RecyclerView mEventRecyclerView;
 
@@ -140,6 +154,10 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
                 {
                     EditActivityRecord(record);
                 }
+                else if (id == R.id.delete_activity)
+                {
+                    DeleteActivityRecord(record);
+                }
                 return true;
             }
         });
@@ -147,5 +165,62 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     }
 
     private void EditActivityRecord(ActivityRecord record) {
+
+        Intent intent = new Intent(getActivity(),CreateTaskActivity.class);
+        intent.putExtra(CreateTaskFragment.ACTIVITY_RECORD,record);
+        startActivity(intent);
+
+    }
+
+    private void DeleteActivityRecord(ActivityRecord record)
+    {
+        selectedRecord = record;
+        final HashMap<String,Integer> moodMap = new HashMap<>();
+        final HashMap<String,Integer> appealingMap = new HashMap<>();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(record.getTimestamp());
+        String sdf = new SimpleDateFormat("dd-MM-yyyy").format(calendar.getTime());
+
+
+        DatabaseReference ref = db.getReference();
+        DatabaseReference statRef = ref.child("daystatistics").child(user.getUid()).child(sdf);
+        DatabaseReference referAppealing = ref.child("planner").child(user.getUid()).child("appealing");
+        DatabaseReference referMood = ref.child("planner").child(user.getUid()).child("mood");
+
+
+//        RxFirebaseDatabase.observeSingleValueEvent(referAppealing, DataSnapshotMapper.listOf(Mood.class))
+//                .subscribe(mood->{for(Mood c:mood){
+//                    moodMap.put(c.getName(),c.getNumValue());
+//                }}, throwable -> {
+//                    Toast.makeText(getActivity(), throwable.toString(), Toast.LENGTH_LONG).show();
+//                });
+//
+//
+        FirebaseDatabaseHelper fbh = new FirebaseDatabaseHelper(statRef);
+
+
+        RxFirebaseDatabase.observeSingleValueEvent(referMood,DataSnapshotMapper.listOf(Mood.class))
+                 .concatMap(mood->{
+                     for(Mood m:mood)
+                     {
+                        moodMap.put(m.getName(),m.getNumValue());
+                     }
+                     return RxFirebaseDatabase.observeSingleValueEvent(referAppealing, DataSnapshotMapper.listOf(Appealing.class));
+                 }).subscribe(apps->{
+                    for(Appealing a:apps)
+                    {
+                        appealingMap.put(a.getName(),a.getNumValue());
+                    }
+                    fbh.removeRecordFromStat(statRef,record,appealingMap,moodMap,this);
+
+                });
+
+    }
+
+    @Override
+    public void onRemoveStatisticsLoaded(DayStatistics ds) {
+        DatabaseReference ref1 = db.getReference("planner").child(user.getUid()).child("activity_records").child(selectedRecord.getKey());
+        ref1.removeValue();
     }
 }

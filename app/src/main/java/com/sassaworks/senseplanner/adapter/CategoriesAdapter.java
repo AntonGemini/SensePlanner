@@ -57,10 +57,23 @@ public class CategoriesAdapter extends ArrayAdapter<String> {
         return categories.length;
     }
 
+
+    @Override
+    public int getPosition(@Nullable String item) {
+        int position = -1;
+        for (int s=0; s< categories.length; s++)
+        {
+            if (categories[s].equals(item))
+            {
+                return s;
+            }
+        }
+        return position;
+    }
+
     public void updateData(String[] data)
     {
         this.categories = data;
         notifyDataSetChanged();
-        Log.d("upd1",String.valueOf(data.length));
     }
 }

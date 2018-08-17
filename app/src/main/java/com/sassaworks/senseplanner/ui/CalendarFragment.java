@@ -35,7 +35,6 @@ import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.stream.Collectors;
-import java8.util.stream.IntStreams;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -198,9 +197,9 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
 
             mCalendarView.addDecorator(new EventDecorator(getDaysByMood(1,1.66f, events),getContext(),
                     new ColorDrawable(getContext().getResources().getColor(R.color.low_mood))));
-            mCalendarView.addDecorator(new EventDecorator(getDaysByMood(1.66f, 2.33f,events),getContext(),
+            mCalendarView.addDecorator(new EventDecorator(getDaysByMood(1.66f, 2.34f,events),getContext(),
                     new ColorDrawable(getContext().getResources().getColor(R.color.avg_mood))));
-            mCalendarView.addDecorator(new EventDecorator(getDaysByMood(2.33f, 3f,events),getContext(),
+            mCalendarView.addDecorator(new EventDecorator(getDaysByMood(2.34f, 3f,events),getContext(),
                     new ColorDrawable(getContext().getResources().getColor(R.color.high_mood))));
             //calendar.addDecorator();
         }
@@ -214,7 +213,7 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
         Calendar calendar = Calendar.getInstance();
         if (upperBound == 3)
         {
-            upperBound = 2.99999f;
+            upperBound = 3.00001f;
         }
         for (DayStatistics ac :events) {
 

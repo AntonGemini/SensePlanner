@@ -19,5 +19,7 @@
     <string name="menu_delete_activity">Delete activity</string>
     
     <string name="description_format">%1$s(%2$s - %3$s) - %4$s</string>
+    <string name="date_format">%1$s-%2$s-%3$s</string>
+    <string name="time_format">%1$s:%2$s</string>
 
 </resources>

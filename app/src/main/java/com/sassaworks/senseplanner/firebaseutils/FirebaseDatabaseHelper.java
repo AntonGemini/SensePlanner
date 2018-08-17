@@ -10,6 +10,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.sassaworks.senseplanner.data.Activity;
@@ -18,12 +19,14 @@ import com.sassaworks.senseplanner.data.Category;
 import com.sassaworks.senseplanner.data.DayStatistics;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class FirebaseDatabaseHelper {
 
     DatabaseReference dbRef;
     String type;
     Query query;
+    FirebaseDatabase db;
 
     public interface OnGetItem
     {
@@ -50,9 +53,21 @@ public class FirebaseDatabaseHelper {
 
     private OnActivityRecordsGetCompleted onActivityLoadedInstance;
 
-    public FirebaseDatabaseHelper(DatabaseReference ref, OnGetItem getItem, String type)
+    public interface OnRemoveFromStatistics
+    {
+        void onRemoveStatisticsLoaded (DayStatistics ds);
+    }
+    private OnRemoveFromStatistics onRemoveFromStatisticsInstance;
+
+    public FirebaseDatabaseHelper(DatabaseReference ref)
+    {
+        dbRef = ref;
+    }
+
+    public FirebaseDatabaseHelper(DatabaseReference ref, OnGetItem getItem, String type, String orderField)
     {
         this.dbRef = ref.child(type);
+        this.query = dbRef.orderByChild(orderField);
         this.onGetItemInstance = getItem;
         this.type = type;
     }
@@ -77,7 +92,7 @@ public class FirebaseDatabaseHelper {
     public void getCategoriesList()
     {
 
-        dbRef.addChildEventListener(new ChildEventListener() {
+        this.query.addChildEventListener(new ChildEventListener() {
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -123,7 +138,7 @@ public class FirebaseDatabaseHelper {
                     DayStatistics record = ds.getValue(DayStatistics.class);
                     events.add(record);
                 }
-                Log.d("RSC3","Method called " + String.valueOf(i));
+
                 onEventsGetinstance.onEventsGet(events);
                 i++;
             }
@@ -156,16 +171,74 @@ public class FirebaseDatabaseHelper {
     }
 
 
+    public void removeRecordFromStat(DatabaseReference ref, ActivityRecord removeRecord,
+                                     Map<String,Integer> appealing, Map<String,Integer> mood, OnRemoveFromStatistics context) {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DayStatistics ds = dataSnapshot.getValue(DayStatistics.class);
+                if (ds!=null)
+                {
+                    removeFromStatistics(ds,removeRecord,appealing,mood,context,ref);
+                }
+                else
+                {
+                    onRemoveFromStatisticsInstance.onRemoveStatisticsLoaded(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void removeFromStatistics(DayStatistics ds, ActivityRecord removeRecord,
+                                      Map<String,Integer> appealing, Map<String,
+            Integer> mood,OnRemoveFromStatistics context,
+                                      DatabaseReference ref) {
+        onRemoveFromStatisticsInstance = context;
+        DayStatistics newDs = new DayStatistics();
+        int newMoodNum = ds.getMood_num() - 1;
+        int newAppealNum = ds.getAppeal_num() - 1;
+
+        if (newMoodNum == 0)
+        {
+            ref.removeValue();
+        }
+        else {
+            float oldTotalMood = ds.getMood_avg() * ds.getMood_num();
+            float oldTotalAppeal = ds.getAppeal_avg() * ds.getAppeal_num();
+
+            float newMoodAvg = (oldTotalMood - mood.get(removeRecord.getMoodType()))/newMoodNum;
+            float newAppealAvg = (oldTotalAppeal - appealing.get(removeRecord.getJobAddiction()))/newAppealNum;
+
+            newDs.setMood_num(newMoodNum);
+            newDs.setAppeal_num(newAppealNum);
+            newDs.setMood_avg(newMoodAvg);
+            newDs.setAppeal_avg(newAppealAvg);
+            newDs.setTimestamp(ds.getTimestamp());
+            ref.setValue(newDs);
+        }
+        onRemoveFromStatisticsInstance.onRemoveStatisticsLoaded(newDs);
+    }
+
+
     public void GetEvents(OnActivityRecordsGetCompleted context)
     {
         this.onActivityLoadedInstance = context;
-        ArrayList<ActivityRecord> records = new ArrayList<>();
+
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<ActivityRecord> records = new ArrayList<>();
+
                 for (DataSnapshot ds:dataSnapshot.getChildren())
                 {
                     ActivityRecord record = ds.getValue(ActivityRecord.class);
+                    record.setKey(ds.getKey());
                     records.add(record);
                 }
                 context.onActivityRecordsLoaded(records);
@@ -176,45 +249,6 @@ public class FirebaseDatabaseHelper {
 
             }
         });
-//        query.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                for (DataSnapshot ds:dataSnapshot.getChildren())
-//                {
-//                    ActivityRecord record = ds.getValue(ActivityRecord.class);
-//                    records.add(record);
-//                }
-//                context.onActivityRecordsLoaded(records);
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
     }
 
-//    private void getData(DataSnapshot dataSnapshot, ArrayList<String> categories) {
-//        categories.clear();
-//        for (DataSnapshot snapshot:dataSnapshot.getChildren())
-//        {
-//            Activity category = snapshot.getValue(Activity.class);
-//            categories.add(category.getName());
-//        }
-//    }
 }

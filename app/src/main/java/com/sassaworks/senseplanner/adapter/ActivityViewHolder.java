@@ -52,12 +52,18 @@ public class ActivityViewHolder extends BaseViewHolder {
 
         mCategoryText.setText(activityRecord.getCategory());
         Drawable moodDrawable = context.getResources().getDrawable(R.drawable.shape_circle);
+        Drawable appealingDrawable = context.getResources().getDrawable(R.drawable.shape_circle);
+
         GradientDrawable colorDrawable = (GradientDrawable)moodDrawable;
+        GradientDrawable colorAppealingDrawable = (GradientDrawable)appealingDrawable;
 
         int resId = context.getResources().getIdentifier(activityRecord.getMoodType(),"color",context.getPackageName());
         colorDrawable.setColor(context.getResources().getColor(resId));
-
         mMoodColor.setBackground(colorDrawable);
+
+        resId = context.getResources().getIdentifier(activityRecord.getJobAddiction(),"color",context.getPackageName());
+        colorAppealingDrawable.setColor(context.getResources().getColor(resId));
+        mAppealingColor.setBackground(colorAppealingDrawable);
 
         mMoreImage.setOnClickListener(new View.OnClickListener() {
             @Override
