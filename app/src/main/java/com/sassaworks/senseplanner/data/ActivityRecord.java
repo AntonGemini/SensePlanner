@@ -14,6 +14,7 @@ public class ActivityRecord extends Category implements CollectionItem {
     private String key;
 
     private long timestamp;
+    private long timestampF;
 
     private String category;
     private String moodType;
@@ -26,7 +27,7 @@ public class ActivityRecord extends Category implements CollectionItem {
     {}
 
     public ActivityRecord(String name, long timestamp, String category, String moodType,
-                          String jobAddiction, String desciption, boolean withNotify)
+                          String jobAddiction, String desciption, boolean withNotify, long timestampF)
     {
         super.setName(name);
         this.timestamp = timestamp;
@@ -35,6 +36,7 @@ public class ActivityRecord extends Category implements CollectionItem {
         this.jobAddiction = jobAddiction;
         this.desciption = desciption;
         this.withNotify = withNotify;
+        this.timestampF = timestampF;
     }
 
 
@@ -47,6 +49,7 @@ public class ActivityRecord extends Category implements CollectionItem {
         jobAddiction = in.readString();
         desciption = in.readString();
         withNotify = in.readByte() != 0;
+        timestampF = in.readLong();
     }
 
     @Override
@@ -59,6 +62,7 @@ public class ActivityRecord extends Category implements CollectionItem {
         dest.writeString(jobAddiction);
         dest.writeString(desciption);
         dest.writeByte((byte) (withNotify ? 1 : 0));
+        dest.writeLong(timestampF);
     }
 
     @Override
@@ -133,6 +137,10 @@ public class ActivityRecord extends Category implements CollectionItem {
     public void setKey(String key) {
         this.key = key;
     }
+
+    public long getTimestampF() { return timestampF; }
+
+    public void setTimestampF(long timestampF) {this.timestampF = timestampF; }
 
     @Override
     public int getItemType() {

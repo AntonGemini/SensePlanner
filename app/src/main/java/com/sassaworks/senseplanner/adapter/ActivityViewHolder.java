@@ -47,8 +47,13 @@ public class ActivityViewHolder extends BaseViewHolder {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(activityRecord.getTimestamp());
         String time = calendar.get(Calendar.HOUR_OF_DAY) + " : " + calendar.get(Calendar.MINUTE);
+
+        //Setting ending date
+        calendar.setTimeInMillis(activityRecord.getTimestampF());
+        String timeF = calendar.get(Calendar.HOUR_OF_DAY) + " : " + calendar.get(Calendar.MINUTE);
+
         mDescription.setText(context.getString(R.string.description_format,activityRecord.getName(),
-                time,"",activityRecord.getDesciption()));
+                time,timeF,activityRecord.getDesciption()));
 
         mCategoryText.setText(activityRecord.getCategory());
         Drawable moodDrawable = context.getResources().getDrawable(R.drawable.shape_circle);

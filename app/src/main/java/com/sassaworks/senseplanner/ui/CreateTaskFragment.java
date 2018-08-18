@@ -43,7 +43,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -195,14 +194,24 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
 
             mNameText.setText(activityRecord.getName());
             mDescrText.setText(activityRecord.getDesciption());
+
             mDateText.setText(getString(R.string.date_format,String.valueOf(recordDay),String.valueOf(recordMonth),String.valueOf(recordYear)));
             mTimeText.setText(getString(R.string.time_format,String.valueOf(recordHour),String.valueOf(recordMinute)));
+
+            /*End date*/
+            calendar.setTimeInMillis(activityRecord.getTimestampF());
+            recordYear = calendar.get(Calendar.YEAR);
+            recordMonth = calendar.get(Calendar.MONTH);
+            recordDay = calendar.get(Calendar.DAY_OF_MONTH);
+            recordHour = calendar.get(Calendar.HOUR);
+            recordMinute = calendar.get(Calendar.MINUTE);
+            mDateTextF.setText(getString(R.string.date_format,String.valueOf(recordDay),String.valueOf(recordMonth),String.valueOf(recordYear)));
+            mTimeTextF.setText(getString(R.string.time_format,String.valueOf(recordHour),String.valueOf(recordMinute)));
 
             mNotifyCheckbox.setChecked(activityRecord.isWithNotify());
 
         }
 
-        // Inflate the layout for this fragment
         return view;
     }
 
@@ -211,9 +220,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
 
     @Override
     public void getItem(Category category, String type) {
-        //String st = category.getName();
 
-        Log.d("CATEG",String.valueOf(activities.size()));
         if (type=="activities") {
             activities.put(category.getName(),category.getNumValue());
             String[] a = activities.keySet().toArray(new String[0]);
@@ -267,15 +274,13 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             selectedTimestamp.set(mYear,mMonth,mDayOfMonth);
         }
 
+
+
         //Date date = new Date(selectedTimestamp.getTimeInMillis());
         String sdf = new SimpleDateFormat("dd-MM-yyyy").format(selectedTimestamp.getTime());
         statRef = db.getReference().child("daystatistics").child(user.getUid()).child(sdf);
         FirebaseDatabaseHelper fbh = new FirebaseDatabaseHelper(statRef, this);
         fbh.GetDayStat(sdf);
-
-        //Query from statistics where date = sfd
-        //if got nothing put new item
-        //else
 
 
 
@@ -286,6 +291,8 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         String name = mNameText.getText().toString();
         String desc = mDescrText.getText().toString();
 
+        Calendar selectedTimestampF = Calendar.getInstance();
+
         if (mYear == 0 && mMonth == 0 && mDayOfMonth == 0 && activityRecord != null) {
             selectedTimestamp.setTimeInMillis(activityRecord.getTimestamp());
         }
@@ -294,6 +301,15 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             selectedTimestamp.set(mYear, mMonth, mDayOfMonth, mHour, mMinute);
         }
         Long timespan = selectedTimestamp.getTimeInMillis();
+
+        if (mYearF == 0 && mMonthF == 0 && mDayOfMonthF == 0 && activityRecord != null) {
+            selectedTimestampF.setTimeInMillis(activityRecord.getTimestampF());
+        }
+        else
+        {
+            selectedTimestampF.set(mYearF, mMonthF, mDayOfMonthF, mHourF, mMinuteF);
+        }
+        Long timespanF = selectedTimestampF.getTimeInMillis();
 
 //        Date date = new Date(timespan);
 //        String sdf = new SimpleDateFormat("dd-MM-yyyy").format(date);
@@ -315,7 +331,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             key = activityRecord.getKey();
         }
 
-        ActivityRecord record = new ActivityRecord(name,timespan,categoryStr,moodStr,appealingStr,desc,withNotify);
+        ActivityRecord record = new ActivityRecord(name,timespan,categoryStr,moodStr,appealingStr,desc,withNotify,timespanF);
 
         DayStatistics newDs = new DayStatistics();
         if (ds == null)
