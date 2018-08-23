@@ -6,4 +6,9 @@
         <item>Calendar</item>
         <item>Charts</item>
     </string-array>
+    <string-array name="charts_name">
+        <item>@string/best_appealing_chart</item>
+        <item>@string/hour_chart</item>
+        <item>@string/dayily_chart</item>
+    </string-array>
 </resources>

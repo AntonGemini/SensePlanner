@@ -6,4 +6,9 @@
         <item>Календарь</item>
         <item>Графики</item>
     </string-array>
+    <string-array name="charts_name">
+        <item>График лучшего настроения/притягательности</item>
+        <item>Почасовой график</item>
+        <item>Ежедневная общая сводка</item>
+    </string-array>
 </resources>

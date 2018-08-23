@@ -17,9 +17,16 @@
     <!-- Activity menu items -->
     <string name="menu_edit_activity">Edit activity</string>
     <string name="menu_delete_activity">Delete activity</string>
-    
+
     <string name="description_format">%1$s(%2$s - %3$s) - %4$s</string>
     <string name="date_format">%1$s-%2$s-%3$s</string>
     <string name="time_format">%1$s:%2$s</string>
+
+    <!--Chart names-->
+    <string name="best_appealing_chart">Best appealing/mood chart</string>
+    <string name="hour_chart">By hour chart</string>
+    <string name="dayily_chart">Total daily chart</string>
+
+    <string name="all_types">All</string>
 
 </resources>

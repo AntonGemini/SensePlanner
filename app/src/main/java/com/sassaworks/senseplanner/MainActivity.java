@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.ui.ActivityTypeFragment;
 import com.sassaworks.senseplanner.ui.CalendarFragment;
+import com.sassaworks.senseplanner.ui.ChartFragment;
 import com.sassaworks.senseplanner.ui.EventsFragment;
 
 import java.util.Arrays;
@@ -191,6 +192,8 @@ public class MainActivity extends AppCompatActivity
                     return EventsFragment.newInstance(null,null);
                 case 2:
                     return CalendarFragment.newInstance();
+                case 3:
+                    return ChartFragment.newInstance();
                 default:
                     return PlaceholderFragment.newInstance(position + 1);
             }
@@ -207,5 +210,6 @@ public class MainActivity extends AppCompatActivity
         public CharSequence getPageTitle(int position) {
             return tabNames[position];
         }
+
     }
 }
