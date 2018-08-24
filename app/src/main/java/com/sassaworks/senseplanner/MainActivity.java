@@ -30,10 +30,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.sassaworks.senseplanner.adapter.SectionsPageAdapter;
 import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.ui.ActivityTypeFragment;
 import com.sassaworks.senseplanner.ui.CalendarFragment;
 import com.sassaworks.senseplanner.ui.ChartFragment;
+import com.sassaworks.senseplanner.ui.DailyChartFragment;
 import com.sassaworks.senseplanner.ui.EventsFragment;
 
 import java.util.Arrays;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private SectionsPageAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPageAdapter(getSupportFragmentManager(),this);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -171,45 +173,78 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position) {
-                case 0:
-                    return ActivityTypeFragment.newInstance(position);
-                case 1:
-                    return EventsFragment.newInstance(null,null);
-                case 2:
-                    return CalendarFragment.newInstance();
-                case 3:
-                    return ChartFragment.newInstance();
-                default:
-                    return PlaceholderFragment.newInstance(position + 1);
-            }
-        }
-
-        @Override
-        public int getCount() {
-            // Show 4 total pages.
-            return 4;
-        }
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return tabNames[position];
-        }
-
-    }
+//    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+//
+//        private Fragment fragmentPos3;
+//        private FragmentManager mFragmentManager;
+//
+//        public SectionsPagerAdapter(FragmentManager fm) {
+//            super(fm);
+//            mFragmentManager = fm;
+//        }
+//
+//        @Override
+//        public Fragment getItem(int position) {
+//            // getItem is called to instantiate the fragment for the given page.
+//            // Return a PlaceholderFragment (defined as a static inner class below).
+//            switch (position) {
+//                case 0:
+//                    return ActivityTypeFragment.newInstance(position);
+//                case 1:
+//                    return EventsFragment.newInstance(null,null);
+//                case 2:
+//                    return CalendarFragment.newInstance();
+//                case 3:
+//                    if (fragmentPos3 == null)
+//                    {
+//                        fragmentPos3 = ChartFragment.newInstance(new ChartFragmentListener() {
+//
+//                            @Override
+//                            public void onSwitchToDailyChartFragment() {
+//                                mFragmentManager.beginTransaction()
+//                                        .remove(fragmentPos3).commit();
+//                                fragmentPos3 = DailyChartFragment.newInstance();
+//                                notifyDataSetChanged();
+//                            }
+//                        });
+//                    }
+//                    return fragmentPos3;
+//                default:
+//                    return PlaceholderFragment.newInstance(position + 1);
+//            }
+//        }
+//
+//        @Override
+//        public int getCount() {
+//            // Show 4 total pages.
+//            return 4;
+//        }
+//
+//        @Nullable
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            return tabNames[position];
+//        }
+//
+//        @Override
+//        public int getItemPosition(@NonNull Object object) {
+//
+//            if (object instanceof ChartFragment && fragmentPos3 instanceof DailyChartFragment)
+//            {
+//                return POSITION_NONE;
+//            }
+//            return POSITION_UNCHANGED;
+//        }
+//    }
+//
+//    public interface ChartFragmentListener
+//    {
+//        void onSwitchToDailyChartFragment();
+//    }
 }

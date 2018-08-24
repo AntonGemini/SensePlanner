@@ -33,6 +33,7 @@ import com.google.firebase.database.Query;
 import com.sassaworks.senseplanner.MainActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
+import com.sassaworks.senseplanner.adapter.SectionsPageAdapter;
 import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.data.Appealing;
 import com.sassaworks.senseplanner.data.Mood;
@@ -77,6 +78,7 @@ public class ChartFragment extends Fragment {
     int mDayOfMonthF;
     String selectedCategory;
     boolean isDrawing = false;
+    public static SectionsPageAdapter.nextFragmentListener chartListener;
 
     @BindView(R.id.sp_chartName) Spinner mChartName;
     @BindView(R.id.sp_mood) Spinner mMoodType;
@@ -98,7 +100,8 @@ public class ChartFragment extends Fragment {
      * @return A new instance of fragment ChartFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ChartFragment newInstance() {
+    public static ChartFragment newInstance(SectionsPageAdapter.nextFragmentListener listener) {
+        chartListener = listener;
         ChartFragment fragment = new ChartFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -125,7 +128,6 @@ public class ChartFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         baseRef = db.getReference("planner").child(user.getUid());
 
-        String[] charts = getActivity().getResources().getStringArray(R.array.charts_name);
         ArrayAdapter<CharSequence> chartAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.charts_name,android.R.layout.simple_spinner_item);
         chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -149,11 +151,12 @@ public class ChartFragment extends Fragment {
                 String selectedMenu = ((TextView) view).getText().toString();
                 if (selectedMenu == getString(R.string.best_appealing_chart)) {
                     LoadBestAppealingChart();
-                } else {
-
-                    Fragment placeHolder = MainActivity.PlaceholderFragment.newInstance(position + 1);
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .add(R.id.container, placeHolder).commit();
+                } else if (selectedMenu == getString(R.string.hour_chart)) {
+                    chartListener.fragment0Changed("Hour");
+                }
+                else
+                {
+                    chartListener.fragment0Changed("Daily");
                 }
             }
         }
@@ -482,7 +485,5 @@ public class ChartFragment extends Fragment {
     {
 
     }
-
-
 
 }
