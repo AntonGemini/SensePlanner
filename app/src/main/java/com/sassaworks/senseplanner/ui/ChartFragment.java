@@ -139,6 +139,7 @@ public class ChartFragment extends Fragment {
 
 
         mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
+        mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
 
         return view;
     }
@@ -450,7 +451,7 @@ public class ChartFragment extends Fragment {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 if (v.getId() == R.id.et_dateS) {
-                    //mDateText.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
+
                     mDateS.setText(getString(R.string.date_format,String.valueOf(dayOfMonth),String.valueOf(month+1),String.valueOf(year)));
                     mYear = year;
                     mMonth = month;
