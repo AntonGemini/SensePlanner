@@ -20,15 +20,59 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="171dp"
-        android:layout_height="79dp"
+    <EditText
+        android:id="@+id/et_dateS"
+        android:layout_width="100dp"
+        android:layout_height="38dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="DAILYVIEW"
+        android:ems="10"
+        android:focusableInTouchMode="false"
+        android:inputType="date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
+
+    <Spinner
+        android:id="@+id/sp_categories"
+        android:layout_width="138dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/et_dateS"
+        app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
+
+    <RadioGroup
+        android:orientation="horizontal"
+        android:id="@+id/rg_typeGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_dateS" >
+        <RadioButton
+            android:id="@+id/rb_appealing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="By appealing"/>
+
+        <RadioButton
+            android:id="@+id/rb_mood"
+            android:layout_width="135dp"
+            android:layout_height="wrap_content"
+            android:text="By mood" />
+
+    </RadioGroup>
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/chart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rg_typeGroup"
+        android:layout_width="match_parent"
+        android:layout_height="350dp" />
 
 </android.support.constraint.ConstraintLayout>
