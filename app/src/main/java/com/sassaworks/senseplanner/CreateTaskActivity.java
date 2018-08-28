@@ -15,15 +15,23 @@ public class CreateTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
+
         ActivityRecord record =  getIntent().getExtras().getParcelable(CreateTaskFragment.ACTIVITY_RECORD);
         CreateTaskFragment taskFragment;
+        String activity = getIntent().getExtras().getString("activity");
+
+
         if (record!= null)
         {
             taskFragment = CreateTaskFragment.newInstance(record);
         }
+        else if (activity != null)
+        {
+            taskFragment = CreateTaskFragment.newInstance(activity);
+        }
         else
         {
-            taskFragment = CreateTaskFragment.newInstance(null);
+            taskFragment = CreateTaskFragment.newInstance("");
         }
 
         FragmentManager fm = getSupportFragmentManager();

@@ -101,6 +101,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     Calendar selectedTimestamp;
 
     ActivityRecord activityRecord;
+    String startingActivity;
 
 
     public CreateTaskFragment() {
@@ -127,11 +128,30 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         return fragment;
     }
 
+    public static CreateTaskFragment newInstance(String activity)
+    {
+        CreateTaskFragment fragment = new CreateTaskFragment();
+        Bundle args = new Bundle();
+        if (activity != "")
+        {
+            args.putString("activity",activity);
+            fragment.setArguments(args);
+        }
+
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            activityRecord = getArguments().getParcelable(ACTIVITY_RECORD);
+            if (getArguments().getParcelable(ACTIVITY_RECORD)!= null) {
+                activityRecord = getArguments().getParcelable(ACTIVITY_RECORD);
+            }
+            if (getArguments().getString("activity")!= null)
+            {
+                startingActivity = getArguments().getString("activity");
+            }
 
         }
     }
@@ -191,6 +211,15 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             int recordDay = calendar.get(Calendar.DAY_OF_MONTH);
             int recordHour = calendar.get(Calendar.HOUR);
             int recordMinute = calendar.get(Calendar.MINUTE);
+            mYear = recordYear;
+            mMonth = recordMonth;
+            mDayOfMonth = recordDay;
+            mHour = recordHour;
+            mMinute = recordMinute;
+
+
+
+
 
             mNameText.setText(activityRecord.getName());
             mDescrText.setText(activityRecord.getDesciption());
@@ -207,6 +236,12 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             recordMinute = calendar.get(Calendar.MINUTE);
             mDateTextF.setText(getString(R.string.date_format,String.valueOf(recordDay),String.valueOf(recordMonth),String.valueOf(recordYear)));
             mTimeTextF.setText(getString(R.string.time_format,String.valueOf(recordHour),String.valueOf(recordMinute)));
+
+            mYearF = recordYear;
+            mMonthF = recordMonth;
+            mDayOfMonthF = recordDay;
+            mHourF = recordHour;
+            mMinuteF = recordMinute;
 
             mNotifyCheckbox.setChecked(activityRecord.isWithNotify());
 
@@ -226,9 +261,17 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             String[] a = activities.keySet().toArray(new String[0]);
             Arrays.sort(a);
             mCategoryAdapter.updateData(a);
-            if (activityRecord != null && category.getName().equals(activityRecord.getCategory()))
+            if (activityRecord != null && category.getName().equals(activityRecord.getCategory())
+                    || startingActivity != null)
             {
-                int position = mCategoryAdapter.getPosition(category.getName());
+                int position;
+                if (startingActivity!= null)
+                {
+                    position = mCategoryAdapter.getPosition(startingActivity);
+                }
+                else {
+                    position = mCategoryAdapter.getPosition(category.getName());
+                }
                 mCategorySpinner.setSelection(position);
             }
 

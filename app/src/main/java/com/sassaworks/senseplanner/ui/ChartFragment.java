@@ -148,7 +148,7 @@ public class ChartFragment extends Fragment {
     public AdapterView.OnItemSelectedListener onChartItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (view != null && !isDrawing) {
+            if (view != null) {
                 String selectedMenu = ((TextView) view).getText().toString();
                 if (selectedMenu == getString(R.string.best_appealing_chart)) {
                     LoadBestAppealingChart();
@@ -159,6 +159,9 @@ public class ChartFragment extends Fragment {
                 {
                     chartListener.fragment0Changed("Daily");
                 }
+            }
+            else {
+                LoadBestAppealingChart();
             }
         }
 

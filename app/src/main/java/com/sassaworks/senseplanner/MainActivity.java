@@ -35,6 +35,7 @@ import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.ui.ActivityTypeFragment;
 import com.sassaworks.senseplanner.ui.CalendarFragment;
 import com.sassaworks.senseplanner.ui.ChartFragment;
+import com.sassaworks.senseplanner.ui.CreateTaskFragment;
 import com.sassaworks.senseplanner.ui.DailyChartFragment;
 import com.sassaworks.senseplanner.ui.EventsFragment;
 
@@ -122,6 +123,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(Activity item) {
 
+        Intent intent = new Intent(this,CreateTaskActivity.class);
+        intent.putExtra("activity",item.getName());
+        startActivity(intent);
     }
 
 
