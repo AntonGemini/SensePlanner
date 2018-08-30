@@ -11,21 +11,34 @@
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/sp_activities"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="38dp" />
 
-    <Spinner
+    <EditText
+        android:id="@+id/et_dateS"
+        android:layout_width="85dp"
+        android:layout_height="38dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:focusableInTouchMode="false"
+        android:inputType="date"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/sp_activities"
-        android:id="@+id/sp_appealing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        app:layout_constraintStart_toEndOf="@id/sp_activities" />
 
-    <Spinner
+    <EditText
+        android:id="@+id/et_dateF"
+        android:layout_width="79dp"
+        android:layout_height="38dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:focusableInTouchMode="false"
+        android:inputType="date"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/sp_appealing"
-        android:id="@+id/sp_mood"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        app:layout_constraintStart_toEndOf="@id/et_dateS" />
+
 
     <android.support.v7.widget.RecyclerView
         app:layout_constraintTop_toBottomOf="@id/sp_activities"

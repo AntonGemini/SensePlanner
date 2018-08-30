@@ -22,6 +22,7 @@ public class ActivityRecord extends Category implements CollectionItem {
     private String desciption;
 
     private boolean withNotify;
+    private long eventId;
 
     public ActivityRecord()
     {}
@@ -50,6 +51,7 @@ public class ActivityRecord extends Category implements CollectionItem {
         desciption = in.readString();
         withNotify = in.readByte() != 0;
         timestampF = in.readLong();
+        eventId = in.readLong();
     }
 
     @Override
@@ -63,6 +65,7 @@ public class ActivityRecord extends Category implements CollectionItem {
         dest.writeString(desciption);
         dest.writeByte((byte) (withNotify ? 1 : 0));
         dest.writeLong(timestampF);
+        dest.writeLong(eventId);
     }
 
     @Override
@@ -141,6 +144,12 @@ public class ActivityRecord extends Category implements CollectionItem {
     public long getTimestampF() { return timestampF; }
 
     public void setTimestampF(long timestampF) {this.timestampF = timestampF; }
+
+    public long getEventId() { return eventId; }
+
+    public void setEventId(long eventId) {this.eventId = eventId; }
+
+
 
     @Override
     public int getItemType() {

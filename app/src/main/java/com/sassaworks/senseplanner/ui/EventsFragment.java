@@ -1,8 +1,11 @@
 package com.sassaworks.senseplanner.ui;
 
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -189,14 +192,6 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         DatabaseReference referMood = ref.child("planner").child(user.getUid()).child("mood");
 
 
-//        RxFirebaseDatabase.observeSingleValueEvent(referAppealing, DataSnapshotMapper.listOf(Mood.class))
-//                .subscribe(mood->{for(Mood c:mood){
-//                    moodMap.put(c.getName(),c.getNumValue());
-//                }}, throwable -> {
-//                    Toast.makeText(getActivity(), throwable.toString(), Toast.LENGTH_LONG).show();
-//                });
-//
-//
         FirebaseDatabaseHelper fbh = new FirebaseDatabaseHelper(statRef);
 
 
@@ -213,7 +208,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
                         appealingMap.put(a.getName(),a.getNumValue());
                     }
                     fbh.removeRecordFromStat(statRef,record,appealingMap,moodMap,this);
-
+                    removeEventFromCalendar(record);
                 });
 
     }
@@ -222,5 +217,15 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     public void onRemoveStatisticsLoaded(DayStatistics ds) {
         DatabaseReference ref1 = db.getReference("planner").child(user.getUid()).child("activity_records").child(selectedRecord.getKey());
         ref1.removeValue();
+    }
+
+    private void removeEventFromCalendar(ActivityRecord record)
+    {
+        if (record.getEventId()!= 0)
+        {
+            Uri deleteUri = null;
+            deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, record.getEventId());
+            int rows = getActivity().getContentResolver().delete(deleteUri, null, null);
+        }
     }
 }
