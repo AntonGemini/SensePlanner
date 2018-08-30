@@ -14,7 +14,7 @@
         android:layout_height="38dp" />
 
     <EditText
-        android:id="@+id/et_dateS"
+        android:id="@+id/et_date_s"
         android:layout_width="85dp"
         android:layout_height="38dp"
         android:layout_marginLeft="8dp"
@@ -27,7 +27,7 @@
         app:layout_constraintStart_toEndOf="@id/sp_activities" />
 
     <EditText
-        android:id="@+id/et_dateF"
+        android:id="@+id/et_date_f"
         android:layout_width="79dp"
         android:layout_height="38dp"
         android:layout_marginLeft="8dp"
@@ -37,7 +37,7 @@
         android:focusableInTouchMode="false"
         android:inputType="date"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/et_dateS" />
+        app:layout_constraintStart_toEndOf="@id/et_date_s" />
 
 
     <android.support.v7.widget.RecyclerView

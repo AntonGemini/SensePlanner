@@ -169,7 +169,6 @@ public class HourChartFragment extends Fragment {
         selectedCategory = "";
 
         DatabaseReference referActivities = db.getReference().child("planner").child(user.getUid()).child("activities");
-        mActivityType.setOnItemSelectedListener(onActivityItemSelected);
         activitiesList = new ArrayList<>();
         activitiesList.add(getString(R.string.all_types));
         RxFirebaseDatabase.observeSingleValueEvent(referActivities, DataSnapshotMapper.listOf(com.sassaworks.senseplanner.data.Activity.class))
@@ -190,7 +189,6 @@ public class HourChartFragment extends Fragment {
         mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
         mActivityType.setAdapter(mActivitiesAdapter);
         mActivityType.setOnItemSelectedListener(onActivityItemSelected);
-
     }
 
     private View.OnClickListener onDateClickListener = new View.OnClickListener() {

@@ -59,4 +59,5 @@ public class ActivityRecordAdapter extends RecyclerView.Adapter<BaseViewHolder> 
     public int getItemCount() {
         return records.size();
     }
+
 }

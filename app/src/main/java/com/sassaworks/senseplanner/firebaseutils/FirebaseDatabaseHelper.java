@@ -226,7 +226,7 @@ public class FirebaseDatabaseHelper {
     }
 
 
-    public void GetEvents(OnActivityRecordsGetCompleted context)
+    public void GetEvents(OnActivityRecordsGetCompleted context, String activityClause)
     {
         this.onActivityLoadedInstance = context;
 
@@ -238,8 +238,10 @@ public class FirebaseDatabaseHelper {
                 for (DataSnapshot ds:dataSnapshot.getChildren())
                 {
                     ActivityRecord record = ds.getValue(ActivityRecord.class);
-                    record.setKey(ds.getKey());
-                    records.add(record);
+                    if (activityClause.equals("") || record.getCategory().equals(activityClause)) {
+                        record.setKey(ds.getKey());
+                        records.add(record);
+                    }
                 }
                 context.onActivityRecordsLoaded(records);
             }

@@ -1,11 +1,14 @@
 package com.sassaworks.senseplanner.ui;
 
 
+import android.app.DatePickerDialog;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -15,6 +18,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,10 +30,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.sassaworks.senseplanner.CreateTaskActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.ActivityRecordAdapter;
 import com.sassaworks.senseplanner.adapter.ActivityViewHolder;
+import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
+import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.data.Appealing;
 import com.sassaworks.senseplanner.data.Category;
@@ -57,17 +68,31 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         FirebaseDatabaseHelper.OnRemoveFromStatistics{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String DATE_S = "dateS";
+    private static final String DATE_F = "dateF";
+    private static final String ADAPTER_POSITION = "adapterPosition";
+    private static final String FINAL_DATE = "date_f";
+    private static final String START_DATE = "date_s";
+    private static final String ACTIVITY_POSITION = "activity_position";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private long mDateS=0;
+    private long mDateF=0;
     FirebaseDatabase db;
     FirebaseUser user;
     ActivityRecord selectedRecord;
 
     @BindView(R.id.rv_events) RecyclerView mEventRecyclerView;
+    @BindView(R.id.et_date_s) EditText mDateText;
+    @BindView(R.id.et_date_f) EditText mDateTextF;
+    @BindView(R.id.sp_activities) Spinner mActivityType;
+
+    private ArrayList<String> activitiesList;
+    private String selectedCategory = "";
+    private int adapterPosition = -1;
+    private long finalDate = 0;
+    private long startDate = 0;
+    private int activityPosition;
 
 
     public EventsFragment() {
@@ -78,16 +103,20 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment EventsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static EventsFragment newInstance(String param1, String param2) {
+    public static EventsFragment newInstance() {
+        EventsFragment fragment = new EventsFragment();
+        return fragment;
+    }
+
+    public static EventsFragment newInstance(long timestampS, long timestampF) {
         EventsFragment fragment = new EventsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putLong(DATE_S,timestampS);
+        args.putLong(DATE_F,timestampF);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,8 +125,8 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mDateS = getArguments().getLong(DATE_S);
+            mDateF = getArguments().getLong(DATE_F);
         }
     }
 
@@ -108,12 +137,89 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events, container, false);
         ButterKnife.bind(this,view);
+        db = FirebaseDatabase.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        mDateText.setOnClickListener(onDateClickListener);
+        mDateTextF.setOnClickListener(onDateClickListener);
+        if (savedInstanceState != null) {
+            adapterPosition = savedInstanceState.getInt(ADAPTER_POSITION);
+            activityPosition = savedInstanceState.getInt(ACTIVITY_POSITION);
+            mDateS = savedInstanceState.getLong(START_DATE);
+            mDateF = savedInstanceState.getLong(FINAL_DATE);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(mDateS);
+            mDateText.setText(getString(R.string.date_format, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)),
+                    String.valueOf(calendar.get(Calendar.MONTH) + 1), String.valueOf(calendar.get(Calendar.YEAR))));
+            calendar.setTimeInMillis(mDateF);
+            mDateTextF.setText(getString(R.string.date_format, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)),
+                    String.valueOf(calendar.get(Calendar.MONTH) + 1), String.valueOf(calendar.get(Calendar.YEAR))));
+        }
+
+        loadActivitiesList();
+        return view;
+    }
+
+    public void loadActivitiesList()
+    {
+        DatabaseReference referActivities = db.getReference().child("planner").child(user.getUid()).child("activities");
+        activitiesList = new ArrayList<>();
+        activitiesList.add(getString(R.string.all_types));
+        RxFirebaseDatabase.observeSingleValueEvent(referActivities, DataSnapshotMapper.listOf(com.sassaworks.senseplanner.data.Activity.class))
+                .subscribe(activities -> {
+                    for (Category c : activities) {
+                        activitiesList.add(c.getName());
+                    }
+                    fillCategorySpinner();
+                });
+    }
+
+    private void fillCategorySpinner()
+    {
+        CategoriesAdapter mActivitiesAdapter = new CategoriesAdapter(getActivity(), activitiesList.toArray(new String[0]));
+        mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
+        mActivityType.setAdapter(mActivitiesAdapter);
+        mActivityType.setOnItemSelectedListener(onActivityItemSelected);
+        if (activityPosition!=0)
+        {
+            mActivityType.setSelection(activityPosition);
+        }
+        loadEventsData();
+    }
+
+    private View.OnClickListener onDateClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            dateSelected(v);
+        }
+    };
+
+    private void loadEventsData()
+    {
+        Calendar calendar = Calendar.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseDatabase.getInstance();
         DatabaseReference ref = db.getReference("planner").child(user.getUid()).child("activity_records");
-        FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(ref.orderByChild("timestamp"));
-        helper.GetEvents(this);
-        return view;
+        Query queryEvents = ref.orderByChild("timestamp");
+        if (mDateS==0 && mDateF==0)
+        {
+            calendar.set(Calendar.HOUR,23);
+            calendar.set(Calendar.MINUTE,59);
+            mDateF = calendar.getTimeInMillis();
+            mDateTextF.setText(getString(R.string.date_format, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)),
+                    String.valueOf(calendar.get(Calendar.MONTH) + 1), String.valueOf(calendar.get(Calendar.YEAR))));
+
+            calendar.add(Calendar.MONTH,-1);
+            calendar.set(Calendar.HOUR,0);
+            calendar.set(Calendar.MINUTE,0);
+            mDateS = calendar.getTimeInMillis();
+            mDateText.setText(getString(R.string.date_format, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)),
+                    String.valueOf(calendar.get(Calendar.MONTH) + 1), String.valueOf(calendar.get(Calendar.YEAR))));
+
+        }
+        queryEvents = queryEvents.startAt(mDateS).endAt(mDateF);
+        FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(queryEvents);
+        helper.GetEvents(this,selectedCategory);
     }
 
     @Override
@@ -141,6 +247,8 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         mEventRecyclerView.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         mEventRecyclerView.setLayoutManager(layoutManager);
+        if (adapterPosition != -1)
+            mEventRecyclerView.getLayoutManager().scrollToPosition(adapterPosition);
     }
 
 
@@ -228,4 +336,57 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
             int rows = getActivity().getContentResolver().delete(deleteUri, null, null);
         }
     }
+
+    public void dateSelected(View v) {
+        final Calendar calendar = Calendar.getInstance();
+
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Calendar c = Calendar.getInstance();
+                if (v.getId() == R.id.et_date_s) {
+                    mDateText.setText(getString(R.string.date_format, String.valueOf(dayOfMonth), String.valueOf(month + 1), String.valueOf(year)));
+                    c.set(year,month,dayOfMonth,0,0);
+                    mDateS = c.getTimeInMillis();
+                } else if (v.getId() == R.id.et_date_f) {
+                    mDateTextF.setText(getString(R.string.date_format, String.valueOf(dayOfMonth), String.valueOf(month + 1), String.valueOf(year)));
+                    c.set(year,month,dayOfMonth,23,59);
+                    mDateF = c.getTimeInMillis();
+                }
+                loadEventsData();
+            }
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        dialog.show();
+    }
+
+
+    public AdapterView.OnItemSelectedListener onActivityItemSelected = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            TextView tv = view.findViewById(R.id.item_tv_category);
+            if (pos > 0) {
+                selectedCategory = tv.getText().toString();
+            } else if (pos == 0) {
+                selectedCategory = "";
+            }
+            loadEventsData();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ADAPTER_POSITION,
+                ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition());
+        outState.putInt(ACTIVITY_POSITION,mActivityType.getSelectedItemPosition());
+        outState.putLong(START_DATE,mDateS);
+        outState.putLong(FINAL_DATE,mDateF);
+
+    }
+
 }

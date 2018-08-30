@@ -36,7 +36,7 @@ public class SectionsPageAdapter extends FragmentPagerAdapter {
             case 0:
                 return ActivityTypeFragment.newInstance(position);
             case 1:
-                return EventsFragment.newInstance(null,null);
+                return EventsFragment.newInstance();
             case 2:
                 return CalendarFragment.newInstance();
             case 3:
