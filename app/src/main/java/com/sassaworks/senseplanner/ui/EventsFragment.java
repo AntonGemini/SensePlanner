@@ -381,9 +381,14 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(ADAPTER_POSITION,
-                ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition());
-        outState.putInt(ACTIVITY_POSITION,mActivityType.getSelectedItemPosition());
+        if (mEventRecyclerView!=null)
+        {
+            outState.putInt(ADAPTER_POSITION,
+                    ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition());
+        }
+        if (mActivityType!=null) {
+            outState.putInt(ACTIVITY_POSITION, mActivityType.getSelectedItemPosition());
+        }
         outState.putLong(START_DATE,mDateS);
         outState.putLong(FINAL_DATE,mDateF);
 

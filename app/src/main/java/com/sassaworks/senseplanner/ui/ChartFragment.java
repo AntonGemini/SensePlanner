@@ -4,6 +4,7 @@ package com.sassaworks.senseplanner.ui;
 import android.app.DatePickerDialog;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -65,6 +67,12 @@ public class ChartFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String START_DATE = "start_date";
+    private static final String FINISH_DATE = "finish_date";
+    private static final String APPEALING_POSITION = "app_position";
+    private static final String MOOD_POSITION = "mood_position";
+    private static final String SELECTED_CATEGORY = "selected_category";
+
     FirebaseDatabase db;
     DatabaseReference baseRef;
     FirebaseUser user;
@@ -76,7 +84,7 @@ public class ChartFragment extends Fragment {
     int mYearF;
     int mMonthF;
     int mDayOfMonthF;
-    String selectedCategory;
+    String selectedCategory = "";
     boolean isDrawing = false;
     public static SectionsPageAdapter.nextFragmentListener chartListener;
 
@@ -88,6 +96,12 @@ public class ChartFragment extends Fragment {
     @BindView(R.id.et_dateS) EditText mDateS;
     @BindView(R.id.et_dateF) EditText mDateF;
     @BindView(R.id.chart) BarChart mChart;
+    @BindView(R.id.rg_typeGroup) RadioGroup mTypeGroup;
+
+    private long mStartTimeInMillis = 0;
+    private long mFinishTimeInMillis = 0;
+    private int mAddictionPosition;
+    private int mMoodPosition;
 
     public ChartFragment() {
         // Required empty public constructor
@@ -137,10 +151,20 @@ public class ChartFragment extends Fragment {
         mDateS.setOnClickListener(onDateClickListener);
         mDateF.setOnClickListener(onDateClickListener);
 
+        if (savedInstanceState != null)
+        {
+            mStartTimeInMillis = savedInstanceState.getLong(START_DATE);
+            mFinishTimeInMillis = savedInstanceState.getLong(FINISH_DATE);
+            mAddictionPosition = savedInstanceState.getInt(APPEALING_POSITION);
+            mMoodPosition = savedInstanceState.getInt(MOOD_POSITION);
+            selectedCategory = savedInstanceState.getString(SELECTED_CATEGORY);
+        }
 
-        mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
-        mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
 
+        mTypeGroup.setOnCheckedChangeListener(onCheckedListener);
+//        mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
+//        mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
+        isDrawing = true;
         return view;
     }
 
@@ -217,21 +241,26 @@ public class ChartFragment extends Fragment {
 
     };
 
-    private CompoundButton.OnCheckedChangeListener onCheckedListener = new CompoundButton.OnCheckedChangeListener() {
+    private RadioGroup.OnCheckedChangeListener onCheckedListener = new RadioGroup.OnCheckedChangeListener() {
         @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            mAppealingType.setEnabled(!mAppealingType.isEnabled());
-            mMoodType.setEnabled(!mMoodType.isEnabled());
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (checkedId == R.id.rb_appealing && mAppealingRadio.isChecked())
+            {
+                mAppealingType.setEnabled(true);
+                mMoodType.setEnabled(false);
+            }
+            else if (checkedId == R.id.rb_mood && mMoodRadio.isChecked()) {
+                mAppealingType.setEnabled(false);
+                mMoodType.setEnabled(true);
+            }
 
-            if (mAppealingType.isEnabled())
-            {
-                selectedCategory = getKeyByValue(appealingMap,mAppealingType.getSelectedItemPosition());
+            if (mAppealingType.isEnabled() && appealingMap.size()!=0) {
+                selectedCategory = getKeyByValue(appealingMap, mAppealingType.getSelectedItemPosition());
+            } else if (mMoodType.isEnabled() && moodMap.size()!=0) {
+                selectedCategory = getKeyByValue(moodMap, mMoodType.getSelectedItemPosition());
             }
-            else if (mMoodType.isEnabled())
-            {
-                selectedCategory = getKeyByValue(moodMap,mMoodType.getSelectedItemPosition());
-            }
-            if (selectedCategory.equals("All")) selectedCategory="";
+
+            if (selectedCategory.equals("All")) selectedCategory = "";
             GetDataBestAppealingChart();
         }
     };
@@ -240,7 +269,7 @@ public class ChartFragment extends Fragment {
 
     private void LoadBestAppealingChart() {
 
-        selectedCategory = "";
+        //selectedCategory = "";
 
         DatabaseReference referAppealing = db.getReference().child("planner").child(user.getUid()).child("appealing");
         DatabaseReference referMood = db.getReference().child("planner").child(user.getUid()).child("mood");
@@ -281,7 +310,14 @@ public class ChartFragment extends Fragment {
 
         mAppealingType.setAdapter(mAppealingAdapter);
         mMoodType.setAdapter(mMoodAdapter);
-
+        if (mAddictionPosition!=0)
+        {
+            mAppealingType.setSelection(mAddictionPosition);
+        }
+        if (mMoodPosition!=0)
+        {
+            mMoodType.setSelection(mMoodPosition);
+        }
 
         if (mAppealingRadio.isChecked())
         {
@@ -310,7 +346,18 @@ public class ChartFragment extends Fragment {
         }
         Calendar cS = Calendar.getInstance();
         Calendar cF = Calendar.getInstance();
-        if (!mDateS.getText().toString().equals(""))
+
+        if (mStartTimeInMillis!= 0)
+        {
+            cS.setTimeInMillis(mStartTimeInMillis);
+            mYear = cS.get(Calendar.YEAR);
+            mMonth = cS.get(Calendar.MONTH);
+            mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
+            mDateS.setText(getResources().getString(R.string.date_format,String.valueOf(mYear),
+                    String.valueOf(mMonth+1),String.valueOf(mDayOfMonth)));
+
+        }
+        else if (!mDateS.getText().toString().equals(""))
         {
             cS.set(mYear,mMonth,mDayOfMonth);
         }
@@ -323,7 +370,17 @@ public class ChartFragment extends Fragment {
                     String.valueOf(mMonth+1),String.valueOf(mDayOfMonth)));
         }
 
-        if (!mDateF.getText().toString().equals(""))
+
+        if(mFinishTimeInMillis!=0)
+        {
+            cF.setTimeInMillis(mFinishTimeInMillis);
+            mYearF = cF.get(Calendar.YEAR);
+            mMonthF = cF.get(Calendar.MONTH);
+            mDayOfMonthF = cF.get(Calendar.DAY_OF_MONTH);
+            mDateF.setText(getResources().getString(R.string.date_format,String.valueOf(mYearF),
+                    String.valueOf(mMonthF+1),String.valueOf(mDayOfMonthF)));
+        }
+        else if (!mDateF.getText().toString().equals(""))
         {
             cF.set(mYearF,mMonthF,mDayOfMonthF);
         }
@@ -335,6 +392,9 @@ public class ChartFragment extends Fragment {
             mDateF.setText(getResources().getString(R.string.date_format,String.valueOf(mYearF),
                     String.valueOf(mMonthF+1),String.valueOf(mDayOfMonthF)));
         }
+
+        mStartTimeInMillis = cS.getTimeInMillis();
+        mFinishTimeInMillis = cF.getTimeInMillis();
 
         DatabaseReference ref = baseRef.child("activity_records");
         Query query = ref.orderByChild(order);
@@ -459,12 +519,14 @@ public class ChartFragment extends Fragment {
                     mYear = year;
                     mMonth = month;
                     mDayOfMonth = dayOfMonth;
+                    mStartTimeInMillis = 0;
                 }
                 else if (v.getId() == R.id.et_dateF) {
                     mDateF.setText(getString(R.string.date_format,String.valueOf(dayOfMonth),String.valueOf(month+1),String.valueOf(year)));
                     mYearF = year;
                     mMonthF = month;
                     mDayOfMonthF = dayOfMonth;
+                    mFinishTimeInMillis = 0;
                 }
                 GetDataBestAppealingChart();
             }
@@ -485,9 +547,15 @@ public class ChartFragment extends Fragment {
         return null;
     }
 
-    public void onFinishInflate()
-    {
 
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(START_DATE,mStartTimeInMillis);
+        outState.putLong(FINISH_DATE,mFinishTimeInMillis);
+        outState.putInt(APPEALING_POSITION,mAppealingType.getSelectedItemPosition());
+        outState.putInt(MOOD_POSITION,mMoodType.getSelectedItemPosition());
+        outState.putString(SELECTED_CATEGORY,selectedCategory);
     }
-
 }
