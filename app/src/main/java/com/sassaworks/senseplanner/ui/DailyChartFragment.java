@@ -4,6 +4,7 @@ package com.sassaworks.senseplanner.ui;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -60,8 +61,9 @@ import durdinapps.rxfirebase2.RxFirebaseDatabase;
 public class DailyChartFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String START_DATE = "start_date";
+    private static final String CATEGORY_POSITION = "cat_position";
+    private static final String SELECTED_CATEGORY = "selected_category";
 
     // TODO: Rename and change types of parameters
     FirebaseDatabase db;
@@ -85,6 +87,9 @@ public class DailyChartFragment extends Fragment {
     @BindView(R.id.chart) PieChart mChart;
 
     public static SectionsPageAdapter.nextFragmentListener chartListener;
+
+    private long mStartTimeInMillis = 0;
+    private int mCategoryPosition;
 
 
     public DailyChartFragment() {
@@ -136,7 +141,12 @@ public class DailyChartFragment extends Fragment {
         mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
         mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
 
-
+        if (savedInstanceState != null)
+        {
+            mStartTimeInMillis = savedInstanceState.getLong(START_DATE);
+            mCategoryPosition = savedInstanceState.getInt(CATEGORY_POSITION);
+            selectedCategory = savedInstanceState.getString(SELECTED_CATEGORY);
+        }
 
         return view;
     }
@@ -189,6 +199,7 @@ public class DailyChartFragment extends Fragment {
                 mYear = year;
                 mMonth = month;
                 mDayOfMonth = dayOfMonth;
+                mStartTimeInMillis = 0;
                 GetDataDailyChart();
             }
         },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
@@ -233,7 +244,6 @@ public class DailyChartFragment extends Fragment {
     };
 
     private void LoadDailyChart() {
-        selectedCategory = "";
 
         DatabaseReference referActivities = db.getReference().child("planner").child(user.getUid()).child("activities");
         mActivityType.setOnItemSelectedListener(onActivityItemSelected);
@@ -255,7 +265,7 @@ public class DailyChartFragment extends Fragment {
         mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
         mActivityType.setAdapter(mActivitiesAdapter);
         mActivityType.setOnItemSelectedListener(onActivityItemSelected);
-
+        mActivityType.setSelection(mCategoryPosition);
 
     }
 
@@ -264,7 +274,17 @@ public class DailyChartFragment extends Fragment {
         Calendar cS = Calendar.getInstance();
         Calendar cF = Calendar.getInstance();
 
-        if (!mDateS.getText().toString().equals(""))
+        if (mStartTimeInMillis!= 0)
+        {
+            cS.setTimeInMillis(mStartTimeInMillis);
+            mYear = cS.get(Calendar.YEAR);
+            mMonth = cS.get(Calendar.MONTH);
+            mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
+            mDateS.setText(getResources().getString(R.string.date_format,String.valueOf(mYear),
+                    String.valueOf(mMonth+1),String.valueOf(mDayOfMonth)));
+
+        }
+        else if (!mDateS.getText().toString().equals(""))
         {
             cS.set(mYear,mMonth,mDayOfMonth);
             cF.set(cF.get(Calendar.YEAR),cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH));
@@ -281,6 +301,8 @@ public class DailyChartFragment extends Fragment {
 
         }
 
+        mStartTimeInMillis = cS.getTimeInMillis();
+
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
         Query query = baseRef.child("activity_records").orderByChild("formattedDate")
@@ -291,7 +313,10 @@ public class DailyChartFragment extends Fragment {
                 .subscribe(events -> {
                     for (ActivityRecord ac : events)
                     {
+                        if (selectedCategory == "" || ac.getCategory().equals(selectedCategory))
+                        {
                             eventsList.add(ac);
+                        }
                     }
                     loadMoodAddictionData();
                 });
@@ -349,6 +374,14 @@ public class DailyChartFragment extends Fragment {
         mChart.setData(data);
         mChart.invalidate();
 
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(START_DATE,mStartTimeInMillis);
+        outState.putInt(CATEGORY_POSITION,mActivityType.getSelectedItemPosition());
+        outState.putString(SELECTED_CATEGORY,selectedCategory);
     }
 
 

@@ -65,8 +65,6 @@ import durdinapps.rxfirebase2.RxFirebaseDatabase;
 public class ChartFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private static final String START_DATE = "start_date";
     private static final String FINISH_DATE = "finish_date";
     private static final String APPEALING_POSITION = "app_position";

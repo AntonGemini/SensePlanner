@@ -4,6 +4,7 @@ package com.sassaworks.senseplanner.ui;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,8 +59,10 @@ import durdinapps.rxfirebase2.RxFirebaseDatabase;
 public class HourChartFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String START_DATE = "start_date";
+    private static final String FINISH_DATE = "finish_date";
+    private static final String CATEGORY_POSITION = "cat_position";
+    private static final String SELECTED_CATEGORY = "selected_category";
 
     FirebaseDatabase db;
     DatabaseReference baseRef;
@@ -86,6 +89,9 @@ public class HourChartFragment extends Fragment {
 
     public static SectionsPageAdapter.nextFragmentListener chartListener;
 
+    private long mStartTimeInMillis = 0;
+    private long mFinishTimeInMillis = 0;
+    private int mCategoryPosition;
 
 
     public HourChartFragment() {
@@ -136,6 +142,14 @@ public class HourChartFragment extends Fragment {
         mDateS.setOnClickListener(onDateClickListener);
         mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
         mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
+
+        if (savedInstanceState != null)
+        {
+            mStartTimeInMillis = savedInstanceState.getLong(START_DATE);
+            mFinishTimeInMillis = savedInstanceState.getLong(FINISH_DATE);
+            mCategoryPosition = savedInstanceState.getInt(CATEGORY_POSITION);
+            selectedCategory = savedInstanceState.getString(SELECTED_CATEGORY);
+        }
 
         return view;
     }
@@ -189,6 +203,10 @@ public class HourChartFragment extends Fragment {
         mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
         mActivityType.setAdapter(mActivitiesAdapter);
         mActivityType.setOnItemSelectedListener(onActivityItemSelected);
+        if (mCategoryPosition!=0)
+        {
+            mActivityType.setSelection(mCategoryPosition);
+        }
     }
 
     private View.OnClickListener onDateClickListener = new View.OnClickListener() {
@@ -210,6 +228,8 @@ public class HourChartFragment extends Fragment {
                 mYear = year;
                 mMonth = month;
                 mDayOfMonth = dayOfMonth;
+                mStartTimeInMillis = 0;
+                mFinishTimeInMillis = 0;
                 GetDataHourChart();
             }
         },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
@@ -257,17 +277,29 @@ public class HourChartFragment extends Fragment {
 
     private void GetDataHourChart() {
         String order;
-        if (mAppealingRadio.isChecked())
-        {
-            order = "jobAddiction";
-        }
-        else {
-            order = "moodType";
-        }
+        order = "category";
+//        if (mAppealingRadio.isChecked())
+//        {
+//            order = "jobAddiction";
+//        }
+//        else {
+//            order = "moodType";
+//        }
         Calendar cS = Calendar.getInstance();
         Calendar cF = Calendar.getInstance();
 
-        if (!mDateS.getText().toString().equals(""))
+        if (mStartTimeInMillis!= 0)
+        {
+            cS.setTimeInMillis(mStartTimeInMillis);
+            cF.setTimeInMillis(mFinishTimeInMillis);
+            mYear = cS.get(Calendar.YEAR);
+            mMonth = cS.get(Calendar.MONTH);
+            mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
+            mDateS.setText(getResources().getString(R.string.date_format,String.valueOf(mYear),
+                    String.valueOf(mMonth+1),String.valueOf(mDayOfMonth)));
+
+        }
+        else if (!mDateS.getText().toString().equals(""))
         {
             cS.set(mYear,mMonth,mDayOfMonth);
             cF.set(cF.get(Calendar.YEAR)+10,cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH));
@@ -284,7 +316,8 @@ public class HourChartFragment extends Fragment {
 
         }
 
-
+        mStartTimeInMillis = cS.getTimeInMillis();
+        mFinishTimeInMillis = cF.getTimeInMillis();
 
         DatabaseReference ref = baseRef.child("activity_records");
         Query query = ref.orderByChild(order);
@@ -419,6 +452,15 @@ public class HourChartFragment extends Fragment {
         mChart.setDrawGridBackground(false);
         mChart.invalidate();
         isDrawing = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(START_DATE,mStartTimeInMillis);
+        outState.putLong(FINISH_DATE,mFinishTimeInMillis);
+        outState.putInt(CATEGORY_POSITION,mActivityType.getSelectedItemPosition());
+        outState.putString(SELECTED_CATEGORY,selectedCategory);
     }
 
 }
