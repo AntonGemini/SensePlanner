@@ -19,8 +19,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="D:\Udacity2\design\baseline-more_vert-black-24\1x\baseline_more_vert_black_24dp.png" />
-                                      <entry key="outputName" value="ic_more" />
+                                      <entry key="imageAsset" value="D:\Udacity2\ic_spinner.png" />
+                                      <entry key="outputName" value="ic_spinner" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="585358" />
                                     </map>

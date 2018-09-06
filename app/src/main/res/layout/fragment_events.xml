@@ -9,44 +9,64 @@
     <Spinner
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/spinner_border"
         android:id="@+id/sp_activities"
-        android:layout_width="wrap_content"
-        android:layout_height="38dp" />
+        android:layout_width="145dp"
+        android:layout_height="wrap_content" />
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/et_date_s_layout"
+        android:layout_width="95dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/create_form_padding"
+        app:layout_constraintStart_toEndOf="@+id/sp_activities"
+        app:layout_constraintTop_toTopOf="parent"
+        >
     <EditText
         android:id="@+id/et_date_s"
-        android:layout_width="85dp"
-        android:layout_height="38dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
         android:focusableInTouchMode="false"
-        android:inputType="date"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/sp_activities" />
+        android:inputType="date" />
+    </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:id="@+id/et_date_f"
-        android:layout_width="79dp"
-        android:layout_height="38dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:focusableInTouchMode="false"
-        android:inputType="date"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/et_date_s" />
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/et_date_f_layout"
+        android:layout_width="95dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="@dimen/create_form_padding"
+        app:layout_constraintStart_toEndOf="@+id/et_date_s_layout"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/et_date_f"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:focusableInTouchMode="false"
+            android:inputType="date"
+            app:layout_constraintStart_toEndOf="@+id/et_date_s_layout"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.design.widget.TextInputLayout>
 
 
     <android.support.v7.widget.RecyclerView
-        app:layout_constraintTop_toBottomOf="@id/sp_activities"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/rv_events"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_date_s_layout" />
 
 
 </android.support.constraint.ConstraintLayout>

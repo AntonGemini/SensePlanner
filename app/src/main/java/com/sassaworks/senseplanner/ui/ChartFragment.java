@@ -21,11 +21,13 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -76,6 +78,7 @@ public class ChartFragment extends Fragment {
     FirebaseUser user;
     Map<String,Integer> moodMap = new HashMap<>();
     Map<String,Integer> appealingMap = new HashMap<>();
+    Map<Float,String> lablesMap;
     int mYear;
     int mMonth;
     int mDayOfMonth;
@@ -421,7 +424,7 @@ public class ChartFragment extends Fragment {
 
     private void DrawBestAppealingChart(Map<String, Float> rawEntries) {
         rawEntries = descSortHashByValue(rawEntries);
-        Map<Float,String> lablesMap = new HashMap<>();
+        lablesMap = new HashMap<>();
         List<BarEntry> barEntries = new ArrayList<>();
         float cnt = 0;
         for(Map.Entry<String,Float> e : rawEntries.entrySet())
@@ -436,6 +439,7 @@ public class ChartFragment extends Fragment {
 
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.5f);
+        mChart.getLegend().setEnabled(false);
         mChart.setFitBars(true);
         mChart.setData(data);
         mChart.getDescription().setEnabled(false);
@@ -454,6 +458,7 @@ public class ChartFragment extends Fragment {
         xAxis.setAxisMinimum(-0.5f);
         xAxis.setAvoidFirstLastClipping(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(formatter);
 
         mChart.setDrawGridBackground(false);
         mChart.invalidate();
@@ -545,6 +550,15 @@ public class ChartFragment extends Fragment {
         return null;
     }
 
+    IAxisValueFormatter formatter = new IAxisValueFormatter() {
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return lablesMap.get(value);
+        }
+
+        public int getDecimalDigits() {  return 0; }
+    };
+
 
 
     @Override
@@ -552,8 +566,14 @@ public class ChartFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putLong(START_DATE,mStartTimeInMillis);
         outState.putLong(FINISH_DATE,mFinishTimeInMillis);
-        outState.putInt(APPEALING_POSITION,mAppealingType.getSelectedItemPosition());
-        outState.putInt(MOOD_POSITION,mMoodType.getSelectedItemPosition());
+        if (mAppealingType != null)
+        {
+            outState.putInt(APPEALING_POSITION,mAppealingType.getSelectedItemPosition());
+        }
+        if (mMoodType != null)
+        {
+            outState.putInt(MOOD_POSITION,mMoodType.getSelectedItemPosition());
+        }
         outState.putString(SELECTED_CATEGORY,selectedCategory);
     }
 }

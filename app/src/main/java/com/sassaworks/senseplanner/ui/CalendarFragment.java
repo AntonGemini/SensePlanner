@@ -68,6 +68,9 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
     @BindView(R.id.calendar) MaterialCalendarView mCalendarView;
     @BindView(R.id.rb_appealing) RadioButton mAppealingRadio;
     @BindView(R.id.rb_mood) RadioButton mMoodRadio;
+    @BindView(R.id.fabToday) FloatingActionButton fabToday;
+    @BindView(R.id.fabYesterday) FloatingActionButton mFabYesterday;
+    @BindView(R.id.fabTomorrow) FloatingActionButton mFabTomorrow;
 
     private OnFragmentInteractionListener mListener;
     private String selectedType = "appealing";
@@ -106,22 +109,26 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
         ButterKnife.bind(this,view);
-        //calendar.setOnDateChangedListener(this);
+
         FloatingActionButton fab = view.findViewById(R.id.fabMenu);
-        //FloatingActionButton fabYesreday= view.findViewById(R.id.fabYesterday);
-        FloatingActionButton fabToday= view.findViewById(R.id.fabToday);
         LinearLayout todayLayout = view.findViewById(R.id.todayLayout);
         LinearLayout yesterdayLayout = view.findViewById(R.id.yesterdayLayout);
+        LinearLayout tomorrowLayout = view.findViewById(R.id.tomorrowLayout);
 
 
         todayLayout.setVisibility(View.INVISIBLE);
         yesterdayLayout.setVisibility(View.INVISIBLE);
+        tomorrowLayout.setVisibility(View.INVISIBLE);
 
 
         Animation mShowButton = AnimationUtils.loadAnimation(getActivity(),R.anim.show_button);
         Animation mHideButton = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_button);
         Animation mShowLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.show_layout);
         Animation mHideLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_layout);
+        Animation mShowTopLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.show_top_layout);
+        Animation mHideTopLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_top_layout);
+        Animation mShowBottomLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.show_bottom_layout);
+        Animation mHideBottomLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_bottom_layout);
 
         mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
         mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
@@ -135,17 +142,19 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
                     fab.startAnimation(mHideButton);
                     todayLayout.setVisibility(View.INVISIBLE);
                     yesterdayLayout.setVisibility(View.INVISIBLE);
-                    yesterdayLayout.startAnimation(mHideLayout);
+                    tomorrowLayout.setVisibility(View.INVISIBLE);
+                    yesterdayLayout.startAnimation(mHideBottomLayout);
                     todayLayout.startAnimation(mHideLayout);
+                    tomorrowLayout.startAnimation(mHideTopLayout);
 
                 }
                 else {
                     todayLayout.setVisibility(View.VISIBLE);
                     yesterdayLayout.setVisibility(View.VISIBLE);
                     fab.startAnimation(mShowButton);
-                    yesterdayLayout.startAnimation(mShowLayout);
+                    yesterdayLayout.startAnimation(mShowBottomLayout);
                     todayLayout.startAnimation(mShowLayout);
-
+                    tomorrowLayout.startAnimation(mShowTopLayout);
                 }
             }
         });
@@ -154,9 +163,30 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),CreateTaskActivity.class);
+                intent.putExtra(CreateTaskFragment.STARTING_DAY,0);
                 startActivity(intent);
             }
         });
+
+        mFabYesterday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),CreateTaskActivity.class);
+                intent.putExtra(CreateTaskFragment.STARTING_DAY,-1);
+                startActivity(intent);
+            }
+        });
+
+        mFabTomorrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),CreateTaskActivity.class);
+                intent.putExtra(CreateTaskFragment.STARTING_DAY,1);
+                startActivity(intent);
+            }
+        });
+
+
         loadCalendarData();
         //Inflate the layout for this fragment
         return view;

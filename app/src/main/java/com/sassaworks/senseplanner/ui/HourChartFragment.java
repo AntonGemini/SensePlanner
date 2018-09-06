@@ -19,11 +19,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,6 +45,7 @@ import com.sassaworks.senseplanner.data.Mood;
 import java.lang.reflect.MalformedParameterizedTypeException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -418,11 +423,15 @@ public class HourChartFragment extends Fragment {
 
         for (Map.Entry<Float,String> lable : lables.entrySet())
         {
+            BarEntry barEntry;
             if (finishedValues.containsKey(lable.getValue()))
             {
                 float[] vals = finishedValues.get(lable.getValue());
-                BarEntry barEntry = new BarEntry(Float.valueOf(lable.getKey()),vals);
+                barEntry = new BarEntry(Float.valueOf(lable.getKey()),vals);
                 barEntries.add(barEntry);
+            }
+            else {
+                barEntry = new BarEntry(Float.valueOf(lable.getKey()),0f);
             }
         }
         BarDataSet dataSet = new BarDataSet(barEntries,"Type");
@@ -430,29 +439,59 @@ public class HourChartFragment extends Fragment {
 
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.5f);
+
+        Legend legend = mChart.getLegend();
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+
+        LegendEntry legendEntryB = new LegendEntry();
+        legendEntryB.label = mAppealingRadio.isChecked() ? "Low" : "Bad";
+        legendEntryB.formColor = getActivity().getResources().getColor(R.color.low_mood);
+        LegendEntry legendEntryA = new LegendEntry();
+        legendEntryA.label = "Average";
+        legendEntryA.formColor = getActivity().getResources().getColor(R.color.avg_mood);
+        LegendEntry legendEntryH = new LegendEntry();
+        legendEntryH.label = "High";
+        legendEntryH.formColor = getActivity().getResources().getColor(R.color.high_mood);
+        legend.setCustom(Arrays.asList(legendEntryB,legendEntryA,legendEntryH));
+
         mChart.setFitBars(true);
         mChart.setData(data);
+        mChart.setExtraOffsets(20, 20, 20, 40);
         mChart.getDescription().setEnabled(false);
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setGranularity(1f);
         leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMaximum(25f);
         leftAxis.setDrawGridLines(false);
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
 
-
         XAxis xAxis = mChart.getXAxis();
         xAxis.setDrawGridLines(false);
+        xAxis.setGranularityEnabled(true);
         xAxis.setGranularity(1f);
         xAxis.setAxisMinimum(-0.5f);
         xAxis.setAvoidFirstLastClipping(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(formatter);
+        xAxis.setLabelRotationAngle(-45);
+        xAxis.setLabelCount(10,false);
 
         mChart.setDrawGridBackground(false);
         mChart.invalidate();
         isDrawing = false;
     }
+
+    IAxisValueFormatter formatter = new IAxisValueFormatter() {
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            return lables.get(value);
+        }
+
+        public int getDecimalDigits() {  return 0; }
+    };
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {

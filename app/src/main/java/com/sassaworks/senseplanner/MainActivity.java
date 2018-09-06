@@ -84,8 +84,6 @@ public class MainActivity extends AppCompatActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabNames = getResources().getStringArray(R.array.tabs_name);
 
-
-
     }
 
 
@@ -110,9 +108,14 @@ public class MainActivity extends AppCompatActivity
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-
+                            Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+                            startActivity(intent);
                         }
                     });
+        }
+        else if (id == R.id.action_edit_category)
+        {
+
         }
 
 
@@ -140,6 +143,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+//        int fragmentsCount = getSupportFragmentManager().getBackStackEntryCount();
+//        super.onBackPressed();
+        finish();
     }
 
     /**

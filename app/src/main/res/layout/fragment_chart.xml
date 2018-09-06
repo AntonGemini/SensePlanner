@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.constraint.ConstraintLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.ChartFragment">
@@ -24,77 +23,92 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/et_dateS_layout"
+            android:layout_width="87dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/create_form_padding"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_chartName">
             <EditText
                 android:id="@+id/et_dateS"
-                android:layout_width="85dp"
-                android:layout_height="38dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:ems="10"
                 android:focusableInTouchMode="false"
                 android:inputType="date"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
+                 />
+        </android.support.design.widget.TextInputLayout>
 
-            <EditText
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/et_dateF_layout"
+            android:layout_width="87dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/create_form_padding"
+            app:layout_constraintStart_toEndOf="@+id/et_dateS_layout"
+            app:layout_constraintTop_toBottomOf="@+id/sp_chartName">
+        <EditText
                 android:id="@+id/et_dateF"
-                android:layout_width="79dp"
-                android:layout_height="38dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:ems="10"
                 android:focusableInTouchMode="false"
                 android:inputType="date"
-                app:layout_constraintStart_toEndOf="@+id/et_dateS"
-                app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
+                 />
+        </android.support.design.widget.TextInputLayout>
 
-            <Spinner
-                android:id="@+id/sp_appealing"
-                android:layout_width="87dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintStart_toEndOf="@+id/et_dateF"
-                app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
-            <Spinner
-                android:id="@+id/sp_mood"
-                android:layout_width="92dp"
-                android:layout_height="35dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintStart_toEndOf="@+id/sp_appealing"
-                app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
+        <Spinner
+            android:id="@+id/sp_appealing"
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toEndOf="@+id/et_dateF_layout"
+            app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
+
+        <Spinner
+            android:id="@+id/sp_mood"
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toEndOf="@+id/sp_appealing"
+            app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
             <RadioGroup
                 android:orientation="horizontal"
                 android:id="@+id/rg_typeGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/et_dateS" >
+                app:layout_constraintTop_toBottomOf="@+id/et_dateS_layout" >
                 <RadioButton
                     android:id="@+id/rb_appealing"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingRight="@dimen/create_form_padding"
+                    android:paddingEnd="@dimen/create_form_padding"
                     android:checked="true"
                     android:text="By appealing"/>
                 <RadioButton
                     android:id="@+id/rb_mood"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingRight="@dimen/create_form_padding"
+                    android:paddingEnd="@dimen/create_form_padding"
                     android:text="By mood"/>
 
             </RadioGroup>
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/chart"
+                android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/rg_typeGroup"

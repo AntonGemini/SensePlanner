@@ -44,7 +44,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -345,8 +349,9 @@ public class DailyChartFragment extends Fragment {
 
     private void aggregateByType() {
         Map<String,Integer> categoryMap = mAppealingRadio.isChecked() ? appealingMap : moodMap;
-        Map<String,Float> chartValues = new HashMap<>();
+        Map<String,Float> chartValues = new LinkedHashMap<>();
         float total = 0;
+        categoryMap = sortHashByValue(categoryMap);
         for (Map.Entry<String, Integer> entry : categoryMap.entrySet())  {
             chartValues.put(entry.getKey(),0f);
             for (ActivityRecord event : eventsList)
@@ -355,6 +360,7 @@ public class DailyChartFragment extends Fragment {
                 if (type.equals(entry.getKey()))
                 {
                     float val = chartValues.get(entry.getKey());
+
                     chartValues.put(entry.getKey(),val+1f);
                 }
             }
@@ -369,7 +375,7 @@ public class DailyChartFragment extends Fragment {
         }
 
         PieDataSet dataSet = new PieDataSet(entries,"Share");
-        dataSet.setColors(new int[] { R.color.Bad, R.color.Average, R.color.High }, getActivity());
+        dataSet.setColors(new int[] {R.color.Bad , R.color.Average, R.color.High }, getActivity());
         PieData data = new PieData(dataSet);
         mChart.setData(data);
         mChart.invalidate();
@@ -383,6 +389,23 @@ public class DailyChartFragment extends Fragment {
         outState.putInt(CATEGORY_POSITION,mActivityType.getSelectedItemPosition());
         outState.putString(SELECTED_CATEGORY,selectedCategory);
     }
+
+    public HashMap<String,Integer> sortHashByValue(Map<String,Integer> hash) {
+        List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(hash.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+        HashMap<String, Integer> sortedHash = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedHash.put(entry.getKey(), entry.getValue());
+        }
+        return sortedHash;
+    }
+
 
 
 }

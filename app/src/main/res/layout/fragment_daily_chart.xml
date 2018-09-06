@@ -25,18 +25,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/et_dateS"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/et_dateS_layout"
         android:layout_width="100dp"
-        android:layout_height="38dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:focusableInTouchMode="false"
-        android:inputType="date"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
+        app:layout_constraintTop_toBottomOf="@+id/sp_chartName">
+        <EditText
+            android:id="@+id/et_dateS"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:focusableInTouchMode="false"
+            android:inputType="date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
+    </android.support.design.widget.TextInputLayout>
 
     <Spinner
         android:id="@+id/sp_categories"
@@ -45,7 +50,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@+id/et_dateS"
+        app:layout_constraintStart_toEndOf="@+id/et_dateS_layout"
         app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
     <RadioGroup
@@ -56,7 +61,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_dateS" >
+        app:layout_constraintTop_toBottomOf="@+id/et_dateS_layout" >
         <RadioButton
             android:id="@+id/rb_appealing"
             android:layout_width="wrap_content"

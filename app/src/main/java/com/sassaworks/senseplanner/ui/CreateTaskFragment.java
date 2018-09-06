@@ -12,11 +12,14 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -58,6 +61,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,9 +75,16 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         FirebaseDatabaseHelper.OnSingleDataLoaded, FirebaseDatabaseHelper.OnRemoveFromStatistics {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     public static final String ACTIVITY_RECORD = "activity_record";
+
+    private static final String CATEGORY_POSITION = "category_position";
+    private static final String APPEALING_POSITION = "appealing_position";
+    private static final String MOOD_POSITION = "mood_position";
+    public static final String STARTING_DAY = "starting_day";
+
+    public static final int START_TODAY = 0;
+    public static final int START_YESTERDAY = -1;
+    public static final int START_TOMORROW = 1;
 
     // TODO: Rename and change types of parameters
     FirebaseUser user;
@@ -116,7 +127,6 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     @BindView(R.id.bt_save_event)
     Button mSaveButton;
 
-
     int mYear, mYearF;
     int mMonth, mMonthF;
     int mDayOfMonth, mDayOfMonthF;
@@ -129,6 +139,12 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     ActivityRecord activityRecord;
     String startingActivity;
     private long eventid = 0;
+
+    private int mCategoryPosition=-1;
+    private int mAppealingPosition=-1;
+    private int mMoodPosition=-1;
+
+    private long mDefaultTimestamp=-1;
 
 
     public CreateTaskFragment() {
@@ -164,17 +180,42 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         return fragment;
     }
 
+    public static CreateTaskFragment newInstance(int startingDate) {
+        CreateTaskFragment fragment = new CreateTaskFragment();
+        Bundle args = new Bundle();
+        args.putInt(STARTING_DAY, startingDate);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            Calendar calendar = Calendar.getInstance();
+            TimeZone tz = TimeZone.getDefault();
+            Log.d("TIMEZONE","TimeZone   "+tz.getDisplayName(false, TimeZone.SHORT)+" Timezon id :: " +tz.getID());
+            calendar.setTimeZone(tz);
             if (getArguments().getParcelable(ACTIVITY_RECORD) != null) {
                 activityRecord = getArguments().getParcelable(ACTIVITY_RECORD);
             }
-            if (getArguments().getString("activity") != null) {
+            else if (getArguments().getString("activity") != null) {
                 startingActivity = getArguments().getString("activity");
+                mDefaultTimestamp = calendar.getTimeInMillis();
             }
+            else if (getArguments().containsKey(STARTING_DAY))
+            {
 
+                int startDay = getArguments().getInt(STARTING_DAY);
+                switch(startDay)
+                {
+                    case START_YESTERDAY:
+                        calendar.add(Calendar.DAY_OF_MONTH,-1);
+                    case START_TOMORROW:
+                        calendar.add(Calendar.DAY_OF_MONTH,1);
+                }
+                mDefaultTimestamp = calendar.getTimeInMillis();
+            }
         }
     }
 
@@ -226,11 +267,12 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
 
         if (activityRecord != null) {
             Calendar calendar = Calendar.getInstance();
+            calendar.setTimeZone(TimeZone.getDefault());
             calendar.setTimeInMillis(activityRecord.getTimestamp());
             int recordYear = calendar.get(Calendar.YEAR);
             int recordMonth = calendar.get(Calendar.MONTH);
             int recordDay = calendar.get(Calendar.DAY_OF_MONTH);
-            int recordHour = calendar.get(Calendar.HOUR);
+            int recordHour = calendar.get(Calendar.HOUR_OF_DAY);
             int recordMinute = calendar.get(Calendar.MINUTE);
             mYear = recordYear;
             mMonth = recordMonth;
@@ -241,7 +283,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             mNameText.setText(activityRecord.getName());
             mDescrText.setText(activityRecord.getDesciption());
 
-            mDateText.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth), String.valueOf(recordYear)));
+            mDateText.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth+1), String.valueOf(recordYear)));
             mTimeText.setText(getString(R.string.time_format, String.valueOf(recordHour), String.valueOf(recordMinute)));
 
             /*End date*/
@@ -249,9 +291,9 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             recordYear = calendar.get(Calendar.YEAR);
             recordMonth = calendar.get(Calendar.MONTH);
             recordDay = calendar.get(Calendar.DAY_OF_MONTH);
-            recordHour = calendar.get(Calendar.HOUR);
+            recordHour = calendar.get(Calendar.HOUR_OF_DAY);
             recordMinute = calendar.get(Calendar.MINUTE);
-            mDateTextF.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth), String.valueOf(recordYear)));
+            mDateTextF.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth+1), String.valueOf(recordYear)));
             mTimeTextF.setText(getString(R.string.time_format, String.valueOf(recordHour), String.valueOf(recordMinute)));
 
             mYearF = recordYear;
@@ -262,9 +304,54 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             eventid = activityRecord.getEventId();
 
             mNotifyCheckbox.setChecked(activityRecord.isWithNotify());
-
         }
-        //mNotifyCheckbox.setOnCheckedChangeListener(onCheckedChangeListener);
+
+        if (mDefaultTimestamp!=-1)
+        {
+            Calendar calendar = Calendar.getInstance();
+            TimeZone tz = TimeZone.getDefault();
+            System.out.println("TimeZone   "+tz.getDisplayName(false, TimeZone.SHORT)+" Timezon id :: " +tz.getID());
+            calendar.setTimeZone(tz);
+
+            calendar.setTimeInMillis(mDefaultTimestamp);
+            int recordYear = calendar.get(Calendar.YEAR);
+            int recordMonth = calendar.get(Calendar.MONTH);
+            int recordDay = calendar.get(Calendar.DAY_OF_MONTH);
+            int recordHour = calendar.get(Calendar.HOUR_OF_DAY);
+            int recordMinute = calendar.get(Calendar.MINUTE);
+            mDateText.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth+1), String.valueOf(recordYear)));
+            mTimeText.setText(getString(R.string.time_format, String.valueOf(recordHour), String.valueOf(recordMinute)));
+            mYear = recordYear;
+            mMonth = recordMonth;
+            mDayOfMonth = recordDay;
+            mHour = recordHour;
+            mMinute = recordMinute;
+
+            /*End date*/
+            calendar.add(Calendar.HOUR_OF_DAY,1);
+            recordYear = calendar.get(Calendar.YEAR);
+            recordMonth = calendar.get(Calendar.MONTH);
+            recordDay = calendar.get(Calendar.DAY_OF_MONTH);
+            recordHour = calendar.get(Calendar.HOUR_OF_DAY);
+            recordMinute = calendar.get(Calendar.MINUTE);
+            mDateTextF.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth+1), String.valueOf(recordYear)));
+            mTimeTextF.setText(getString(R.string.time_format, String.valueOf(recordHour), String.valueOf(recordMinute)));
+
+            mYearF = recordYear;
+            mMonthF = recordMonth;
+            mDayOfMonthF = recordDay;
+            mHourF = recordHour;
+            mMinuteF = recordMinute;
+        }
+
+        if (savedInstanceState!=null)
+        {
+            mCategoryPosition = savedInstanceState.getInt(CATEGORY_POSITION);
+            mAppealingPosition = savedInstanceState.getInt(APPEALING_POSITION);
+            mMoodPosition = savedInstanceState.getInt(MOOD_POSITION);
+            startingActivity = null;
+        }
+
         return view;
     }
 
@@ -278,11 +365,16 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             Arrays.sort(a);
             mCategoryAdapter.updateData(a);
             if (activityRecord != null && category.getName().equals(activityRecord.getCategory())
-                    || startingActivity != null) {
+                    || startingActivity != null || mCategoryPosition != -1) {
                 int position;
                 if (startingActivity != null) {
                     position = mCategoryAdapter.getPosition(startingActivity);
-                } else {
+                }
+                else if (mCategoryPosition != -1)
+                {
+                    position = mCategoryPosition;
+                }
+                else {
                     position = mCategoryAdapter.getPosition(category.getName());
                 }
                 mCategorySpinner.setSelection(position);
@@ -292,25 +384,36 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             appealing.put(category.getName(), category.getNumValue());
             appealing = sortHashByValue(appealing);
             mAppealingAdapter.updateData(appealing.keySet().toArray(new String[0]));
-            if (activityRecord != null && category.getName().equals(activityRecord.getJobAddiction())) {
-                int position = mAppealingAdapter.getPosition(category.getName());
-                mAppealingSpinner.setSelection(position);
+            if (activityRecord != null && category.getName().equals(activityRecord.getJobAddiction())
+                    || mAppealingPosition != -1) {
+                if (mAppealingPosition!=-1)
+                {
+                    mAppealingSpinner.setSelection(mAppealingPosition);
+                }
+                else
+                {
+                    int position = mAppealingAdapter.getPosition(category.getName());
+                    mAppealingSpinner.setSelection(position);
+                }
             }
         } else if (type == "mood") {
             mood.put(category.getName(), category.getNumValue());
             mood = sortHashByValue(mood);
             mMoodAdapter.updateData(mood.keySet().toArray(new String[0]));
-            if (activityRecord != null && category.getName().equals(activityRecord.getMoodType())) {
-                int position = mMoodAdapter.getPosition(category.getName());
-                mMoodSpinner.setSelection(position);
+            if (activityRecord != null && category.getName().equals(activityRecord.getMoodType())
+                    || mMoodPosition != -1) {
+                if (mMoodPosition!=-1)
+                {
+                    mMoodSpinner.setSelection(mMoodPosition);
+                }
+                else
+                {
+                    int position = mMoodAdapter.getPosition(category.getName());
+                    mMoodSpinner.setSelection(position);
+                }
             }
         }
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     public void SaveEvent() {
@@ -318,13 +421,11 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         if (selectedTimestamp == null || selectedTimestampF == null)
             setActivityDate();
 
-
         //Date date = new Date(selectedTimestamp.getTimeInMillis());
         String sdf = new SimpleDateFormat("dd-MM-yyyy").format(selectedTimestamp.getTime());
         statRef = db.getReference().child("daystatistics").child(user.getUid()).child(sdf);
         FirebaseDatabaseHelper fbh = new FirebaseDatabaseHelper(statRef, this);
         fbh.GetDayStat(sdf);
-
 
     }
 
@@ -364,10 +465,6 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             selectedTimestampF.set(mYearF, mMonthF, mDayOfMonthF, mHourF, mMinuteF);
         }
         Long timespanF = selectedTimestampF.getTimeInMillis();
-
-//        Date date = new Date(timespan);
-//        String sdf = new SimpleDateFormat("dd-MM-yyyy").format(date);
-//        Calendar c = Calendar.getInstance();
 
 
         String moodStr = ((TextView) mMoodSpinner.getSelectedView().findViewById(R.id.item_tv_category)).getText().toString();
@@ -655,5 +752,15 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     @Override
     public void onRemoveStatisticsLoaded(DayStatistics ds) {
         getActivity().finish();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mCategorySpinner!=null) {
+            outState.putInt(CATEGORY_POSITION, mCategorySpinner.getSelectedItemPosition());
+            outState.putInt(APPEALING_POSITION, mAppealingSpinner.getSelectedItemPosition());
+            outState.putInt(MOOD_POSITION, mMoodSpinner.getSelectedItemPosition());
+        }
     }
 }

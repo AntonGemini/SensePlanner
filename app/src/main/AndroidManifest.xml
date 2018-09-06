@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
-
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,11 +15,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -47,7 +42,9 @@
 
         <service
             android:name=".service.ChartIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".EditCategoryActivity"></activity>
     </application>
 
 </manifest>

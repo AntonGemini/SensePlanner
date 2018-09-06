@@ -50,10 +50,12 @@ public class LoginActivity extends AppCompatActivity {
         {
             startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
                     .setAvailableProviders(providers).build(),RC_SIGN_IN);
+            finish();
         }
         else {
             //copyDefaultCategories(db.getReference("defaultactivities"),db.getReference("planner"));
             startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
     }
 
@@ -106,10 +108,27 @@ public class LoginActivity extends AppCompatActivity {
                 });
 
 
-
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
+            }
+            else
+            {
+                finish();
             }
         }
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
     private void copyDefaultCategories(DatabaseReference defaultactivities, DatabaseReference planner, String categoryType) {
@@ -124,5 +143,11 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

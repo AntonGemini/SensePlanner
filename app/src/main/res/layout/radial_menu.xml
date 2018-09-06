@@ -45,14 +45,14 @@
         android:orientation="vertical"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="30dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginEnd="120dp"
+        android:layout_marginRight="120dp"
 
         >
 
         <TextView
             android:id="@+id/textView"
-            style="@style/Base.TextAppearance.AppCompat.Title"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
@@ -75,9 +75,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="95dp"
-        android:layout_marginEnd="65dp"
-        android:layout_marginRight="65dp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginEnd="75dp"
+        android:layout_marginRight="75dp"
         android:orientation="vertical">
         <TextView
             android:id="@+id/textView2"
@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
             android:layout_marginEnd="5dp"
-            style="@style/Base.TextAppearance.AppCompat.Title"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:text="Today" />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabToday"
@@ -104,7 +104,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="130dp"
+        android:layout_marginBottom="140dp"
         android:layout_marginEnd="0dp"
         android:layout_marginRight="0dp"
         android:orientation="vertical">
@@ -115,7 +115,7 @@
             android:layout_marginRight="5dp"
             android:layout_marginEnd="5dp"
             android:gravity="center"
-            style="@style/Base.TextAppearance.AppCompat.Title"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:text="Tomorrow"
             />
         <android.support.design.widget.FloatingActionButton
