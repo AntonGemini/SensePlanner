@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <!-- Main menu items -->
-    <string name="action_edit_categories">Sign out</string>
+    <string name="action_edit_categories">Edit categories</string>
     <string name="action_sign_out">Sign out</string>
 
     <string name="section_format">Hello World from section: %1$d</string>
@@ -38,5 +38,7 @@
     <string name="category_label">Category</string>
     <string name="appealing_label">Appealing</string>
     <string name="mood_label">Mood</string>
+
+    <string name="save_button">Save</string>
 
 </resources>

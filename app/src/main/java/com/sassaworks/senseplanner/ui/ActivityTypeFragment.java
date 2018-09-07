@@ -4,13 +4,18 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.transition.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,6 +34,9 @@ import com.sassaworks.senseplanner.data.User;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -38,15 +46,23 @@ import java.util.ArrayList;
 public class ActivityTypeFragment extends Fragment {
 
     // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String OPEN_MODE = "open_mode";
+
+    private static final int READ_MODE = 0;
+    private static final int EDIT_MODE = 1;
+
     // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private int mOpenMode = -1;
     private OnListFragmentInteractionListener mListener;
+    private OnAddClickListener mClickListener;
 
     private ArrayList<Activity> activities;
     private MyActivityTypeRecyclerViewAdapter adapter;
 
     FirebaseUser user;
+
+    @BindView(R.id.list) RecyclerView recyclerView;
+    @BindView(R.id.fabAddCategory) FloatingActionButton mAddButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -57,10 +73,10 @@ public class ActivityTypeFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static ActivityTypeFragment newInstance(int columnCount) {
+    public static ActivityTypeFragment newInstance(int openMode) {
         ActivityTypeFragment fragment = new ActivityTypeFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putInt(OPEN_MODE, openMode);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,9 +84,8 @@ public class ActivityTypeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            mOpenMode = getArguments().getInt(OPEN_MODE);
         }
 
     }
@@ -78,37 +93,54 @@ public class ActivityTypeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activitytype_list, container, false);
+        ButterKnife.bind(this,view);
+
         user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
 
-
-
         DatabaseReference dbRef = db.getReference("planner").child(user.getUid()).child("activities");
         activities = new ArrayList<>();
-        final RecyclerView recyclerView;
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            adapter = new MyActivityTypeRecyclerViewAdapter(activities, mListener);
-            recyclerView.setAdapter(adapter);
+
+        if (mOpenMode == READ_MODE)
+        {
+            mAddButton.setVisibility(View.GONE);
         }
         else
         {
-            adapter = null;
+            mAddButton.setVisibility(View.VISIBLE);
         }
+
+        Context context = view.getContext();
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        adapter = new MyActivityTypeRecyclerViewAdapter(activities, mListener);
+        recyclerView.setAdapter(adapter);
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                TextView tv = viewHolder.itemView.findViewById(R.id.content);
+                String st = tv.getText().toString();
+                if (mOpenMode == EDIT_MODE)
+                {
+                    mListener.onSwipeListener(st);
+                }
+            }
+        }).attachToRecyclerView(recyclerView);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                ((LinearLayoutManager)recyclerView.getLayoutManager()).getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
 
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
@@ -125,7 +157,16 @@ public class ActivityTypeFragment extends Fragment {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                Activity activity = dataSnapshot.getValue(Activity.class);
+                for (int i=0; i<activities.size(); i++)
+                {
+                    if (activities.get(i).getName().equals(activity.getName()))
+                    {
+                        activities.remove(i);
+                        break;
+                    }
+                }
+                adapter.updateViewData(activities);
             }
 
             @Override
@@ -139,6 +180,14 @@ public class ActivityTypeFragment extends Fragment {
             }
         };
         dbRef.addChildEventListener(childEventListener);
+
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClickListener.onAddClickListener();
+            }
+        });
+
         return view;
     }
 
@@ -152,6 +201,11 @@ public class ActivityTypeFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
         }
+        if (context instanceof OnAddClickListener)
+        {
+            mClickListener = (OnAddClickListener) context;
+        }
+
     }
 
     @Override
@@ -173,5 +227,11 @@ public class ActivityTypeFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(Activity item);
+        void onSwipeListener(String category);
     }
+
+    public interface OnAddClickListener {
+        void onAddClickListener();
+    }
+
 }

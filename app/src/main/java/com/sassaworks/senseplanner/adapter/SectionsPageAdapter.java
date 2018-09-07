@@ -34,7 +34,7 @@ public class SectionsPageAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return ActivityTypeFragment.newInstance(position);
+                return ActivityTypeFragment.newInstance(0);
             case 1:
                 return EventsFragment.newInstance();
             case 2:

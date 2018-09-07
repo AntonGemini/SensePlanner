@@ -6,4 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".EditCategoryActivity">
 
+    <FrameLayout
+        android:id="@+id/frameEditCategory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
 </android.support.constraint.ConstraintLayout>

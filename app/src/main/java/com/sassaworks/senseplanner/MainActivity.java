@@ -45,7 +45,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements ActivityTypeFragment.OnListFragmentInteractionListener,
-        CalendarFragment.OnFragmentInteractionListener {
+        CalendarFragment.OnFragmentInteractionListener
+    {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -115,7 +116,8 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.action_edit_category)
         {
-
+            Intent intent = new Intent(this,EditCategoryActivity.class);
+            startActivity(intent);
         }
 
 
@@ -152,7 +154,12 @@ public class MainActivity extends AppCompatActivity
         finish();
     }
 
-    /**
+    @Override
+    public void onSwipeListener(String category) {
+        //String st = category;
+    }
+
+        /**
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {

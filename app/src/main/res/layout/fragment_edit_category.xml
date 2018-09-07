@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="15dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.EditCategoryFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/et_description_layout"
+        android:layout_width="140dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        app:layout_constraintStart_toStartOf="@+id/et_name_layout"
+        app:layout_constraintTop_toBottomOf="@+id/et_name_layout">
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPersonName"
+            android:hint="Category name" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="@string/save_button" />
+</LinearLayout>
