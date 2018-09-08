@@ -30,6 +30,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -59,41 +62,37 @@ public class CreateEventTest {
     public ActivityTestRule<MainActivity> mActivityTestRule =
             new ActivityTestRule<>(MainActivity.class);
 
-    //private IdlingResource mIdlingResource;
 
     @Before
     public void setupFragment()
     {
-        //mIdlingResource =  mActivityTestRule.getActivity().getIdlingResource();
         //mActivityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-
-//        Espresso.registerIdlingResources(mIdlingResource);
-        //IdlingRegistry.getInstance().register(mIdlingResource);
         IdlingRegistry.getInstance().register(FirebaseIdlingResource.getIdlingResource());
 //        intending(not(isInternal())).respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
     }
 
     @Test
     public void testOnActivityClick() throws InterruptedException {
-        //Thread.sleep(5000);
+
         onView(ViewMatchers.withId(R.id.list))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0,click()));
-        Thread.sleep(4000);
-        //onView(withId(R.id.sp_activities)).check(matches(not(withAdaptedData(withItemContent(INVALID_COUNTRY_NAME)))));
+        //Thread.sleep(2000);
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getDefault());
+        String date = mActivityTestRule.getActivity().getResources().getString(R.string.date_format,
+                calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR));
 
         onView(withId(R.id.et_date))
-                .check(matches(isEditTextValueEqualTo("8-9-2018")));
+                .check(matches(isEditTextValueEqualTo(date)));
 
         onView(withId(R.id.sp_activities)).check(matches(withTextInSpinnerSelectedView(containsString("Hobby"))));
         //onData(allOf(is(instanceOf(String.class)), withMyValue("Hobby"))).perform(click());
-        //onData(anything()).inAdapterView(withId(R.id.sp_activities)).atPosition(0).perform(click());
 
 
 //        onData(anything())
 //                .inAdapterView(withId(R.id.sp_activities))
 //                .onChildView(allOf(withId(R.id.item_tv_category))).check(matches(withText(containsString("Hobby"))));
-        //onView(withId(R.id.sp_activities)).check(matches(withTextInSpinnerSelectedView(containsString("Hobby"))));
 
 
 //        onView(withId(R.id.list))
@@ -143,26 +142,12 @@ public class CreateEventTest {
         };
     }
 
-    public static <T> Matcher<T> withMyValue(final String name) {
-        return new BaseMatcher<T>() {
-            @Override
-            public boolean matches(Object item) {
-                return item.toString().equals(name);
-            }
-
-            @Override
-            public void describeTo(Description description) {
-
-            }
-        };
-    }
-
     public static Matcher<View> withTextInSpinnerSelectedView(final Matcher<String> stringMatcher) {
 
         return new BoundedMatcher<View, Spinner>(Spinner.class) {
             @Override
             public void describeTo(Description description) {
-                description.appendText("with text In Spinner Selected View: ");
+                //description.appendText("with text In Spinner Selected View: ");
                 stringMatcher.describeTo(description);
             }
 
@@ -193,29 +178,22 @@ public class CreateEventTest {
             private boolean isTextMatch(TextView textView) {
                 String text = textView.getText().toString();
                 if (stringMatcher.matches(text)) {
-                    String resName = getViewIdName(textView);
+                    //String resName = getViewIdName(textView);
                     return true;
                 }
                 return false;
             }
 
-            private String getViewIdName(View view) {
-                String resName = "@NULL";
-                try {
-                    resName = view.getResources().getResourceName(view.getId());
-                } catch (Resources.NotFoundException e) {
-
-                }
-                return resName;
-            }
+//            private String getViewIdName(View view) {
+//                String resName = "@NULL";
+//                try {
+//                    resName = view.getResources().getResourceName(view.getId());
+//                } catch (Resources.NotFoundException e) {
+//
+//                }
+//                return resName;
+//            }
         };
     }
 
-
-//    @After
-//    public void unregisterIdlingResource() {
-//        if (mIdlingResource != null) {
-//            IdlingRegistry.getInstance().unregister(mIdlingResource);
-//        }
-//    }
 }

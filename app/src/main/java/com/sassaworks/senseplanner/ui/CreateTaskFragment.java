@@ -146,6 +146,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     private int mMoodPosition=-1;
 
     private long mDefaultTimestamp=-1;
+    boolean mIsIdleSet = false;
 
 
     public CreateTaskFragment() {
@@ -218,7 +219,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
                 mDefaultTimestamp = calendar.getTimeInMillis();
             }
         }
-        //FirebaseIdlingResource.increment();
+
     }
 
     @Override
@@ -228,6 +229,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         View view = inflater.inflate(R.layout.fragment_create_task, container, false);
         ButterKnife.bind(this, view);
 
+        FirebaseIdlingResource.increment();
         mSaveButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -382,10 +384,11 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
                 mCategorySpinner.setSelection(position);
             }
 
-//            if (startingActivity != null && startingActivity.equals("Hobby"))
-//            {
-//                FirebaseIdlingResource.decrement();
-//            }
+            if (!mIsIdleSet)
+            {
+                FirebaseIdlingResource.decrement();
+                mIsIdleSet = true;
+            }
 
         } else if (type == "appealing") {
             appealing.put(category.getName(), category.getNumValue());
