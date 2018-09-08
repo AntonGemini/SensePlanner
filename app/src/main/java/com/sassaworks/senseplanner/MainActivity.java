@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -64,7 +66,8 @@ public class MainActivity extends AppCompatActivity
     private ViewPager mViewPager;
     private String[] tabNames;
 
-
+//    @Nullable
+//    public RecyclerIdlingResource mIdlingResource;
 
 
 
@@ -84,7 +87,6 @@ public class MainActivity extends AppCompatActivity
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabNames = getResources().getStringArray(R.array.tabs_name);
-
     }
 
 
@@ -193,6 +195,17 @@ public class MainActivity extends AppCompatActivity
             return rootView;
         }
     }
+
+//    @VisibleForTesting
+//    @NonNull
+//    public IdlingResource getIdlingResource()
+//    {
+//        if (mIdlingResource == null)
+//        {
+//            mIdlingResource = new  RecyclerIdlingResource();
+//        }
+//        return mIdlingResource;
+//    }
 
 
 

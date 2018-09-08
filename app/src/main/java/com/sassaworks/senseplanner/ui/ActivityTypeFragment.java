@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
@@ -26,7 +28,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.sassaworks.senseplanner.FirebaseIdlingResource;
 import com.sassaworks.senseplanner.MainActivity;
+import com.sassaworks.senseplanner.RecyclerIdlingResource;
 import com.sassaworks.senseplanner.adapter.MyActivityTypeRecyclerViewAdapter;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.data.Activity;
@@ -63,6 +67,8 @@ public class ActivityTypeFragment extends Fragment {
 
     @BindView(R.id.list) RecyclerView recyclerView;
     @BindView(R.id.fabAddCategory) FloatingActionButton mAddButton;
+
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -101,9 +107,14 @@ public class ActivityTypeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_activitytype_list, container, false);
         ButterKnife.bind(this,view);
 
+
         user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-
+//        if (((MainActivity)getActivity()).mIdlingResource!=null)
+//        {
+//            ((MainActivity)getActivity()).mIdlingResource.setIdleState(false);
+//        }
+        FirebaseIdlingResource.increment();
         DatabaseReference dbRef = db.getReference("planner").child(user.getUid()).child("activities");
         activities = new ArrayList<>();
 
@@ -143,11 +154,22 @@ public class ActivityTypeFragment extends Fragment {
 
 
         ChildEventListener childEventListener = new ChildEventListener() {
+
+            boolean mIsIdleSet = false;
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Activity activity = dataSnapshot.getValue(Activity.class);
                 activities.add(activity);
                 adapter.updateViewData(activities);
+                if (!mIsIdleSet)
+                {
+                    FirebaseIdlingResource.decrement();
+                    mIsIdleSet = true;
+                }
+
+//                if (((MainActivity)getActivity()).mIdlingResource!=null) {
+//                    ((MainActivity) getActivity()).mIdlingResource.setIdleState(true);
+//                }
             }
 
             @Override
@@ -176,7 +198,7 @@ public class ActivityTypeFragment extends Fragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                FirebaseIdlingResource.decrement();
             }
         };
         dbRef.addChildEventListener(childEventListener);
@@ -233,5 +255,8 @@ public class ActivityTypeFragment extends Fragment {
     public interface OnAddClickListener {
         void onAddClickListener();
     }
+
+
+
 
 }

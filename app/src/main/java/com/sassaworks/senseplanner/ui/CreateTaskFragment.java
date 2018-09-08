@@ -40,6 +40,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.sassaworks.senseplanner.FirebaseIdlingResource;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
 import com.sassaworks.senseplanner.data.Activity;
@@ -217,6 +218,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
                 mDefaultTimestamp = calendar.getTimeInMillis();
             }
         }
+        //FirebaseIdlingResource.increment();
     }
 
     @Override
@@ -379,6 +381,11 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
                 }
                 mCategorySpinner.setSelection(position);
             }
+
+//            if (startingActivity != null && startingActivity.equals("Hobby"))
+//            {
+//                FirebaseIdlingResource.decrement();
+//            }
 
         } else if (type == "appealing") {
             appealing.put(category.getName(), category.getNumValue());
