@@ -10,6 +10,7 @@ import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -197,8 +198,8 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private void loadEventsData()
     {
         Calendar calendar = Calendar.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        db = FirebaseDatabase.getInstance();
+//        user = FirebaseAuth.getInstance().getCurrentUser();
+//        db = FirebaseDatabase.getInstance();
         DatabaseReference ref = db.getReference("planner").child(user.getUid()).child("activity_records");
         Query queryEvents = ref.orderByChild("timestamp");
         if (mDateS==0 && mDateF==0)
@@ -247,6 +248,9 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         mEventRecyclerView.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         mEventRecyclerView.setLayoutManager(layoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mEventRecyclerView.getContext(),
+                ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).getOrientation());
+        mEventRecyclerView.addItemDecoration(dividerItemDecoration);
         if (adapterPosition != -1)
             mEventRecyclerView.getLayoutManager().scrollToPosition(adapterPosition);
     }

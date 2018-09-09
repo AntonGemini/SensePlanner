@@ -195,6 +195,7 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
     private void loadCalendarData()
     {
         db = FirebaseDatabase.getInstance();
+//        db.setPersistenceEnabled(true);
         user = FirebaseAuth.getInstance().getCurrentUser();
         refStat = db.getReference("daystatistics").child(user.getUid());
         FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(this);

@@ -1,5 +1,6 @@
 package com.sassaworks.senseplanner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -32,6 +35,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sassaworks.senseplanner.adapter.SectionsPageAdapter;
 import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.ui.ActivityTypeFragment;
@@ -40,6 +48,7 @@ import com.sassaworks.senseplanner.ui.ChartFragment;
 import com.sassaworks.senseplanner.ui.CreateTaskFragment;
 import com.sassaworks.senseplanner.ui.DailyChartFragment;
 import com.sassaworks.senseplanner.ui.EventsFragment;
+import com.twitter.sdk.android.core.models.TwitterCollection;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -66,8 +75,6 @@ public class MainActivity extends AppCompatActivity
     private ViewPager mViewPager;
     private String[] tabNames;
 
-//    @Nullable
-//    public RecyclerIdlingResource mIdlingResource;
 
 
 
@@ -75,6 +82,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Context context = this;
+        checkConnection(this);
 
 
         Toolbar toolbar =  findViewById(R.id.toolbar);
@@ -196,16 +206,33 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    @VisibleForTesting
-//    @NonNull
-//    public IdlingResource getIdlingResource()
-//    {
-//        if (mIdlingResource == null)
-//        {
-//            mIdlingResource = new  RecyclerIdlingResource();
-//        }
-//        return mIdlingResource;
-//    }
+    public void checkConnection(Context context)
+    {
+        DatabaseReference connectionRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectionRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean connected = dataSnapshot.getValue(Boolean.class);
+                if (connected)
+                {
+                    Snackbar.make(findViewById(R.id.main_content), getString(R.string.connection_on),
+                            Snackbar.LENGTH_SHORT)
+                            .show();
+                }
+                else
+                {
+                    Snackbar.make(findViewById(R.id.main_content), getString(R.string.connection_off),
+                            Snackbar.LENGTH_SHORT)
+                            .show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 
 

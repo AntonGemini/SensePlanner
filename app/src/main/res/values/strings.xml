@@ -41,4 +41,7 @@
 
     <string name="save_button">Save</string>
 
+    <string name="connection_on">Connection with your data established</string>
+    <string name="connection_off">Connection with your data disabled</string>
+
 </resources>

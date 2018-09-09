@@ -70,6 +70,8 @@ public class ActivityTypeFragment extends Fragment {
 
 
 
+
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -110,10 +112,7 @@ public class ActivityTypeFragment extends Fragment {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-//        if (((MainActivity)getActivity()).mIdlingResource!=null)
-//        {
-//            ((MainActivity)getActivity()).mIdlingResource.setIdleState(false);
-//        }
+
         FirebaseIdlingResource.increment();
         DatabaseReference dbRef = db.getReference("planner").child(user.getUid()).child("activities");
         activities = new ArrayList<>();
@@ -166,10 +165,6 @@ public class ActivityTypeFragment extends Fragment {
                     FirebaseIdlingResource.decrement();
                     mIsIdleSet = true;
                 }
-
-//                if (((MainActivity)getActivity()).mIdlingResource!=null) {
-//                    ((MainActivity) getActivity()).mIdlingResource.setIdleState(true);
-//                }
             }
 
             @Override
