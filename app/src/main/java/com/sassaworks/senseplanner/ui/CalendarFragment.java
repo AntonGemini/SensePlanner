@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,24 +18,18 @@ import android.widget.RadioButton;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.sassaworks.senseplanner.CreateTaskActivity;
 import com.sassaworks.senseplanner.R;
-import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.data.DayStatistics;
 import com.sassaworks.senseplanner.decorators.EventDecorator;
 import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,13 +46,7 @@ import butterknife.ButterKnife;
 
 public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper.OnEventsGetCompleted {
     // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     FirebaseUser user;
     FirebaseDatabase db;
@@ -96,15 +83,6 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
@@ -132,7 +110,6 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
 
         mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
         mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
-        //mCalendarView = view.findViewById(R.id.calendar);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,17 +164,23 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
         });
 
 
-        loadCalendarData();
+
         //Inflate the layout for this fragment
         return view;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadCalendarData();
     }
 
     private void loadCalendarData()
     {
         db = FirebaseDatabase.getInstance();
-//        db.setPersistenceEnabled(true);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        refStat = db.getReference("daystatistics").child(user.getUid());
+        refStat = db.getReference(getString(R.string.ref_daystatistics)).child(user.getUid());
         FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(this);
         helper.getActivityRecords(refStat);
     }
@@ -230,7 +213,6 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
     public void onEventsGet(ArrayList<DayStatistics> events) {
 
         //events.stream().filter(s -> s.getJobAddiction().equals("Low")).collect(Collectors.toList());
-        //i equals number of job appealings of user
         mEvents = events;
         fillCalendar();
     }
@@ -240,21 +222,22 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
         for (int i=0; i<1; i++)
         {
             //query ActivityRecords where jobAppealing equals i
-
             //convert all this days to CalendarDay list
             //get colour for this type of jobAppealing
             //create an EventDecorator and add it to the calendar
             if (mEvents!=null) {
-                mCalendarView.addDecorator(new EventDecorator(getDaysByType(1, 1.66f, mEvents), getContext(),
+                mCalendarView.addDecorator(
+                        new EventDecorator(getDaysByType(Float.valueOf(getString(R.string.bound1)),
+                                Float.valueOf(getString(R.string.bound2)), mEvents), getContext(),
                         new ColorDrawable(getContext().getResources().getColor(R.color.low_mood))));
-                mCalendarView.addDecorator(new EventDecorator(getDaysByType(1.66f, 2.34f, mEvents), getContext(),
+                mCalendarView.addDecorator(new EventDecorator(getDaysByType(Float.valueOf(getString(R.string.bound2)),
+                        Float.valueOf(getString(R.string.bound3)), mEvents), getContext(),
                         new ColorDrawable(getContext().getResources().getColor(R.color.avg_mood))));
-                mCalendarView.addDecorator(new EventDecorator(getDaysByType(2.34f, 3f, mEvents), getContext(),
+                mCalendarView.addDecorator(new EventDecorator(getDaysByType(Float.valueOf(getString(R.string.bound3)),
+                        Float.valueOf(getString(R.string.bound4)), mEvents), getContext(),
                         new ColorDrawable(getContext().getResources().getColor(R.color.high_mood))));
             }
-            //calendar.addDecorator();
         }
-        //ArrayList<DayStatistics> userEvents = mEvents;
     }
 
     public ArrayList<CalendarDay> getDaysByType(float lowBound, float upperBound, ArrayList<DayStatistics> events)
@@ -264,10 +247,10 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
         Calendar calendar = Calendar.getInstance();
         if (upperBound == 3)
         {
-            upperBound = 3.00001f;
+            upperBound = Float.valueOf(getString(R.string.bound5));
         }
         for (DayStatistics ac :events) {
-            float value = selectedType.equals("appealing") ? ac.getAppeal_avg() : ac.getMood_avg();
+            float value = selectedType.equals(getString(R.string.ref_appealing)) ? ac.getAppeal_avg() : ac.getMood_avg();
             if (value >= lowBound && value < upperBound)
             {
                 calendar.setTimeInMillis(ac.getTimestamp());
@@ -285,11 +268,11 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
 
             if (mAppealingRadio.isChecked())
             {
-                selectedType = "appealing";
+                selectedType = getString(R.string.ref_appealing);
             }
             else if (mMoodRadio.isChecked())
             {
-                selectedType = "mood";
+                selectedType = getString(R.string.ref_mood);
             }
             fillCalendar();
         }

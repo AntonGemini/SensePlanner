@@ -1,7 +1,6 @@
 package com.sassaworks.senseplanner.ui;
 
 
-
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -14,7 +13,6 @@ import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.data.Activity;
@@ -53,10 +51,6 @@ public class EditCategoryFragment extends DialogFragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,7 +66,7 @@ public class EditCategoryFragment extends DialogFragment {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     Activity activity = new Activity();
                     activity.setName(mCategory.getText().toString());
-                    db.getReference("planner").child(user.getUid()).child("activities")
+                    db.getReference(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_activities))
                             .child(activity.getName().toLowerCase()).setValue(activity);
                     dismiss();
                 }

@@ -1,37 +1,28 @@
 package com.sassaworks.senseplanner.ui;
 
-
 import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Debug;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -43,20 +34,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.sassaworks.senseplanner.FirebaseIdlingResource;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
-import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.data.Category;
 import com.sassaworks.senseplanner.data.DayStatistics;
 import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -77,6 +64,8 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final String ACTIVITY_RECORD = "activity_record";
+    public static final int CALENDAR_PERMISSION = 4;
+
 
     private static final String CATEGORY_POSITION = "category_position";
     private static final String APPEALING_POSITION = "appealing_position";
@@ -545,7 +534,12 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         if (activityRecord != null) {
             removeFromStatistics(activityRecord);
         } else {
-            getActivity().finish();
+            if (!mNotifyCheckbox.isChecked() ||
+                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+            {
+                getActivity().finish();
+            }
         }
 
     }
@@ -621,19 +615,6 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         }
     };
 
-    private CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               if (activityRecord!=null && activityRecord.getEventId()!=0)
-               {
-                   updateCalendarEvent(isChecked);
-               }
-               else if ((activityRecord==null || activityRecord.getEventId()==0) && isChecked)
-               {
-                   createCalendarEvent();
-               }
-        }
-    };
 
     private void updateCalendarEvent(boolean isChecked) {
         Uri updateUri = null;
@@ -657,13 +638,28 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         }
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CALENDAR_PERMISSION)
+        {
+            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED)
+            {
+                requestCalendarData();
+                getActivity().finish();
+            }
+            else
+            {
+                getActivity().finish();
+                mNotifyCheckbox.setChecked(false);
+            }
+        }
     }
 
     private void createCalendarEvent() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -671,33 +667,37 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.WRITE_CALENDAR},564);
+            requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR,Manifest.permission.READ_CALENDAR},CALENDAR_PERMISSION);
         }
         else
         {
-            long calId = getCalendarId();
-            if (selectedTimestamp == null || selectedTimestampF == null)
-                setActivityDate();
-            ContentResolver contentResolver = getActivity().getContentResolver();
-            ContentValues cv = new ContentValues();
-            cv.put(CalendarContract.Events.DTSTART, selectedTimestamp.getTimeInMillis());
-            cv.put(CalendarContract.Events.DTEND, selectedTimestampF.getTimeInMillis());
-            cv.put(CalendarContract.Events.TITLE, mNameText.getText().toString());
-            cv.put(CalendarContract.Events.DESCRIPTION, mDescrText.getText().toString());
-            cv.put(CalendarContract.Events.EVENT_TIMEZONE, selectedTimestamp
-                    .getTimeZone().getID());
-
-            cv.put(CalendarContract.Events.CALENDAR_ID,calId);
-            Uri uri = contentResolver.insert(CalendarContract.Events.CONTENT_URI, cv);
-            long eventId = Long.parseLong(uri.getLastPathSegment());
-            this.eventid = eventId;
-            //inserting event reminder
-            ContentValues reminderValues = new ContentValues();
-            reminderValues.put(CalendarContract.Reminders.EVENT_ID,eventId);
-            reminderValues.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
-            uri = contentResolver.insert(CalendarContract.Reminders.CONTENT_URI,reminderValues);
-
+            requestCalendarData();
         }
+    }
+
+    private void requestCalendarData()
+    {
+        long calId = getCalendarId();
+        if (selectedTimestamp == null || selectedTimestampF == null)
+            setActivityDate();
+        ContentResolver contentResolver = getActivity().getContentResolver();
+        ContentValues cv = new ContentValues();
+        cv.put(CalendarContract.Events.DTSTART, selectedTimestamp.getTimeInMillis());
+        cv.put(CalendarContract.Events.DTEND, selectedTimestampF.getTimeInMillis());
+        cv.put(CalendarContract.Events.TITLE, mNameText.getText().toString());
+        cv.put(CalendarContract.Events.DESCRIPTION, mDescrText.getText().toString());
+        cv.put(CalendarContract.Events.EVENT_TIMEZONE, selectedTimestamp
+                .getTimeZone().getID());
+
+        cv.put(CalendarContract.Events.CALENDAR_ID,calId);
+        Uri uri = contentResolver.insert(CalendarContract.Events.CONTENT_URI, cv);
+        long eventId = Long.parseLong(uri.getLastPathSegment());
+        this.eventid = eventId;
+        //inserting event reminder
+        ContentValues reminderValues = new ContentValues();
+        reminderValues.put(CalendarContract.Reminders.EVENT_ID,eventId);
+        reminderValues.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+        uri = contentResolver.insert(CalendarContract.Reminders.CONTENT_URI,reminderValues);
     }
 
 
@@ -709,36 +709,19 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     };
 
     private static final int PROJECTION_ID_INDEX = 0;
-    private static final int PROJECTION_ACCOUNT_NAME_INDEX = 1;
-    private static final int PROJECTION_DISPLAY_NAME_INDEX = 2;
-    private static final int PROJECTION_OWNER_ACCOUNT_INDEX = 3;
 
     public long getCalendarId()
     {
         long calId = 0;
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_CALENDAR},564);
+        Cursor calCursor = getContext().getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, CalendarContract.Calendars.VISIBLE + " = 1 AND "  + CalendarContract.Calendars.IS_PRIMARY + "=1", null, CalendarContract.Calendars._ID + " ASC");
+        if(calCursor.getCount() <= 0){
+            calCursor = getContext().getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, CalendarContract.Calendars.VISIBLE + " = 1", null, CalendarContract.Calendars._ID + " ASC");
         }
-        else
+        while (calCursor.moveToNext())
         {
-            Cursor calCursor = getContext().getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, CalendarContract.Calendars.VISIBLE + " = 1 AND "  + CalendarContract.Calendars.IS_PRIMARY + "=1", null, CalendarContract.Calendars._ID + " ASC");
-            if(calCursor.getCount() <= 0){
-                calCursor = getContext().getContentResolver().query(CalendarContract.Calendars.CONTENT_URI, EVENT_PROJECTION, CalendarContract.Calendars.VISIBLE + " = 1", null, CalendarContract.Calendars._ID + " ASC");
-            }
-            while (calCursor.moveToNext())
-            {
-                calId = calCursor.getLong(PROJECTION_ID_INDEX);
-            }
+            calId = calCursor.getLong(PROJECTION_ID_INDEX);
         }
         return calId;
-
     }
 
     public HashMap<String,Integer> sortHashByValue(HashMap<String,Integer> hash)
@@ -761,7 +744,12 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
 
     @Override
     public void onRemoveStatisticsLoaded(DayStatistics ds) {
-        getActivity().finish();
+        if (!mNotifyCheckbox.isChecked() ||
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+        {
+            getActivity().finish();
+        }
     }
 
     @Override

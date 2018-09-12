@@ -3,10 +3,8 @@ package com.sassaworks.senseplanner.adapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.support.v7.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.sassaworks.senseplanner.R;

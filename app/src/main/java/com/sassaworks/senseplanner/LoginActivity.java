@@ -1,11 +1,9 @@
 package com.sassaworks.senseplanner;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -50,10 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         {
             startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
                     .setAvailableProviders(providers).build(),RC_SIGN_IN);
-            finish();
         }
         else {
-            //copyDefaultCategories(db.getReference("defaultactivities"),db.getReference("planner"));
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
@@ -87,14 +83,13 @@ public class LoginActivity extends AppCompatActivity {
                         final User currentUser;
                         currentUser = dataSnapshot.getValue(User.class);
 
-                        Log.d("PLAN","onDataChange");
                         if (currentUser == null)
                         {
 
-                            db.getReference("users").child(user.getUid()).setValue(new User(user.getDisplayName(),user.getEmail(),user.getPhoneNumber()));
-                            copyDefaultCategories(db.getReference("defaultactivities"),db.getReference("planner"),"activities");
-                            copyDefaultCategories(db.getReference("defaultappealing"),db.getReference("planner"),"appealing");
-                            copyDefaultCategories(db.getReference("defaultmood"),db.getReference("planner"),"mood");
+                            db.getReference(getString(R.string.ref_users)).child(user.getUid()).setValue(new User(user.getDisplayName(),user.getEmail(),user.getPhoneNumber()));
+                            copyDefaultCategories(db.getReference(getString(R.string.ref_defaultactivities)),db.getReference(getString(R.string.ref_planner)),getString(R.string.ref_activities));
+                            copyDefaultCategories(db.getReference(getString(R.string.ref_defaultappealing)),db.getReference(getString(R.string.ref_planner)),getString(R.string.ref_appealing));
+                            copyDefaultCategories(db.getReference(getString(R.string.ref_defaultmood)),db.getReference(getString(R.string.ref_planner)),getString(R.string.ref_mood));
 
                         }
                         //move
@@ -102,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("PLAN","onCancelled");
+
                     }
 
                 });
@@ -118,18 +113,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
 
     private void copyDefaultCategories(DatabaseReference defaultactivities, DatabaseReference planner, String categoryType) {
         defaultactivities.addListenerForSingleValueEvent(new ValueEventListener() {

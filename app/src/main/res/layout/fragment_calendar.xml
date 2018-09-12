@@ -11,8 +11,8 @@
         android:id="@+id/rg_typeGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_dateS" >
         <RadioButton
@@ -20,13 +20,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="By appealing"/>
+            android:text="@string/appealing_str"/>
 
         <RadioButton
             android:id="@+id/rb_mood"
             android:layout_width="135dp"
             android:layout_height="wrap_content"
-            android:text="By mood" />
+            android:text="@string/mood_str" />
 
     </RadioGroup>
 
@@ -35,14 +35,14 @@
         android:id="@+id/calendar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/dimen_margin_30"
         />
 
 
     <include layout="@layout/radial_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="@dimen/radial_margin_bottom"
         android:layout_gravity="bottom|end"
         />
 

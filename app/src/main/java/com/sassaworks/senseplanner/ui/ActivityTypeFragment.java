@@ -2,18 +2,12 @@ package com.sassaworks.senseplanner.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
-import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.transition.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,15 +20,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.sassaworks.senseplanner.FirebaseIdlingResource;
-import com.sassaworks.senseplanner.MainActivity;
-import com.sassaworks.senseplanner.RecyclerIdlingResource;
-import com.sassaworks.senseplanner.adapter.MyActivityTypeRecyclerViewAdapter;
 import com.sassaworks.senseplanner.R;
+import com.sassaworks.senseplanner.adapter.MyActivityTypeRecyclerViewAdapter;
 import com.sassaworks.senseplanner.data.Activity;
-import com.sassaworks.senseplanner.data.User;
 
 import java.util.ArrayList;
 
@@ -98,10 +87,6 @@ public class ActivityTypeFragment extends Fragment {
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -114,7 +99,8 @@ public class ActivityTypeFragment extends Fragment {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
 
         FirebaseIdlingResource.increment();
-        DatabaseReference dbRef = db.getReference("planner").child(user.getUid()).child("activities");
+        DatabaseReference dbRef = db.getReference(getString(R.string.ref_planner)).child(user.getUid())
+                .child(getString(R.string.ref_activities));
         activities = new ArrayList<>();
 
         if (mOpenMode == READ_MODE)

@@ -1,11 +1,11 @@
 package com.sassaworks.senseplanner;
 
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,7 +37,7 @@ public class EditCategoryActivity extends AppCompatActivity implements ActivityT
     public void onSwipeListener(String category) {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        db.getReference("planner").child(user.getUid()).child("activities")
+        db.getReference(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_activities))
                 .child(category.toLowerCase()).removeValue();
     }
 

@@ -1,7 +1,6 @@
 package com.sassaworks.senseplanner.ui;
 
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,7 +27,6 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -42,7 +40,6 @@ import com.sassaworks.senseplanner.data.Appealing;
 import com.sassaworks.senseplanner.data.Category;
 import com.sassaworks.senseplanner.data.Mood;
 
-import java.lang.reflect.MalformedParameterizedTypeException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,7 +132,7 @@ public class HourChartFragment extends Fragment {
 
         db = FirebaseDatabase.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        baseRef = db.getReference("planner").child(user.getUid());
+        baseRef = db.getReference(getString(R.string.ref_planner)).child(user.getUid());
 
         ArrayAdapter<CharSequence> chartAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.charts_name,android.R.layout.simple_spinner_item);
@@ -187,7 +184,7 @@ public class HourChartFragment extends Fragment {
 
         selectedCategory = "";
 
-        DatabaseReference referActivities = db.getReference().child("planner").child(user.getUid()).child("activities");
+        DatabaseReference referActivities = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_activities));
         activitiesList = new ArrayList<>();
         activitiesList.add(getString(R.string.all_types));
         RxFirebaseDatabase.observeSingleValueEvent(referActivities, DataSnapshotMapper.listOf(com.sassaworks.senseplanner.data.Activity.class))
@@ -270,11 +267,11 @@ public class HourChartFragment extends Fragment {
 
             if (mAppealingRadio.isChecked())
             {
-                selectedType = "appealing";
+                selectedType = getString(R.string.ref_appealing);
             }
             else if (mMoodRadio.isChecked())
             {
-                selectedType = "mood";
+                selectedType = getString(R.string.ref_mood);
             }
             GetDataHourChart();
         }
@@ -283,13 +280,7 @@ public class HourChartFragment extends Fragment {
     private void GetDataHourChart() {
         String order;
         order = "category";
-//        if (mAppealingRadio.isChecked())
-//        {
-//            order = "jobAddiction";
-//        }
-//        else {
-//            order = "moodType";
-//        }
+
         Calendar cS = Calendar.getInstance();
         Calendar cF = Calendar.getInstance();
 
@@ -324,7 +315,7 @@ public class HourChartFragment extends Fragment {
         mStartTimeInMillis = cS.getTimeInMillis();
         mFinishTimeInMillis = cF.getTimeInMillis();
 
-        DatabaseReference ref = baseRef.child("activity_records");
+        DatabaseReference ref = baseRef.child(getString(R.string.activity_records));
         Query query = ref.orderByChild(order);
 
         if (selectedCategory!=null && selectedCategory!="")
@@ -368,8 +359,8 @@ public class HourChartFragment extends Fragment {
         }
         mappedEvents.size();
 
-        Query referAppealing = db.getReference().child("planner").child(user.getUid()).child("appealing").orderByChild("numValue");
-        Query referMood = db.getReference().child("planner").child(user.getUid()).child("mood").orderByChild("numValue");
+        Query referAppealing = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_appealing)).orderByChild("numValue");
+        Query referMood = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_mood)).orderByChild("numValue");
 
         RxFirebaseDatabase.observeSingleValueEvent(referMood, DataSnapshotMapper.listOf(Mood.class))
                 .concatMap(mood->{
@@ -445,13 +436,13 @@ public class HourChartFragment extends Fragment {
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
 
         LegendEntry legendEntryB = new LegendEntry();
-        legendEntryB.label = mAppealingRadio.isChecked() ? "Low" : "Bad";
+        legendEntryB.label = mAppealingRadio.isChecked() ? getString(R.string.lb_low) : getString(R.string.lb_bad);
         legendEntryB.formColor = getActivity().getResources().getColor(R.color.low_mood);
         LegendEntry legendEntryA = new LegendEntry();
-        legendEntryA.label = "Average";
+        legendEntryA.label = getString(R.string.lb_average);
         legendEntryA.formColor = getActivity().getResources().getColor(R.color.avg_mood);
         LegendEntry legendEntryH = new LegendEntry();
-        legendEntryH.label = "High";
+        legendEntryH.label = getString(R.string.lb_high);
         legendEntryH.formColor = getActivity().getResources().getColor(R.color.high_mood);
         legend.setCustom(Arrays.asList(legendEntryB,legendEntryA,legendEntryH));
 

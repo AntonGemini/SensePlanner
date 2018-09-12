@@ -6,8 +6,6 @@ import android.graphics.drawable.ColorDrawable;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
-import com.sassaworks.senseplanner.R;
-import com.sassaworks.senseplanner.data.ActivityRecord;
 
 import java.util.ArrayList;
 

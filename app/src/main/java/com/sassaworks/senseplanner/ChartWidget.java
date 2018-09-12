@@ -8,8 +8,6 @@ import android.widget.RemoteViews;
 
 import com.sassaworks.senseplanner.service.ChartIntentService;
 
-import java.lang.reflect.Method;
-
 /**
  * Implementation of App Widget functionality.
  */

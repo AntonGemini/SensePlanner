@@ -16,11 +16,11 @@
         android:id="@+id/sp_chartName"
         android:layout_width="368dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/create_form_padding"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginRight="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
+        android:layout_marginTop="@dimen/create_form_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,14 +30,16 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sp_chartName">
         <EditText
             android:id="@+id/et_dateS"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/create_form_padding"
             android:focusableInTouchMode="false"
+            android:hint="@string/start_date_hint"
             android:inputType="date"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
@@ -47,9 +49,9 @@
         android:id="@+id/sp_categories"
         android:layout_width="138dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
+        android:layout_marginTop="@dimen/create_form_padding"
         app:layout_constraintStart_toEndOf="@+id/et_dateS_layout"
         app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
@@ -58,8 +60,8 @@
         android:id="@+id/rg_typeGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_dateS_layout" >
         <RadioButton
@@ -67,13 +69,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="By appealing"/>
+            android:text="@string/appealing_str"/>
 
         <RadioButton
             android:id="@+id/rb_mood"
             android:layout_width="135dp"
             android:layout_height="wrap_content"
-            android:text="By mood" />
+            android:text="@string/mood_str" />
 
     </RadioGroup>
 

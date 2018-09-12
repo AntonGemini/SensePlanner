@@ -9,14 +9,10 @@ import android.widget.TextView;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.ui.ActivityTypeFragment.OnListFragmentInteractionListener;
-import com.sassaworks.senseplanner.dummy.DummyContent.DummyItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyActivityTypeRecyclerViewAdapter extends RecyclerView.Adapter<MyActivityTypeRecyclerViewAdapter.ViewHolder> {
@@ -68,8 +64,8 @@ public class MyActivityTypeRecyclerViewAdapter extends RecyclerView.Adapter<MyAc
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mIdView = view.findViewById(R.id.item_number);
+            mContentView = view.findViewById(R.id.content);
         }
 
         @Override

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="15dp"
+    android:padding="@dimen/edit_padding"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.EditCategoryFragment">
@@ -15,6 +15,7 @@
         android:layout_width="140dp"
         android:layout_height="60dp"
         android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="@+id/et_name_layout"
         app:layout_constraintTop_toBottomOf="@+id/et_name_layout">
         <EditText
@@ -22,12 +23,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textPersonName"
-            android:hint="Category name" />
+            android:hint="@string/cat_name_hint" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/button2"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/margin_top"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_width="100dp"
         android:layout_height="wrap_content"

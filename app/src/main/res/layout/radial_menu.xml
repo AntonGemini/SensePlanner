@@ -9,33 +9,14 @@
         android:id="@+id/fabMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginBottom="@dimen/dimen_margin_30"
+        android:layout_marginEnd="@dimen/dimen_margin_30"
+        android:layout_marginRight="@dimen/dimen_margin_30"
         android:layout_gravity="bottom|end"
         android:clickable="true"
-        app:srcCompat="@drawable/ic_add_event" />
+        app:srcCompat="@drawable/ic_add_event"
+        android:focusable="true" />
 
-    <!--<LinearLayout-->
-        <!--android:id="@+id/testLayout"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:orientation="vertical"-->
-        <!--android:visibility="gone"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:layout_constraintCircle="@id/fabMenu"-->
-        <!--app:layout_constraintCircleAngle="300"-->
-        <!--app:layout_constraintCircleRadius="150dp"-->
-        <!--&gt;-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/textView8"-->
-            <!--style="@style/Base.TextAppearance.AppCompat.Title"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginEnd="5dp"-->
-            <!--android:layout_marginRight="5dp"-->
-            <!--android:text="Yesterday" />-->
-    <!--</LinearLayout>-->
 
 
     <LinearLayout
@@ -44,7 +25,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="@dimen/dimen_margin_30"
         android:layout_marginEnd="120dp"
         android:layout_marginRight="120dp"
 
@@ -57,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
             android:layout_marginRight="5dp"
-            android:text="Yesterday" />
+            android:text="@string/yesterday" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabYesterday"
@@ -67,7 +48,8 @@
             android:clickable="true"
             app:backgroundTint="@color/colorPrimary"
 
-            app:srcCompat="@drawable/ic_add_yesterday" />
+            app:srcCompat="@drawable/ic_add_yesterday"
+            android:focusable="true" />
     </LinearLayout>
 
     <LinearLayout
@@ -86,7 +68,7 @@
             android:layout_marginRight="5dp"
             android:layout_marginEnd="5dp"
             style="@style/Base.TextAppearance.AppCompat.Small"
-            android:text="Today" />
+            android:text="@string/today" />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabToday"
         android:layout_width="wrap_content"
@@ -94,7 +76,8 @@
         android:layout_gravity="center"
         android:clickable="true"
         app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@drawable/ic_action_name" />
+        app:srcCompat="@drawable/ic_action_name"
+        android:focusable="true" />
     </LinearLayout>
 
 
@@ -116,7 +99,7 @@
             android:layout_marginEnd="5dp"
             android:gravity="center"
             style="@style/Base.TextAppearance.AppCompat.Small"
-            android:text="Tomorrow"
+            android:text="@string/tomorrow"
             />
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabTomorrow"
@@ -125,7 +108,8 @@
             android:layout_gravity="center"
             android:clickable="true"
             app:backgroundTint="@color/colorPrimary"
-            app:srcCompat="@drawable/ic_add_tomorrow" />
+            app:srcCompat="@drawable/ic_add_tomorrow"
+            android:focusable="true" />
 
     </LinearLayout>
 

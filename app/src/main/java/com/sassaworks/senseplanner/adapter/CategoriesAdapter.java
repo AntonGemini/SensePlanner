@@ -11,11 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.sassaworks.senseplanner.R;
-import com.sassaworks.senseplanner.data.Category;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class CategoriesAdapter extends ArrayAdapter<String> {
 

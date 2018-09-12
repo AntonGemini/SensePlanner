@@ -58,7 +58,7 @@ public class SectionsPageAdapter extends FragmentPagerAdapter {
                 }
                 return fragAt0;
             default:
-                return MainActivity.PlaceholderFragment.newInstance(position + 1);
+                return ActivityTypeFragment.newInstance(0);
         }
     }
 
@@ -98,7 +98,7 @@ public class SectionsPageAdapter extends FragmentPagerAdapter {
     }
 
     public interface nextFragmentListener {
-        public void fragment0Changed(String newFragmentIdentification);
+        void fragment0Changed(String newFragmentIdentification);
     }
     private nextFragmentListener listener;
 

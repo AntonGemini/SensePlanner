@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -10,9 +9,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:paddingEnd="58dp"
-        android:paddingRight="58dp"
-        android:text="TextView"
+        android:paddingEnd="@dimen/record_padding"
+        android:paddingRight="@dimen/record_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,9 +19,9 @@
         android:id="@+id/tv_catLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginLeft="@dimen/appbar_padding_top"
+        android:layout_marginStart="@dimen/appbar_padding_top"
+        android:layout_marginTop="@dimen/double_padding_top"
         android:textStyle="bold"
         android:text="Cat:"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,9 +31,9 @@
         android:id="@+id/tv_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="4dp"
-        android:text="TextView"
+        android:layout_marginTop="@dimen/double_padding_top"
+        android:layout_marginLeft="@dimen/item_small_margin"
+        android:layout_marginStart="@dimen/item_small_margin"
         app:layout_constraintStart_toEndOf="@+id/tv_catLabel"
         app:layout_constraintTop_toBottomOf="@+id/tv_full_description" />
 
@@ -54,17 +52,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:text="Mood"
+        android:text="@string/mood_label"
         app:layout_constraintStart_toEndOf="@+id/guideline1"
         app:layout_constraintTop_toTopOf="@+id/tv_category" />
     <!---->
     <!---->
     <View
         android:id="@+id/mood_color"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="@dimen/indicator_radius"
+        android:layout_height="@dimen/indicator_radius"
+        android:layout_marginLeft="@dimen/appbar_padding_top"
+        android:layout_marginStart="@dimen/appbar_padding_top"
         android:background="@drawable/shape_circle"
         app:layout_constraintBottom_toTopOf="@+id/tv_mood"
         app:layout_constraintStart_toEndOf="@+id/tv_mood"
@@ -82,26 +80,27 @@
         android:id="@+id/tv_job_appealing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginLeft="@dimen/appbar_padding_top"
+        android:layout_marginStart="@dimen/appbar_padding_top"
         android:textStyle="bold"
-        android:text="Job"
+        android:text="@string/job_label"
         app:layout_constraintStart_toEndOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/tv_category" />
 
 
     <View
         android:id="@+id/job_appealing_color"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="@dimen/indicator_radius"
+        android:layout_height="@dimen/indicator_radius"
+        android:layout_marginLeft="@dimen/appbar_padding_top"
+        android:layout_marginStart="@dimen/appbar_padding_top"
         android:background="@drawable/shape_circle"
         app:layout_constraintBottom_toTopOf="@+id/tv_job_appealing"
         app:layout_constraintStart_toEndOf="@+id/tv_job_appealing"
         app:layout_constraintTop_toBottomOf="@+id/tv_job_appealing" />
 
     <ImageView
+        android:contentDescription="@string/menu_record_desc"
         android:id="@+id/iv_more"
         android:layout_width="50dp"
         android:layout_height="72dp"

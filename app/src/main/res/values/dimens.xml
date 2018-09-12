@@ -2,14 +2,28 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="double_padding_top">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="create_form_padding">8dp</dimen>
+    <dimen name="dimen_margin_30">30dp</dimen>
+    <dimen name="radial_margin_bottom">50dp</dimen>
+    <dimen name="item_small_margin">4dp</dimen>
+
+    <dimen name="chart_spinner_width">368dp</dimen>
+    <dimen name="date_spinner_width">87dp</dimen>
+    <dimen name="name_layout_width">200dp</dimen>
+    <dimen name="margin_top">10dp</dimen>
+    <dimen name="edit_padding">15dp</dimen>
+    <dimen name="indicator_radius">35dp</dimen>
 
     <!--
 Refer to App Widget Documentation for margin information
 http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     -->
     <dimen name="widget_margin">8dp</dimen>
+    <dimen name="item_text_height">18sp</dimen>
+    <dimen name="header_text_height">16sp</dimen>
+    <dimen name="record_padding">58dp</dimen>
+
 </resources>

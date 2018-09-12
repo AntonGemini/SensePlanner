@@ -2,7 +2,6 @@ package com.sassaworks.senseplanner.ui;
 
 
 import android.app.DatePickerDialog;
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -20,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -34,7 +31,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.sassaworks.senseplanner.MainActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
 import com.sassaworks.senseplanner.adapter.SectionsPageAdapter;
@@ -51,11 +47,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnItemSelected;
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
 
@@ -141,7 +135,7 @@ public class ChartFragment extends Fragment {
 
         db = FirebaseDatabase.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        baseRef = db.getReference("planner").child(user.getUid());
+        baseRef = db.getReference(getString(R.string.ref_planner)).child(user.getUid());
 
         ArrayAdapter<CharSequence> chartAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.charts_name,android.R.layout.simple_spinner_item);
@@ -163,8 +157,7 @@ public class ChartFragment extends Fragment {
 
 
         mTypeGroup.setOnCheckedChangeListener(onCheckedListener);
-//        mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
-//        mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
+
         isDrawing = true;
         return view;
     }
@@ -261,7 +254,7 @@ public class ChartFragment extends Fragment {
                 selectedCategory = getKeyByValue(moodMap, mMoodType.getSelectedItemPosition());
             }
 
-            if (selectedCategory.equals("All")) selectedCategory = "";
+            if (selectedCategory.equals(getString(R.string.all_types))) selectedCategory = "";
             GetDataBestAppealingChart();
         }
     };
@@ -270,10 +263,11 @@ public class ChartFragment extends Fragment {
 
     private void LoadBestAppealingChart() {
 
-        //selectedCategory = "";
 
-        DatabaseReference referAppealing = db.getReference().child("planner").child(user.getUid()).child("appealing");
-        DatabaseReference referMood = db.getReference().child("planner").child(user.getUid()).child("mood");
+        DatabaseReference referAppealing = db.getReference().child(getString(R.string.ref_planner))
+                .child(user.getUid()).child(getString(R.string.ref_appealing));
+        DatabaseReference referMood = db.getReference().child(getString(R.string.ref_planner))
+                .child(user.getUid()).child(getString(R.string.ref_mood));
         mAppealingType.setOnItemSelectedListener(onAppealingItemSelected);
         mMoodType.setOnItemSelectedListener(onMoodItemSelected);
         RxFirebaseDatabase.observeSingleValueEvent(referMood, DataSnapshotMapper.listOf(Mood.class))
@@ -340,10 +334,10 @@ public class ChartFragment extends Fragment {
         String order;
         if (mAppealingRadio.isChecked())
         {
-            order = "jobAddiction";
+            order = getString(R.string.job_addiction);
         }
         else {
-            order = "moodType";
+            order = getString(R.string.mood_type);
         }
         Calendar cS = Calendar.getInstance();
         Calendar cF = Calendar.getInstance();
@@ -397,7 +391,7 @@ public class ChartFragment extends Fragment {
         mStartTimeInMillis = cS.getTimeInMillis();
         mFinishTimeInMillis = cF.getTimeInMillis();
 
-        DatabaseReference ref = baseRef.child("activity_records");
+        DatabaseReference ref = baseRef.child(getString(R.string.activity_records));
         Query query = ref.orderByChild(order);
         Map<String,Float> rawEntries = new HashMap<>();
 

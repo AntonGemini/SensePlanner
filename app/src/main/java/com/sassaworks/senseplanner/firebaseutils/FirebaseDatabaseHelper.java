@@ -1,11 +1,7 @@
 package com.sassaworks.senseplanner.firebaseutils;
 
-import android.content.Context;
-import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -75,7 +71,7 @@ public class FirebaseDatabaseHelper {
 
     public FirebaseDatabaseHelper( OnEventsGetCompleted context)
     {
-        this.onEventsGetinstance = (OnEventsGetCompleted) context;
+        this.onEventsGetinstance = context;
     }
 
     public FirebaseDatabaseHelper(DatabaseReference ref, OnSingleDataLoaded context)
@@ -130,7 +126,7 @@ public class FirebaseDatabaseHelper {
     {
         ArrayList<DayStatistics> events = new ArrayList<>();
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int i = 1;

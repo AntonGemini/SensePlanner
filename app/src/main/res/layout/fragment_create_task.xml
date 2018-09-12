@@ -15,10 +15,11 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/et_name_layout"
-        android:layout_width="200dp"
+        android:layout_width="@dimen/name_layout_width"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/create_form_padding"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="@dimen/create_form_padding"
+        android:layout_marginTop="@dimen/margin_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -27,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textShortMessage"
-            android:hint="Event name" />
+            android:hint="@string/event_name" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -35,6 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="@+id/et_name_layout"
         app:layout_constraintTop_toBottomOf="@+id/et_name_layout">
         <EditText
@@ -42,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:hint="Event description"
+            android:hint="@string/event_desc"
             />
     </android.support.design.widget.TextInputLayout>
 
@@ -50,7 +52,7 @@
         android:id="@+id/tv_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/margin_top"
         android:layout_marginLeft="@dimen/create_form_padding"
         android:layout_marginStart="@dimen/create_form_padding"
         android:text="@string/category_label"
@@ -73,7 +75,7 @@
         android:background="@drawable/spinner_border"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/create_form_padding"
         android:layout_marginLeft="@dimen/create_form_padding"
         android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +86,7 @@
         android:background="@drawable/spinner_border"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/create_form_padding"
         android:layout_marginLeft="@dimen/create_form_padding"
         android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +97,7 @@
         android:id="@+id/et_date_layout"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sp_mood">
 
@@ -103,11 +105,11 @@
             android:id="@+id/et_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="@dimen/create_form_padding"
+            android:layout_marginStart="@dimen/create_form_padding"
+            android:layout_marginTop="@dimen/create_form_padding"
             android:focusableInTouchMode="false"
-            android:hint="Start date"
+            android:hint="@string/start_date_hint"
             android:inputType="date" />
     </android.support.design.widget.TextInputLayout>
 
@@ -122,11 +124,11 @@
         android:id="@+id/et_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
+        android:layout_marginTop="@dimen/create_form_padding"
         android:focusableInTouchMode="false"
-        android:hint="Start time"
+        android:hint="@string/start_time_hint"
         android:inputType="time"
          />
     </android.support.design.widget.TextInputLayout>
@@ -136,7 +138,7 @@
         android:id="@+id/cb_notify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notify"
+        android:text="@string/notify_lbl"
         android:layout_marginLeft="@dimen/create_form_padding"
         android:layout_marginStart="@dimen/create_form_padding"
         android:layout_marginTop="@dimen/create_form_padding"
@@ -147,10 +149,10 @@
         android:id="@+id/bt_save_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="@dimen/create_form_padding"
+        android:layout_marginRight="@dimen/create_form_padding"
         android:layout_marginTop="4dp"
-        android:text="Save"
+        android:text="@string/save_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_time_layout" />
 
@@ -159,9 +161,9 @@
         android:id="@+id/et_date_f_layout"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
+        android:layout_marginTop="@dimen/create_form_padding"
         app:layout_constraintStart_toEndOf="@+id/et_date_layout"
         app:layout_constraintTop_toBottomOf="@+id/sp_mood">
 
@@ -169,11 +171,11 @@
             android:id="@+id/et_date_f"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="@dimen/create_form_padding"
+            android:layout_marginStart="@dimen/create_form_padding"
+            android:layout_marginTop="@dimen/create_form_padding"
             android:focusableInTouchMode="false"
-            android:hint="Finish date"
+            android:hint="@string/finish_date_hint"
             android:inputType="date" />
     </android.support.design.widget.TextInputLayout>
 
@@ -182,8 +184,8 @@
         android:id="@+id/et_time_f_layout"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toEndOf="@+id/et_time_layout"
         app:layout_constraintTop_toBottomOf="@+id/et_date_f_layout">
 
@@ -191,11 +193,11 @@
             android:id="@+id/et_time_f"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="@dimen/create_form_padding"
+            android:layout_marginStart="@dimen/create_form_padding"
+            android:layout_marginTop="@dimen/create_form_padding"
             android:focusableInTouchMode="false"
-            android:hint="Finish time"
+            android:hint="@string/finish_time_hint"
             android:inputType="time" />
     </android.support.design.widget.TextInputLayout>
 
@@ -203,9 +205,9 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
         android:text="@string/appealing_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sp_activities" />
@@ -214,9 +216,9 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginLeft="@dimen/create_form_padding"
+        android:layout_marginStart="@dimen/create_form_padding"
+        android:layout_marginTop="@dimen/margin_top"
         android:text="@string/mood_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sp_appealing" />

@@ -43,7 +43,7 @@
 
         <service
             android:name=".service.ChartIntentService"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity android:name=".EditCategoryActivity"></activity>
     </application>

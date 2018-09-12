@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,11 +23,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -37,7 +34,6 @@ import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.ActivityRecordAdapter;
 import com.sassaworks.senseplanner.adapter.ActivityViewHolder;
 import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
-import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.data.Appealing;
 import com.sassaworks.senseplanner.data.Category;
@@ -47,7 +43,6 @@ import com.sassaworks.senseplanner.data.HeaderRecord;
 import com.sassaworks.senseplanner.data.Mood;
 import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -108,8 +103,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
      */
     // TODO: Rename and change types and number of parameters
     public static EventsFragment newInstance() {
-        EventsFragment fragment = new EventsFragment();
-        return fragment;
+        return new EventsFragment();
     }
 
     public static EventsFragment newInstance(long timestampS, long timestampF) {
@@ -163,7 +157,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
 
     public void loadActivitiesList()
     {
-        DatabaseReference referActivities = db.getReference().child("planner").child(user.getUid()).child("activities");
+        DatabaseReference referActivities = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_activities));
         activitiesList = new ArrayList<>();
         activitiesList.add(getString(R.string.all_types));
         RxFirebaseDatabase.observeSingleValueEvent(referActivities, DataSnapshotMapper.listOf(com.sassaworks.senseplanner.data.Activity.class))
@@ -200,7 +194,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         Calendar calendar = Calendar.getInstance();
 //        user = FirebaseAuth.getInstance().getCurrentUser();
 //        db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference("planner").child(user.getUid()).child("activity_records");
+        DatabaseReference ref = db.getReference(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.activity_records));
         Query queryEvents = ref.orderByChild("timestamp");
         if (mDateS==0 && mDateF==0)
         {
@@ -299,9 +293,9 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
 
 
         DatabaseReference ref = db.getReference();
-        DatabaseReference statRef = ref.child("daystatistics").child(user.getUid()).child(sdf);
-        DatabaseReference referAppealing = ref.child("planner").child(user.getUid()).child("appealing");
-        DatabaseReference referMood = ref.child("planner").child(user.getUid()).child("mood");
+        DatabaseReference statRef = ref.child(getString(R.string.ref_daystatistics)).child(user.getUid()).child(sdf);
+        DatabaseReference referAppealing = ref.child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_appealing));
+        DatabaseReference referMood = ref.child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_mood));
 
 
         FirebaseDatabaseHelper fbh = new FirebaseDatabaseHelper(statRef);
@@ -327,7 +321,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
 
     @Override
     public void onRemoveStatisticsLoaded(DayStatistics ds) {
-        DatabaseReference ref1 = db.getReference("planner").child(user.getUid()).child("activity_records").child(selectedRecord.getKey());
+        DatabaseReference ref1 = db.getReference(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.activity_records)).child(selectedRecord.getKey());
         ref1.removeValue();
     }
 

@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,7 +19,6 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -30,17 +28,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.sassaworks.senseplanner.MainActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.CategoriesAdapter;
 import com.sassaworks.senseplanner.adapter.SectionsPageAdapter;
-import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.data.Appealing;
 import com.sassaworks.senseplanner.data.Category;
 import com.sassaworks.senseplanner.data.Mood;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -139,7 +134,7 @@ public class DailyChartFragment extends Fragment {
 
         db = FirebaseDatabase.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        baseRef = db.getReference("planner").child(user.getUid());
+        baseRef = db.getReference(getString(R.string.ref_planner)).child(user.getUid());
 
         mDateS.setOnClickListener(onDateClickListener);
         mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
@@ -155,10 +150,6 @@ public class DailyChartFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
-        super.onInflate(context, attrs, savedInstanceState);
-    }
 
     public AdapterView.OnItemSelectedListener onChartItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -235,21 +226,13 @@ public class DailyChartFragment extends Fragment {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-//            if (mAppealingRadio.isChecked())
-//            {
-//                selectedType = "appealing";
-//            }
-//            else if (mMoodRadio.isChecked())
-//            {
-//                selectedType = "mood";
-//            }
             GetDataDailyChart();
         }
     };
 
     private void LoadDailyChart() {
 
-        DatabaseReference referActivities = db.getReference().child("planner").child(user.getUid()).child("activities");
+        DatabaseReference referActivities = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_activities));
         mActivityType.setOnItemSelectedListener(onActivityItemSelected);
         activitiesList = new ArrayList<>();
         activitiesList.add(getString(R.string.all_types));
@@ -296,7 +279,6 @@ public class DailyChartFragment extends Fragment {
         else {
             cS.set(cS.get(Calendar.YEAR),cS.get(Calendar.MONTH),cS.get(Calendar.DAY_OF_MONTH));
 
-            //cF.set(cF.get(Calendar.YEAR),cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH));
             mYear = cS.get(Calendar.YEAR);
             mMonth = cS.get(Calendar.MONTH);
             mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
@@ -309,7 +291,7 @@ public class DailyChartFragment extends Fragment {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
-        Query query = baseRef.child("activity_records").orderByChild("formattedDate")
+        Query query = baseRef.child(getString(R.string.activity_records)).orderByChild("formattedDate")
                 .equalTo(sdf.format(cS.getTime()));
 
         eventsList = new ArrayList<>();
@@ -327,8 +309,8 @@ public class DailyChartFragment extends Fragment {
     }
 
     private void loadMoodAddictionData() {
-        Query referAppealing = db.getReference().child("planner").child(user.getUid()).child("appealing").orderByChild("numValue");
-        Query referMood = db.getReference().child("planner").child(user.getUid()).child("mood").orderByChild("numValue");
+        Query referAppealing = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_appealing)).orderByChild("numValue");
+        Query referMood = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_mood)).orderByChild("numValue");
 
         RxFirebaseDatabase.observeSingleValueEvent(referMood, DataSnapshotMapper.listOf(Mood.class))
                 .concatMap(mood->{

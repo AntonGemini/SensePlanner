@@ -3,14 +3,13 @@ package com.sassaworks.senseplanner.service;
 import android.app.IntentService;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.View;
 
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -27,7 +26,11 @@ import com.sassaworks.senseplanner.data.Mood;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,8 +50,6 @@ public class ChartIntentService extends IntentService {
     private static final String ACTION_GET_CHART = "com.sassaworks.senseplanner.service.action.GET_CHART";
 
     // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.sassaworks.senseplanner.service.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.sassaworks.senseplanner.service.extra.PARAM2";
     private FirebaseDatabase db;
     private FirebaseUser user;
     private DatabaseReference baseRef;
@@ -71,8 +72,6 @@ public class ChartIntentService extends IntentService {
     public static void startActionGetChart(Context context) {
         Intent intent = new Intent(context, ChartIntentService.class);
         intent.setAction(ACTION_GET_CHART);
-//        intent.putExtra(EXTRA_PARAM1, param1);
-//        intent.putExtra(EXTRA_PARAM2, param2);
         context.startService(intent);
     }
 
@@ -82,29 +81,14 @@ public class ChartIntentService extends IntentService {
      *
      * @see IntentService
      */
-    // TODO: Customize helper method
-//    public static void startActionBaz(Context context, String param1, String param2) {
-//        Intent intent = new Intent(context, MyIntentService.class);
-//        intent.setAction(ACTION_BAZ);
-//        intent.putExtra(EXTRA_PARAM1, param1);
-//        intent.putExtra(EXTRA_PARAM2, param2);
-//        context.startService(intent);
-//    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_GET_CHART.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
+                handleActionFoo();
             }
-//            else if (ACTION_BAZ.equals(action)) {
-//                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-//                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-//                handleActionBaz(param1, param2);
-//            }
         }
     }
 
@@ -112,7 +96,7 @@ public class ChartIntentService extends IntentService {
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo(String param1, String param2) {
+    private void handleActionFoo() {
         db = FirebaseDatabase.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         baseRef = db.getReference("planner").child(user.getUid());
@@ -143,8 +127,9 @@ public class ChartIntentService extends IntentService {
     }
 
     private void LoadDailyChart() {
-        Map<String,Float> chartValues = new HashMap<>();
+        Map<String,Float> chartValues = new LinkedHashMap<>();
         float total = 0;
+        moodMap = sortHashByValue(moodMap);
         for (Map.Entry<String, Integer> entry : moodMap.entrySet())  {
             chartValues.put(entry.getKey(),0f);
             for (ActivityRecord event : eventsList)
@@ -171,11 +156,7 @@ public class ChartIntentService extends IntentService {
         dataSet.setColors(new int[] { R.color.Bad, R.color.Average, R.color.High }, getApplicationContext());
         PieData data = new PieData(dataSet);
         mChart.setData(data);
-//        PieChart.LayoutParams parms = new BarChart.LayoutParams(300, 200);
-//        mChart.setLayoutParams(parms);
-//        mChart.setMinimumWidth(300);
-//        mChart.setMinimumHeight(200);
-//        mChart.getViewPortHandler().setChartDimens(300, 200);
+
         mChart.measure(View.MeasureSpec.makeMeasureSpec(400,View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(555,View.MeasureSpec.EXACTLY));
         mChart.layout(0, 0, mChart.getMeasuredWidth(), mChart.getMeasuredHeight());
@@ -199,9 +180,20 @@ public class ChartIntentService extends IntentService {
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    public HashMap<String,Integer> sortHashByValue(Map<String,Integer> hash) {
+        List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(hash.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+        HashMap<String, Integer> sortedHash = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedHash.put(entry.getKey(), entry.getValue());
+        }
+        return sortedHash;
     }
 
     AsyncTask<Void,Void,PieChart> chartTask = new AsyncTask<Void, Void, PieChart>() {
