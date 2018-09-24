@@ -33,6 +33,7 @@
     <!-- TODO: Update blank fragment layout -->
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendar"
+        android:background="@color/rv_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/dimen_margin_30"

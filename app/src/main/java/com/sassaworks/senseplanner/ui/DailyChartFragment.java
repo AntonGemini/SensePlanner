@@ -90,6 +90,8 @@ public class DailyChartFragment extends Fragment {
     private long mStartTimeInMillis = 0;
     private int mCategoryPosition;
 
+    private ChartFragment.OnChartNameSelected mCallback;
+
 
     public DailyChartFragment() {
         // Required empty public constructor
@@ -102,10 +104,10 @@ public class DailyChartFragment extends Fragment {
      * @return A new instance of fragment DailyChartFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DailyChartFragment newInstance(SectionsPageAdapter.nextFragmentListener listener) {
+    public static DailyChartFragment newInstance() {
         DailyChartFragment fragment = new DailyChartFragment();
         Bundle args = new Bundle();
-        chartListener = listener;
+        //chartListener = listener;
         fragment.setArguments(args);
         return fragment;
     }
@@ -113,9 +115,6 @@ public class DailyChartFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -150,6 +149,18 @@ public class DailyChartFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallback = (ChartFragment.OnChartNameSelected)context;
+        } catch(ClassCastException ex)
+        {
+            throw new ClassCastException(context.toString());
+        }
+
+    }
+
 
     public AdapterView.OnItemSelectedListener onChartItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -157,9 +168,11 @@ public class DailyChartFragment extends Fragment {
             if (view != null) {
                 String selectedMenu = ((TextView) view).getText().toString();
                 if (selectedMenu == getString(R.string.best_appealing_chart)) {
-                    chartListener.fragment0Changed("Chart");
+                    mCallback.onChartNameSelected("Chart");
+                    //chartListener.fragment0Changed("Chart", getActivity().getSupportFragmentManager());
                 } else if (selectedMenu == getString(R.string.hour_chart)) {
-                    chartListener.fragment0Changed("Hour");
+                    mCallback.onChartNameSelected("Hour");
+                    //chartListener.fragment0Changed("Hour", getActivity().getSupportFragmentManager());
                 }
                 else
                 {

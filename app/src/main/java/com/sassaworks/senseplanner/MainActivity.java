@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,10 +35,11 @@ import com.sassaworks.senseplanner.adapter.SectionsPageAdapter;
 import com.sassaworks.senseplanner.data.Activity;
 import com.sassaworks.senseplanner.ui.ActivityTypeFragment;
 import com.sassaworks.senseplanner.ui.CalendarFragment;
+import com.sassaworks.senseplanner.ui.ChartFragment;
 
 public class MainActivity extends AppCompatActivity
         implements ActivityTypeFragment.OnListFragmentInteractionListener,
-        CalendarFragment.OnFragmentInteractionListener
+        CalendarFragment.OnFragmentInteractionListener, ChartFragment.OnChartNameSelected
     {
 
     /**
@@ -58,6 +61,8 @@ public class MainActivity extends AppCompatActivity
 
     public static final String ACTIVITY_EXTRA = "activity";
 
+    public static SectionsPageAdapter.nextFragmentListener chartListener;
+
 
 
 
@@ -69,11 +74,17 @@ public class MainActivity extends AppCompatActivity
         checkConnection(this);
 
 
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPageAdapter(getSupportFragmentManager(),this);
+        String lastFrag = "";
+        if (savedInstanceState!=null)
+        {
+            lastFrag = savedInstanceState.getString("SAVED_FRAGMENT");
+        }
+        mSectionsPagerAdapter = new SectionsPageAdapter(getSupportFragmentManager(), this, lastFrag);
+        chartListener = mSectionsPagerAdapter.listener;
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.container);
@@ -86,6 +97,7 @@ public class MainActivity extends AppCompatActivity
         mAdBanner = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdBanner.loadAd(adRequest);
+
     }
 
 
@@ -179,4 +191,22 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-}
+        @Override
+        protected void onSaveInstanceState(Bundle outState) {
+            super.onSaveInstanceState(outState);
+            String fragName = mSectionsPagerAdapter.getFragmentName();
+            outState.putString("SAVED_FRAGMENT",fragName);
+            Log.d("MainActivity7","saveInstance");
+        }
+
+        @Override
+        protected void onPostResume() {
+            super.onPostResume();
+            Log.d("MainActivity7","postResume");
+        }
+
+        @Override
+        public void onChartNameSelected(String chartName) {
+            chartListener.fragment0Changed(chartName,getSupportFragmentManager());
+        }
+    }

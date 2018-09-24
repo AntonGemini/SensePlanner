@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/item_record"
+    >
+<android.support.v7.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    tools:cardCornerRadius="30dp"
+    android:elevation="8dp"
+    >
+<android.support.constraint.ConstraintLayout
+    android:paddingBottom="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tv_full_description"
@@ -19,11 +34,13 @@
         android:id="@+id/tv_catLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginLeft="@dimen/appbar_padding_top"
         android:layout_marginStart="@dimen/appbar_padding_top"
         android:layout_marginTop="@dimen/double_padding_top"
+        android:text="@string/cat_label_prefix"
         android:textStyle="bold"
-        android:text="Cat:"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_full_description" />
 
@@ -63,6 +80,7 @@
         android:layout_height="@dimen/indicator_radius"
         android:layout_marginLeft="@dimen/appbar_padding_top"
         android:layout_marginStart="@dimen/appbar_padding_top"
+        android:paddingBottom="8dp"
         android:background="@drawable/shape_circle"
         app:layout_constraintBottom_toTopOf="@+id/tv_mood"
         app:layout_constraintStart_toEndOf="@+id/tv_mood"
@@ -111,3 +129,5 @@
 
 
 </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>
+</LinearLayout>

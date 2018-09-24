@@ -4,7 +4,7 @@
         <item>Home</item>
         <item>Activities</item>
         <item>Calendar</item>
-        <item>Charts</item>
+        <item>Сharts</item>
     </string-array>
     <string-array name="charts_name">
         <item>@string/best_appealing_chart</item>

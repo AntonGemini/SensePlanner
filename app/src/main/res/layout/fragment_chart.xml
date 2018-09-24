@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll_chart"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.constraint.ConstraintLayout
@@ -29,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/create_form_padding"
             android:layout_marginStart="@dimen/create_form_padding"
-            android:layout_marginTop="@dimen/appbar_padding_top"
+            android:layout_marginTop="12dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sp_chartName">
 
@@ -49,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/create_form_padding"
             android:layout_marginStart="@dimen/create_form_padding"
-            android:layout_marginTop="@dimen/appbar_padding_top"
+            android:layout_marginTop="12dp"
             app:layout_constraintStart_toEndOf="@+id/et_dateS_layout"
             app:layout_constraintTop_toBottomOf="@+id/sp_chartName">
 
@@ -70,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/create_form_padding"
             android:layout_marginStart="@dimen/create_form_padding"
-            android:layout_marginTop="@dimen/double_padding_top"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toEndOf="@+id/et_dateF_layout"
             app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
@@ -80,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/create_form_padding"
             android:layout_marginStart="@dimen/create_form_padding"
-            android:layout_marginTop="@dimen/double_padding_top"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toEndOf="@+id/sp_appealing"
             app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
@@ -114,6 +115,7 @@
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/chart"
+                android:background="@color/rv_background"
                 android:layout_marginTop="@dimen/create_form_padding"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

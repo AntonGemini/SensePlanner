@@ -4,6 +4,11 @@ package com.sassaworks.senseplanner.ui;
 import android.app.DatePickerDialog;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -13,6 +18,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -192,8 +199,6 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private void loadEventsData()
     {
         Calendar calendar = Calendar.getInstance();
-//        user = FirebaseAuth.getInstance().getCurrentUser();
-//        db = FirebaseDatabase.getInstance();
         DatabaseReference ref = db.getReference(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.activity_records));
         Query queryEvents = ref.orderByChild("timestamp");
         if (mDateS==0 && mDateF==0)
@@ -242,9 +247,11 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         mEventRecyclerView.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         mEventRecyclerView.setLayoutManager(layoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mEventRecyclerView.getContext(),
-                ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).getOrientation());
+        LinearSpacingItemDecoration dividerItemDecoration = new LinearSpacingItemDecoration();
         mEventRecyclerView.addItemDecoration(dividerItemDecoration);
+//
+//          ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).getOrientation());
+//        mEventRecyclerView.addItemDecoration(dividerItemDecoration);
         if (adapterPosition != -1)
             mEventRecyclerView.getLayoutManager().scrollToPosition(adapterPosition);
     }
@@ -389,7 +396,60 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         }
         outState.putLong(START_DATE,mDateS);
         outState.putLong(FINAL_DATE,mDateF);
+    }
 
+    public class LinearSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private final Paint mPaint = new Paint();
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            View recordItem = view.findViewById(R.id.item_record);
+            View headerItem = view.findViewById(R.id.item_header);
+
+            mPaint.setColor(Color.DKGRAY);
+            float thickness = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,1f,
+                    getContext().getResources().getDisplayMetrics());
+            mPaint.setStrokeWidth(thickness);
+            if (recordItem!=null)
+            {
+                outRect.bottom = (int)(mPaint.getStrokeWidth() + 2f);
+//                outRect.top = (int)(mPaint.getStrokeWidth() + 10f);
+            }
+            else if (headerItem != null) {
+                outRect.top = (int)(mPaint.getStrokeWidth() + 20f);
+            }
+        }
+
+        @Override
+        public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+            super.onDraw(c, parent, state);
+//            c.save();
+//            int left = parent.getPaddingLeft();
+//            int right = parent.getWidth() - parent.getPaddingRight();
+            int childCount = parent.getChildCount();
+
+            for (int i = 0; i < childCount; i++)
+            {
+                final View childView = parent.getChildAt(i);
+                View currentItem = childView.findViewById(R.id.item_record);
+
+                if (currentItem != null) {
+//                    c.drawLine(childView.getLeft(), childView.getBottom(),
+//                            childView.getRight(), childView.getBottom(), mPaint);
+//                    c.drawLine(childView.getLeft(), childView.getTop(),
+//                            childView.getRight(), childView.getTop(), mPaint);
+//                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+//                            ViewGroup.LayoutParams.WRAP_CONTENT);
+//                    int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,8,
+//                            getContext().getResources().getDisplayMetrics());
+//                    params.setMargins(0,px,0,px);
+                    //childView.setLayoutParams(params);
+                }
+            }
+
+        }
     }
 
 }

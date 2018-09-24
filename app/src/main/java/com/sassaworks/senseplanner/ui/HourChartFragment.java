@@ -2,6 +2,7 @@ package com.sassaworks.senseplanner.ui;
 
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -61,8 +62,8 @@ import durdinapps.rxfirebase2.RxFirebaseDatabase;
 public class HourChartFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String START_DATE = "start_date";
-    private static final String FINISH_DATE = "finish_date";
+    private static final String START_DATE = "start_date1";
+    private static final String FINISH_DATE = "finish_date1";
     private static final String CATEGORY_POSITION = "cat_position";
     private static final String SELECTED_CATEGORY = "selected_category";
 
@@ -86,7 +87,7 @@ public class HourChartFragment extends Fragment {
     @BindView(R.id.sp_categories) Spinner mActivityType;
     @BindView(R.id.rb_appealing) RadioButton mAppealingRadio;
     @BindView(R.id.rb_mood) RadioButton mMoodRadio;
-    @BindView(R.id.et_dateS) EditText mDateS;
+    @BindView(R.id.et_dateS1) EditText mDateS;
     @BindView(R.id.chart) BarChart mChart;
 
     public static SectionsPageAdapter.nextFragmentListener chartListener;
@@ -94,6 +95,8 @@ public class HourChartFragment extends Fragment {
     private long mStartTimeInMillis = 0;
     private long mFinishTimeInMillis = 0;
     private int mCategoryPosition;
+
+    private ChartFragment.OnChartNameSelected mCallback;
 
 
     public HourChartFragment() {
@@ -107,19 +110,17 @@ public class HourChartFragment extends Fragment {
      * @return A new instance of fragment HourChartFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HourChartFragment newInstance(SectionsPageAdapter.nextFragmentListener listener) {
+    public static HourChartFragment newInstance() {
         HourChartFragment fragment = new HourChartFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
-        chartListener = listener;
+        //chartListener = listener;
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
     }
 
     @Override
@@ -156,6 +157,18 @@ public class HourChartFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallback = (ChartFragment.OnChartNameSelected)context;
+        } catch(ClassCastException ex)
+        {
+            throw new ClassCastException(context.toString());
+        }
+
+    }
+
 
     public AdapterView.OnItemSelectedListener onChartItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -163,12 +176,14 @@ public class HourChartFragment extends Fragment {
             if (view != null) {
                 String selectedMenu = ((TextView) view).getText().toString();
                 if (selectedMenu == getString(R.string.best_appealing_chart)) {
-                    chartListener.fragment0Changed("Chart");
+                    mCallback.onChartNameSelected("Chart");
+                    //chartListener.fragment0Changed("Chart", getActivity().getSupportFragmentManager());
                 } else if (selectedMenu == getString(R.string.hour_chart)) {
                     LoadHourChart();
                 }
                 else {
-                    chartListener.fragment0Changed("Daily");
+                    mCallback.onChartNameSelected("Daily");
+                    //chartListener.fragment0Changed("Daily", getActivity().getSupportFragmentManager());
                 }
             }
         }
@@ -493,4 +508,9 @@ public class HourChartFragment extends Fragment {
         outState.putString(SELECTED_CATEGORY,selectedCategory);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //getActivity().getSupportFragmentManager().popBackStackImmediate();
+    }
 }

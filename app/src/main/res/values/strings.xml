@@ -87,5 +87,17 @@
     <string name="event_desc">Event description</string>
     <string name="hint_1_label">Tap category to begin</string>
 
+    <string name="widget_label">Please, select date that daily chart will show your mood for!</string>
+    <string name="widget_date">Enter date</string>
+    <string name="widget_button">Get widget</string>
+
+    <string name="cat_label_prefix">Cat:</string>
+
+    <string name="desc_add_category">Add category button</string>
+    <string name="desc_show_add_buttons">Show add event buttons</string>
+    <string name="desc_today_event">Add event for today</string>
+    <string name="desc_yesterday_event">Add event for yesterday</string>
+    <string name="desc_tomorrow_event">Add event for tomorrow</string>
+
 
 </resources>

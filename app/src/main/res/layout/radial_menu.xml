@@ -13,6 +13,7 @@
         android:layout_marginEnd="@dimen/dimen_margin_30"
         android:layout_marginRight="@dimen/dimen_margin_30"
         android:layout_gravity="bottom|end"
+        android:contentDescription="@string/desc_show_add_buttons"
         android:clickable="true"
         app:srcCompat="@drawable/ic_add_event"
         android:focusable="true" />
@@ -47,7 +48,7 @@
             android:layout_gravity="center"
             android:clickable="true"
             app:backgroundTint="@color/colorPrimary"
-
+            android:contentDescription="@string/desc_yesterday_event"
             app:srcCompat="@drawable/ic_add_yesterday"
             android:focusable="true" />
     </LinearLayout>
@@ -75,6 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:clickable="true"
+        android:contentDescription="@string/desc_today_event"
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@drawable/ic_action_name"
         android:focusable="true" />
@@ -107,6 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:clickable="true"
+            android:contentDescription="@string/desc_tomorrow_event"
             app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_add_tomorrow"
             android:focusable="true" />

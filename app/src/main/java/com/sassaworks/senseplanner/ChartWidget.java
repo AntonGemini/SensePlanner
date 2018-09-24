@@ -4,9 +4,12 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import com.sassaworks.senseplanner.service.ChartIntentService;
+
+import static com.sassaworks.senseplanner.ConfigChartWidgetActivity.PREF_PREFIX_KEY;
 
 /**
  * Implementation of App Widget functionality.
@@ -27,7 +30,11 @@ public class ChartWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
-        ChartIntentService.startActionGetChart(context);
+        for (int mAppWidgetId : appWidgetIds) {
+            long chartDate =  PreferenceManager.getDefaultSharedPreferences(context).getLong(PREF_PREFIX_KEY + " " + mAppWidgetId,0);
+            ChartIntentService.startActionGetChart(context, chartDate);
+        }
+
 
     }
 
@@ -47,6 +54,13 @@ public class ChartWidget extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         // Enter relevant functionality for when the last widget is disabled
+    }
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        for (int appWidgetId : appWidgetIds) {
+            ConfigChartWidgetActivity.deleteTitlePref(context, appWidgetId);
+        }
     }
 }
 

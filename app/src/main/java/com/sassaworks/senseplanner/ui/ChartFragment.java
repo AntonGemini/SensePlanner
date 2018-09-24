@@ -2,8 +2,10 @@ package com.sassaworks.senseplanner.ui;
 
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +54,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
+import android.util.Log;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -97,6 +100,11 @@ public class ChartFragment extends Fragment {
     private long mFinishTimeInMillis = 0;
     private int mAddictionPosition;
     private int mMoodPosition;
+    private OnChartNameSelected mCallback;
+
+    public interface OnChartNameSelected{
+        public void onChartNameSelected(String chartName);
+    }
 
     public ChartFragment() {
         // Required empty public constructor
@@ -109,8 +117,8 @@ public class ChartFragment extends Fragment {
      * @return A new instance of fragment ChartFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ChartFragment newInstance(SectionsPageAdapter.nextFragmentListener listener) {
-        chartListener = listener;
+    public static ChartFragment newInstance() {
+        //chartListener = listener;
         ChartFragment fragment = new ChartFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -120,9 +128,6 @@ public class ChartFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -159,9 +164,22 @@ public class ChartFragment extends Fragment {
         mTypeGroup.setOnCheckedChangeListener(onCheckedListener);
 
         isDrawing = true;
+        Log.d("MainActivity7","click binded");
+
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallback = (OnChartNameSelected)context;
+        } catch(ClassCastException ex)
+        {
+            throw new ClassCastException(context.toString());
+        }
+
+    }
 
     public AdapterView.OnItemSelectedListener onChartItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -171,11 +189,13 @@ public class ChartFragment extends Fragment {
                 if (selectedMenu == getString(R.string.best_appealing_chart)) {
                     LoadBestAppealingChart();
                 } else if (selectedMenu == getString(R.string.hour_chart)) {
-                    chartListener.fragment0Changed("Hour");
+                    mCallback.onChartNameSelected("Hour");
+                    //chartListener.fragment0Changed("Hour", getActivity().getSupportFragmentManager());
                 }
                 else
                 {
-                    chartListener.fragment0Changed("Daily");
+                    mCallback.onChartNameSelected("Daily");
+                    //chartListener.fragment0Changed("Daily", getActivity().getSupportFragmentManager());
                 }
             }
             else {
@@ -570,4 +590,5 @@ public class ChartFragment extends Fragment {
         }
         outState.putString(SELECTED_CATEGORY,selectedCategory);
     }
+
 }

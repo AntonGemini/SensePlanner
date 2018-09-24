@@ -24,6 +24,7 @@ import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.data.ActivityRecord;
 import com.sassaworks.senseplanner.data.Mood;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -36,6 +37,7 @@ import java.util.Map;
 
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
+import okhttp3.internal.connection.StreamAllocation;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -48,6 +50,7 @@ public class ChartIntentService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_GET_CHART = "com.sassaworks.senseplanner.service.action.GET_CHART";
+    private static final String CHART_DATE = "chart_date";
 
     // TODO: Rename parameters
     private FirebaseDatabase db;
@@ -69,8 +72,9 @@ public class ChartIntentService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionGetChart(Context context) {
+    public static void startActionGetChart(Context context, Long chartDate) {
         Intent intent = new Intent(context, ChartIntentService.class);
+        intent.putExtra(CHART_DATE,chartDate);
         intent.setAction(ACTION_GET_CHART);
         context.startService(intent);
     }
@@ -87,7 +91,7 @@ public class ChartIntentService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_GET_CHART.equals(action)) {
-                handleActionFoo();
+                handleActionFoo(intent.getLongExtra(CHART_DATE,0));
             }
         }
     }
@@ -96,16 +100,19 @@ public class ChartIntentService extends IntentService {
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo() {
+    private void handleActionFoo(long chartDate) {
+
+
         db = FirebaseDatabase.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        baseRef = db.getReference("planner").child(user.getUid());
+        baseRef = db.getReference(getString(R.string.ref_planner)).child(user.getUid());
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH,-7);
-        //SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        Query query = baseRef.child("activity_records").orderByChild("timestamp")
-                .startAt(calendar.getTimeInMillis());
+        calendar.setTimeInMillis(chartDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+        Query query = baseRef.child("activity_records").orderByChild("formattedDate")
+                .equalTo(sdf.format(calendar.getTime()));
         DatabaseReference refMood = baseRef.child("mood");
         eventsList = new ArrayList<>();
         RxFirebaseDatabase.observeSingleValueEvent(query, DataSnapshotMapper.listOf(ActivityRecord.class))

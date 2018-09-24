@@ -56,7 +56,7 @@ public class ActivityTypeFragment extends Fragment {
 
     @BindView(R.id.list) RecyclerView recyclerView;
     @BindView(R.id.fabAddCategory) FloatingActionButton mAddButton;
-
+    @BindView(R.id.tv_welcome_text) TextView mIntroText;
 
 
 
@@ -106,10 +106,12 @@ public class ActivityTypeFragment extends Fragment {
         if (mOpenMode == READ_MODE)
         {
             mAddButton.setVisibility(View.GONE);
+            mIntroText.setVisibility(View.VISIBLE);
         }
         else
         {
             mAddButton.setVisibility(View.VISIBLE);
+            mIntroText.setVisibility(View.GONE);
         }
 
         Context context = view.getContext();
