@@ -54,19 +54,37 @@ public class ActivityViewHolder extends BaseViewHolder {
                 time,timeF,activityRecord.getDesciption()));
 
         mCategoryText.setText(activityRecord.getCategory());
-        Drawable moodDrawable = context.getResources().getDrawable(R.drawable.shape_circle);
-        Drawable appealingDrawable = context.getResources().getDrawable(R.drawable.shape_circle);
+        Drawable moodDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_satisfied_24px);
+        Drawable appealingDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_satisfied_24px);
 
-        GradientDrawable colorDrawable = (GradientDrawable)moodDrawable;
-        GradientDrawable colorAppealingDrawable = (GradientDrawable)appealingDrawable;
+        if (activityRecord.getMoodType().equals(context.getString(R.string.lb_bad))
+                || activityRecord.getMoodType().equals(context.getString(R.string.lb_low)))
+        {
+            moodDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_dissatisfied_24px);
+        }
+        else if (activityRecord.getMoodType().equals(context.getString(R.string.lb_good)))
+        {
+            moodDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_satisfied_24px);
+        }
+        if (activityRecord.getJobAddiction().equals(context.getString(R.string.lb_bad))
+                || activityRecord.getJobAddiction().equals(context.getString(R.string.lb_low)))
+        {
+            appealingDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_dissatisfied_24px);
+        }
+        else if (activityRecord.getJobAddiction().equals(context.getString(R.string.lb_high)))
+        {
+            appealingDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_satisfied_24px);
+        }
+//        GradientDrawable colorDrawable = (GradientDrawable)moodDrawable;
+//        GradientDrawable colorAppealingDrawable = (GradientDrawable)appealingDrawable;
 
-        int resId = context.getResources().getIdentifier(activityRecord.getMoodType(),"color",context.getPackageName());
-        colorDrawable.setColor(context.getResources().getColor(resId));
-        mMoodColor.setBackground(colorDrawable);
+//        int resId = context.getResources().getIdentifier(activityRecord.getMoodType(),"color",context.getPackageName());
+//        colorDrawable.setColor(context.getResources().getColor(resId));
+        mMoodColor.setBackground(moodDrawable);
 
-        resId = context.getResources().getIdentifier(activityRecord.getJobAddiction(),"color",context.getPackageName());
-        colorAppealingDrawable.setColor(context.getResources().getColor(resId));
-        mAppealingColor.setBackground(colorAppealingDrawable);
+//        resId = context.getResources().getIdentifier(activityRecord.getJobAddiction(),"color",context.getPackageName());
+//        colorAppealingDrawable.setColor(context.getResources().getColor(resId));
+        mAppealingColor.setBackground(appealingDrawable);
 
         mMoreImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +94,7 @@ public class ActivityViewHolder extends BaseViewHolder {
         });
 
     }
+
 
 
 }

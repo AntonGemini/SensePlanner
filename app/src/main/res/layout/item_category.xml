@@ -7,7 +7,7 @@
         android:id="@+id/item_tv_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/margin_top"
+        android:padding="@dimen/appbar_padding_top"
         android:textSize="@dimen/item_text_height"/>
 
 </android.support.constraint.ConstraintLayout>

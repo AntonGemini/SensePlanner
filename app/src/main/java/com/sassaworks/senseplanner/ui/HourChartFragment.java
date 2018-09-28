@@ -27,7 +27,10 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -442,6 +445,7 @@ public class HourChartFragment extends Fragment {
         }
         BarDataSet dataSet = new BarDataSet(barEntries,"Type");
         dataSet.setColors(new int[] { R.color.Bad, R.color.Average, R.color.High }, getActivity());
+        dataSet.setValueFormatter(labelFormatter);
 
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.5f);
@@ -513,4 +517,12 @@ public class HourChartFragment extends Fragment {
         super.onResume();
         //getActivity().getSupportFragmentManager().popBackStackImmediate();
     }
+
+    IValueFormatter labelFormatter = new IValueFormatter() {
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return String.valueOf((int)value);
+        }
+    };
 }

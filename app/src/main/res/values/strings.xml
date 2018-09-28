@@ -25,9 +25,9 @@
     <string name="time_format">%1$s:%2$s</string>
 
     <!--Chart names-->
-    <string name="best_appealing_chart">Best appealing/mood chart</string>
-    <string name="hour_chart">By hour chart</string>
-    <string name="dayily_chart">Total daily chart</string>
+    <string name="best_appealing_chart">Your appealing/mood chart</string>
+    <string name="hour_chart">10 days by hour chart</string>
+    <string name="dayily_chart">Activities daily chart</string>
 
     <string name="all_types">All</string>
     <string name="appwidget_text">EXAMPLE</string>
@@ -67,7 +67,7 @@
     <string name="lb_bad">Bad</string>
     <string name="lb_average">Average</string>
     <string name="lb_high">High</string>
-
+    <string name="lb_good">Good</string>
     <string name="menu_record_desc">Options menu</string>
     <string name="widget_image">Chart image</string>
     <string name="appealing_str">By appealing</string>
@@ -75,6 +75,8 @@
     <string name="start_date_hint">Start date</string>
     <string name="start_time_hint">Start time</string>
     <string name="notify_lbl">Notify</string>
+    <string name="start_date_hint_hour">Starting date</string>
+    <string name="start_date_hint_daily">Show for</string>
 
     <string name="finish_date_hint">Finish date</string>
     <string name="finish_time_hint">Finish time</string>
@@ -98,6 +100,9 @@
     <string name="desc_today_event">Add event for today</string>
     <string name="desc_yesterday_event">Add event for yesterday</string>
     <string name="desc_tomorrow_event">Add event for tomorrow</string>
+
+    <string name="activities_label">Activities:</string>
+    <string name="empty_chart_text">No records for today</string>
 
 
 </resources>

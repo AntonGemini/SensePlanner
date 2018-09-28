@@ -26,8 +26,11 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -162,9 +165,7 @@ public class ChartFragment extends Fragment {
 
 
         mTypeGroup.setOnCheckedChangeListener(onCheckedListener);
-
         isDrawing = true;
-        Log.d("MainActivity7","click binded");
 
         return view;
     }
@@ -450,6 +451,7 @@ public class ChartFragment extends Fragment {
         }
         BarDataSet dataSet = new BarDataSet(barEntries,"Categories");
         dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+        dataSet.setValueFormatter(labelFormatter);
 
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.5f);
@@ -473,6 +475,7 @@ public class ChartFragment extends Fragment {
         xAxis.setAvoidFirstLastClipping(true);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(formatter);
+
 
         mChart.setDrawGridBackground(false);
         mChart.invalidate();
@@ -571,6 +574,14 @@ public class ChartFragment extends Fragment {
         }
 
         public int getDecimalDigits() {  return 0; }
+    };
+
+    IValueFormatter labelFormatter = new IValueFormatter() {
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return String.valueOf((int)value);
+        }
     };
 
 

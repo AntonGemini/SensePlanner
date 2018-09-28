@@ -20,9 +20,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -124,6 +127,7 @@ public class DailyChartFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_daily_chart, container, false);
         ButterKnife.bind(this,view);
 
+        mChart.setNoDataText(getString(R.string.empty_chart_text));
         ArrayAdapter<CharSequence> chartAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.charts_name,android.R.layout.simple_spinner_item);
         chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -370,6 +374,7 @@ public class DailyChartFragment extends Fragment {
         }
 
         PieDataSet dataSet = new PieDataSet(entries,"Share");
+        dataSet.setValueFormatter(labelFormatter);
         dataSet.setColors(new int[] {R.color.Bad , R.color.Average, R.color.High }, getActivity());
         PieData data = new PieData(dataSet);
         mChart.setData(data);
@@ -400,6 +405,15 @@ public class DailyChartFragment extends Fragment {
         }
         return sortedHash;
     }
+
+
+    IValueFormatter labelFormatter = new IValueFormatter() {
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            return String.valueOf((int)value)+"%";
+        }
+    };
 
 
 

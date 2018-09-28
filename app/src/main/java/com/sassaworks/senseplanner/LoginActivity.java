@@ -15,6 +15,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.sassaworks.senseplanner.data.Activity;
+import com.sassaworks.senseplanner.data.Category;
 import com.sassaworks.senseplanner.data.User;
 
 import java.util.Arrays;
@@ -118,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
         defaultactivities.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //Category category =  dataSnapshot.getValue(Activity.class);
                 planner.child(user.getUid()).child(categoryType).setValue(dataSnapshot.getValue());
             }
 

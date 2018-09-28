@@ -13,8 +13,16 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/create_form_padding"
         android:layout_marginStart="@dimen/create_form_padding"
+        android:layout_marginTop="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_dateS" >
+        <TextView
+            android:id="@+id/textView7"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/activities_label" />
+
         <RadioButton
             android:id="@+id/rb_appealing"
             android:layout_width="wrap_content"
@@ -36,7 +44,7 @@
         android:background="@color/rv_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dimen_margin_30"
+        android:layout_marginTop="45dp"
         />
 
 
@@ -46,6 +54,7 @@
         android:layout_marginBottom="@dimen/radial_margin_bottom"
         android:layout_gravity="bottom|end"
         />
+
 
 
 

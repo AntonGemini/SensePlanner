@@ -202,8 +202,10 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
                 {
                     case START_YESTERDAY:
                         calendar.add(Calendar.DAY_OF_MONTH,-1);
+                        break;
                     case START_TOMORROW:
                         calendar.add(Calendar.DAY_OF_MONTH,1);
+                        break;
                 }
                 mDefaultTimestamp = calendar.getTimeInMillis();
             }

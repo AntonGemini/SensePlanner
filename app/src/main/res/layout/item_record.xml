@@ -81,7 +81,7 @@
         android:layout_marginLeft="@dimen/appbar_padding_top"
         android:layout_marginStart="@dimen/appbar_padding_top"
         android:paddingBottom="8dp"
-        android:background="@drawable/shape_circle"
+        android:background="@drawable/ic_baseline_sentiment_satisfied_24px"
         app:layout_constraintBottom_toTopOf="@+id/tv_mood"
         app:layout_constraintStart_toEndOf="@+id/tv_mood"
         app:layout_constraintTop_toBottomOf="@+id/tv_mood" />

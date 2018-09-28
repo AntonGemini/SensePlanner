@@ -26,6 +26,7 @@ import com.sassaworks.senseplanner.CreateTaskActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.data.DayStatistics;
 import com.sassaworks.senseplanner.decorators.EventDecorator;
+import com.sassaworks.senseplanner.firebaseutils.FIrebaseApp;
 import com.sassaworks.senseplanner.firebaseutils.FirebaseDatabaseHelper;
 
 import java.util.ArrayList;
@@ -123,7 +124,6 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
                     yesterdayLayout.startAnimation(mHideBottomLayout);
                     todayLayout.startAnimation(mHideLayout);
                     tomorrowLayout.startAnimation(mHideTopLayout);
-
                 }
                 else {
                     todayLayout.setVisibility(View.VISIBLE);
@@ -178,11 +178,13 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
 
     private void loadCalendarData()
     {
-        db = FirebaseDatabase.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        refStat = db.getReference(getString(R.string.ref_daystatistics)).child(user.getUid());
-        FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(this);
-        helper.getActivityRecords(refStat);
+        if (FirebaseAuth.getInstance().getCurrentUser()!=null) {
+            db = FirebaseDatabase.getInstance();
+            user = FirebaseAuth.getInstance().getCurrentUser();
+            refStat = db.getReference(getString(R.string.ref_daystatistics)).child(user.getUid());
+            FirebaseDatabaseHelper helper = new FirebaseDatabaseHelper(this);
+            helper.getActivityRecords(refStat);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -226,16 +228,32 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
             //get colour for this type of jobAppealing
             //create an EventDecorator and add it to the calendar
             if (mEvents!=null) {
+                mCalendarView.removeDecorators();
                 mCalendarView.addDecorator(
-                        new EventDecorator(getDaysByType(Float.valueOf(getString(R.string.bound1)),
-                                Float.valueOf(getString(R.string.bound2)), mEvents), getContext(),
-                        new ColorDrawable(getContext().getResources().getColor(R.color.low_mood))));
-                mCalendarView.addDecorator(new EventDecorator(getDaysByType(Float.valueOf(getString(R.string.bound2)),
-                        Float.valueOf(getString(R.string.bound3)), mEvents), getContext(),
-                        new ColorDrawable(getContext().getResources().getColor(R.color.avg_mood))));
-                mCalendarView.addDecorator(new EventDecorator(getDaysByType(Float.valueOf(getString(R.string.bound3)),
-                        Float.valueOf(getString(R.string.bound4)), mEvents), getContext(),
-                        new ColorDrawable(getContext().getResources().getColor(R.color.high_mood))));
+                        new EventDecorator(getDaysByType(Float.valueOf(FIrebaseApp.getInstance().getBaseContext().getApplicationContext().getString(R.string.bound1)),
+                                Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound2)), mEvents),  FIrebaseApp.getInstance().getApplicationContext(),
+                        new ColorDrawable(FIrebaseApp.getInstance().getApplicationContext().getResources().getColor(R.color.low_mood))));
+
+                mCalendarView.addDecorator(new EventDecorator(getDaysByType(Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound2)),
+                        Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound3)), mEvents), FIrebaseApp.getInstance().getApplicationContext(),
+                        new ColorDrawable(FIrebaseApp.getInstance().getApplicationContext().getResources().getColor(R.color.avg_mood))));
+
+                mCalendarView.addDecorator(new EventDecorator(getDaysByType(Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound3)),
+                        Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound4)), mEvents), FIrebaseApp.getInstance().getApplicationContext(),
+                        new ColorDrawable(FIrebaseApp.getInstance().getApplicationContext().getResources().getColor(R.color.high_mood))));
+            }
+        }
+
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser)
+        {
+            if (mCalendarView!= null)
+            {
+                loadCalendarData();
             }
         }
     }
@@ -247,10 +265,10 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
         Calendar calendar = Calendar.getInstance();
         if (upperBound == 3)
         {
-            upperBound = Float.valueOf(getString(R.string.bound5));
+            upperBound = Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound5));
         }
         for (DayStatistics ac :events) {
-            float value = selectedType.equals(getString(R.string.ref_appealing)) ? ac.getAppeal_avg() : ac.getMood_avg();
+            float value = selectedType.equals(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.ref_appealing)) ? ac.getAppeal_avg() : ac.getMood_avg();
             if (value >= lowBound && value < upperBound)
             {
                 calendar.setTimeInMillis(ac.getTimestamp());
