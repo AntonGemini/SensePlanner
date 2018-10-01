@@ -296,6 +296,11 @@ public class HourChartFragment extends Fragment {
     };
 
     private void GetDataHourChart() {
+
+        if (mChart.getBarData()!=null){
+            mChart.getBarData().removeDataSet(0);
+            mChart.invalidate();
+        }
         String order;
         order = "category";
 
@@ -315,13 +320,13 @@ public class HourChartFragment extends Fragment {
         }
         else if (!mDateS.getText().toString().equals(""))
         {
-            cS.set(mYear,mMonth,mDayOfMonth);
-            cF.set(cF.get(Calendar.YEAR)+10,cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH));
+            cS.set(mYear,mMonth,mDayOfMonth,0,0);
+            cF.set(cF.get(Calendar.YEAR)+10,cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH),23,59);
         }
         else {
-            cS.set(cS.get(Calendar.YEAR),cS.get(Calendar.MONTH),cS.get(Calendar.DAY_OF_MONTH));
+            cS.set(cS.get(Calendar.YEAR),cS.get(Calendar.MONTH),cS.get(Calendar.DAY_OF_MONTH), 0,0);
             cS.add(Calendar.DAY_OF_MONTH,-10);
-            cF.set(cF.get(Calendar.YEAR),cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH));
+            cF.set(cF.get(Calendar.YEAR),cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH),23,59);
             mYear = cS.get(Calendar.YEAR);
             mMonth = cS.get(Calendar.MONTH);
             mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
@@ -340,9 +345,10 @@ public class HourChartFragment extends Fragment {
         {
             query = query.equalTo(selectedCategory);
         }
-        eventsList = new ArrayList<>();
+
         RxFirebaseDatabase.observeSingleValueEvent(query,DataSnapshotMapper.listOf(ActivityRecord.class))
                 .subscribe(events -> {
+                    eventsList = new ArrayList<>();
                     for (ActivityRecord ac : events)
                     {
                         if (ac.getTimestamp()>=cS.getTimeInMillis() && ac.getTimestamp()<= cF.getTimeInMillis()) {
@@ -360,7 +366,7 @@ public class HourChartFragment extends Fragment {
         Calendar cl = Calendar.getInstance();
         cl.set(mYear,mMonth,mDayOfMonth);
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 11; i++) {
             lables.put(Float.valueOf(i), sdf.format(cl.getTime()));
             for (ActivityRecord ac : eventsList) {
                 if (ac.getFormattedDate().equals(sdf.format(cl.getTime()))) {
@@ -487,7 +493,7 @@ public class HourChartFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(formatter);
         xAxis.setLabelRotationAngle(-45);
-        xAxis.setLabelCount(10,false);
+        xAxis.setLabelCount(11,false);
 
         mChart.setDrawGridBackground(false);
         mChart.invalidate();

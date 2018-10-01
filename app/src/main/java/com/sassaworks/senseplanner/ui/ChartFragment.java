@@ -86,7 +86,6 @@ public class ChartFragment extends Fragment {
     int mMonthF;
     int mDayOfMonthF;
     String selectedCategory = "";
-    boolean isDrawing = false;
     public static SectionsPageAdapter.nextFragmentListener chartListener;
 
     @BindView(R.id.sp_chartName) Spinner mChartName;
@@ -163,10 +162,7 @@ public class ChartFragment extends Fragment {
             selectedCategory = savedInstanceState.getString(SELECTED_CATEGORY);
         }
 
-
         mTypeGroup.setOnCheckedChangeListener(onCheckedListener);
-        isDrawing = true;
-
         return view;
     }
 
@@ -217,15 +213,13 @@ public class ChartFragment extends Fragment {
     public AdapterView.OnItemSelectedListener onAppealingItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            if (!isDrawing) {
-                if (pos > 0) {
-                    String selection = getKeyByValue(appealingMap, pos);
-                    selectedCategory = selection;
-                } else if (pos == 0) {
-                    selectedCategory = "";
-                }
-                GetDataBestAppealingChart();
+            if (pos > 0) {
+                String selection = getKeyByValue(appealingMap, pos);
+                selectedCategory = selection;
+            } else if (pos == 0) {
+                selectedCategory = "";
             }
+            GetDataBestAppealingChart();
         }
 
         @Override
@@ -238,15 +232,14 @@ public class ChartFragment extends Fragment {
     public AdapterView.OnItemSelectedListener onMoodItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            if (!isDrawing) {
-                if (pos > 0) {
-                    String selection = getKeyByValue(moodMap, pos);
-                    selectedCategory = selection;
-                } else if (pos == 0) {
-                    selectedCategory = "";
-                }
-                GetDataBestAppealingChart();
+            if (pos > 0) {
+                String selection = getKeyByValue(moodMap, pos);
+                selectedCategory = selection;
+            } else if (pos == 0) {
+                selectedCategory = "";
             }
+            GetDataBestAppealingChart();
+
         }
 
         @Override
@@ -275,7 +268,7 @@ public class ChartFragment extends Fragment {
                 selectedCategory = getKeyByValue(moodMap, mMoodType.getSelectedItemPosition());
             }
 
-            if (selectedCategory.equals(getString(R.string.all_types))) selectedCategory = "";
+            if (selectedCategory != null && selectedCategory.equals(getString(R.string.all_types))) selectedCategory = "";
             GetDataBestAppealingChart();
         }
     };
@@ -351,7 +344,11 @@ public class ChartFragment extends Fragment {
 
     private void GetDataBestAppealingChart() {
 
-        isDrawing = true;
+        if (mChart.getBarData()!=null){
+            mChart.getBarData().removeDataSet(0);
+            mChart.invalidate();
+        }
+
         String order;
         if (mAppealingRadio.isChecked())
         {
@@ -375,10 +372,10 @@ public class ChartFragment extends Fragment {
         }
         else if (!mDateS.getText().toString().equals(""))
         {
-            cS.set(mYear,mMonth,mDayOfMonth);
+            cS.set(mYear,mMonth,mDayOfMonth,0,0);
         }
         else {
-            cS.set(cS.get(Calendar.YEAR),cS.get(Calendar.MONTH)-1,cS.get(Calendar.DAY_OF_MONTH));
+            cS.set(cS.get(Calendar.YEAR),cS.get(Calendar.MONTH)-1,cS.get(Calendar.DAY_OF_MONTH),0,0);
             mYear = cS.get(Calendar.YEAR);
             mMonth = cS.get(Calendar.MONTH);
             mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
@@ -398,10 +395,10 @@ public class ChartFragment extends Fragment {
         }
         else if (!mDateF.getText().toString().equals(""))
         {
-            cF.set(mYearF,mMonthF,mDayOfMonthF);
+            cF.set(mYearF,mMonthF,mDayOfMonthF,23,59);
         }
         else {
-            cF.set(cF.get(Calendar.YEAR),cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH));
+            cF.set(cF.get(Calendar.YEAR),cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH),23,59);
             mYearF = cF.get(Calendar.YEAR);
             mMonthF = cF.get(Calendar.MONTH);
             mDayOfMonthF = cF.get(Calendar.DAY_OF_MONTH);
@@ -479,7 +476,6 @@ public class ChartFragment extends Fragment {
 
         mChart.setDrawGridBackground(false);
         mChart.invalidate();
-        isDrawing = false;
 
     }
 
@@ -599,7 +595,11 @@ public class ChartFragment extends Fragment {
         {
             outState.putInt(MOOD_POSITION,mMoodType.getSelectedItemPosition());
         }
-        outState.putString(SELECTED_CATEGORY,selectedCategory);
+        if (selectedCategory != null)
+        {
+            outState.putString(SELECTED_CATEGORY,selectedCategory);
+        }
+
     }
 
 }
