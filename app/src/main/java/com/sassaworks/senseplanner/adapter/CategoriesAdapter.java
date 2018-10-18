@@ -40,7 +40,7 @@ public class CategoriesAdapter extends ArrayAdapter<String> {
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.item_category,parent,false);
+        View view = inflater.inflate(R.layout.item_dropdown_category,parent,false);
         TextView tv = view.findViewById(R.id.item_tv_category);
         tv.setText(categories[position]);
         Log.d("Adap3",categories[position]);

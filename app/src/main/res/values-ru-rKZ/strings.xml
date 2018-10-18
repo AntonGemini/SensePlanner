@@ -1,0 +1,116 @@
+<resources>
+    <string name="app_name">SensePlanner</string>
+
+    <!-- Main menu items -->
+    <string name="action_edit_categories">Редактировать занятия</string>
+    <string name="action_sign_out">Выйти</string>
+
+    <string name="section_format">Hello World from section: %1$d</string>
+
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+
+
+    <!-- Activity menu items -->
+    <string name="menu_edit_activity">Редактировать</string>
+    <string name="menu_delete_activity">Удалить</string>
+
+    <string name="description_format">%1$s(%2$s - %3$s) - %4$s</string>
+    <string name="date_format">%1$s-%2$s-%3$s</string>
+    <string name="time_format">%1$d:%2$02d</string>
+
+    <!--Chart names-->
+    <string name="best_appealing_chart">Best appealing/mood chart</string>
+    <string name="hour_chart">By hour chart</string>
+    <string name="dayily_chart">Total daily chart</string>
+
+    <string name="all_types">All</string>
+    <string name="appwidget_text">SensePlanner</string>
+
+    <string name="category_label">Вид</string>
+    <string name="appealing_label">Увлекательность</string>
+    <string name="mood_label">Настроение</string>
+
+    <string name="save_button">Сохранить</string>
+
+    <string name="connection_on">Связь с базой установлена</string>
+    <string name="connection_off">Связь с базой прерванна</string>
+
+    <string name="ref_users">users</string>
+    <string name="ref_defaultactivities">defaultactivities</string>
+    <string name="ref_defaultappealing">defaultappealing</string>
+    <string name="ref_defaultmood">defaultmood</string>
+    <string name="ref_planner">planner</string>
+    <string name="ref_activities">activities</string>
+    <string name="ref_appealing">appealing</string>
+    <string name="ref_mood">mood</string>
+    <string name="ref_daystatistics">daystatistics</string>
+
+    <string name="job_addiction">jobAddiction</string>
+    <string name="mood_type">moodType</string>
+    <string name="activity_records">activity_records</string>
+
+    <string name="activity">activity</string>
+
+    <string name="bound1">1.00</string>
+    <string name="bound2">1.66</string>
+    <string name="bound3">2.34</string>
+    <string name="bound4">3.00</string>
+    <string name="bound5">3.0001</string>
+
+    <string name="lb_low">Low</string>
+    <string name="lb_bad">Bad</string>
+    <string name="lb_average">Average</string>
+    <string name="lb_high">High</string>
+    <string name="lb_good">Good</string>
+
+    <string name="menu_record_desc">Меню настроек</string>
+    <string name="widget_image">График</string>
+    <string name="appealing_str">Увлекательность</string>
+    <string name="mood_str">Настроение</string>
+    <string name="start_date_hint">Дата начала</string>
+    <string name="start_time_hint">Время начала</string>
+    <string name="notify_lbl">Уведомление</string>
+    <string name="start_date_hint_hour">Начал.дата</string>
+    <string name="start_date_hint_daily">Показать для</string>
+
+    <string name="finish_date_hint">Дата окончания</string>
+    <string name="finish_time_hint">Время окончания</string>
+    <string name="cat_name_hint">Вид занятия</string>
+    <string name="job_label">Занятие</string>
+    <string name="yesterday">Вчера</string>
+    <string name="today">Сегодня</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="event_name">Имя события</string>
+    <string name="event_desc">Описание события</string>
+    <string name="hint_1_label">Нажмите на занятие для создания записи</string>
+
+    <string name="widget_label">Пожалуйста, введите дату для ежедневного графика!</string>
+
+    <string name="widget_date">Ввести дату</string>
+    <string name="widget_button">Добавить виджет</string>
+
+    <string name="cat_label_prefix">Вид:</string>
+
+    <string name="desc_add_category">Добавить вид занятий</string>
+    <string name="desc_show_add_buttons">Показать кнопки для добавления событий</string>
+    <string name="desc_today_event">Делаю сегодня</string>
+    <string name="desc_yesterday_event">Делал вчера</string>
+    <string name="desc_tomorrow_event">Делаю завтра</string>
+
+    <string name="activities_label">Средняя оценка занятий по:</string>
+    <string name="empty_chart_text">Нет записей в этот день</string>
+
+    <string name="category_label_tooltip">Вид занятий</string>
+
+    <string name="hour_chart_y_label">Часы</string>
+
+    <string name="chart_events_label">События</string>
+
+    <string name="chart_appealing_short">Увлекат.</string>
+    <string name="chart_mood_short">Настр.</string>
+
+    <string name="edit_cat_label">Редактирование категорий</string>
+
+</resources>

@@ -15,11 +15,11 @@
             android:id="@+id/sp_chartName"
             android:layout_width="@dimen/chart_spinner_width"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/create_form_padding"
-            android:layout_marginLeft="@dimen/create_form_padding"
-            android:layout_marginRight="@dimen/create_form_padding"
-            android:layout_marginStart="@dimen/create_form_padding"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="@dimen/create_form_padding"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -36,6 +36,7 @@
 
             <EditText
                 android:id="@+id/et_dateS"
+                style="@style/Base.TextAppearance.AppCompat.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/create_form_padding"
@@ -56,6 +57,7 @@
 
             <EditText
                 android:id="@+id/et_dateF"
+                style="@style/Base.TextAppearance.AppCompat.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/create_form_padding"
@@ -67,12 +69,14 @@
 
         <Spinner
             android:id="@+id/sp_mood"
-            android:layout_width="90dp"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toEndOf="@+id/sp_appealing"
-            app:layout_constraintTop_toBottomOf="@+id/textView_mood" />
+            app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
         <RadioGroup
             android:id="@+id/rg_typeGroup"
@@ -89,7 +93,7 @@
                 android:id="@+id/textView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/activities_label"
+                android:text="@string/chart_events_label"
                 android:textColor="@android:color/black" />
 
             <RadioButton
@@ -123,34 +127,40 @@
 
         <TextView
             android:id="@+id/textView_appealing"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="@dimen/top_margin_edit_chart"
-            android:text="@string/appealing_label"
+            android:layout_marginTop="12dp"
+            android:text="@string/chart_appealing_short"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/sp_appealing"
             app:layout_constraintStart_toStartOf="@+id/sp_appealing"
             app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
         <TextView
             android:id="@+id/textView_mood"
+            style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="@dimen/top_margin_edit_chart"
-            android:text="@string/mood_label"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/chart_mood_short"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/sp_mood"
             app:layout_constraintStart_toStartOf="@+id/sp_mood"
             app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
         <Spinner
             android:id="@+id/sp_appealing"
-            android:layout_width="90dp"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/appbar_padding_top"
             android:layout_marginStart="@dimen/appbar_padding_top"
+            android:layout_marginLeft="@dimen/appbar_padding_top"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toEndOf="@+id/et_dateF_layout"
-            app:layout_constraintTop_toBottomOf="@+id/textView_appealing" />
+            app:layout_constraintTop_toBottomOf="@+id/sp_chartName" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

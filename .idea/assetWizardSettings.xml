@@ -31,12 +31,29 @@
                             <entry key="launcher">
                               <value>
                                 <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="foregroundImage">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="scalingPercent" value="60" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="D:\Udacity2\pie-2579310_1280.jpg" />
-                                      <entry key="foregroundLayerName" value="ic_launcher_foreground" />
-                                      <entry key="outputName" value="ic_chart_image" />
+                                      <entry key="backgroundAssetType" value="COLOR" />
+                                      <entry key="backgroundColor" value="e5bc71" />
+                                      <entry key="backgroundLayerName" value="ic_logo_test_background_3" />
+                                      <entry key="foregroundImage" value="D:\Udacity2\design\icon_for_device_android.png" />
+                                      <entry key="foregroundLayerName" value="ic_logo_test_foreground_3" />
+                                      <entry key="outputName" value="ic_logo_test_3" />
                                     </map>
                                   </option>
                                 </PersistentState>

@@ -104,7 +104,7 @@ public class ConfigChartWidgetActivity extends AppCompatActivity {
         DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                if (v.getId() == R.id.et_dateS) {
+                if (v.getId() == R.id.et_date_config) {
 
                     mDateEditText.setText(getString(R.string.date_format,String.valueOf(dayOfMonth),String.valueOf(month+1),String.valueOf(year)));
                     mYear = year;

@@ -7,15 +7,15 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="create_form_padding">8dp</dimen>
     <dimen name="dimen_margin_30">30dp</dimen>
-    <dimen name="radial_margin_bottom">50dp</dimen>
+    <dimen name="radial_margin_bottom">30dp</dimen>
     <dimen name="item_small_margin">4dp</dimen>
 
     <dimen name="chart_spinner_width">368dp</dimen>
-    <dimen name="date_spinner_width">87dp</dimen>
+    <dimen name="date_spinner_width">84dp</dimen>
     <dimen name="name_layout_width">200dp</dimen>
     <dimen name="margin_top">10dp</dimen>
     <dimen name="edit_padding">15dp</dimen>
-    <dimen name="indicator_radius">42dp</dimen>
+    <dimen name="indicator_radius">35dp</dimen>
     <dimen name="top_margin_edit_chart">12dp</dimen>
 
     <!--

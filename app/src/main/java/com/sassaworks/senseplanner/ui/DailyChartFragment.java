@@ -171,10 +171,10 @@ public class DailyChartFragment extends Fragment {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (view != null) {
                 String selectedMenu = ((TextView) view).getText().toString();
-                if (selectedMenu == getString(R.string.best_appealing_chart)) {
+                if (position == 0) {
                     mCallback.onChartNameSelected("Chart");
                     //chartListener.fragment0Changed("Chart", getActivity().getSupportFragmentManager());
-                } else if (selectedMenu == getString(R.string.hour_chart)) {
+                } else if (position == 1) {
                     mCallback.onChartNameSelected("Hour");
                     //chartListener.fragment0Changed("Hour", getActivity().getSupportFragmentManager());
                 }
@@ -377,6 +377,7 @@ public class DailyChartFragment extends Fragment {
         dataSet.setValueFormatter(labelFormatter);
         dataSet.setColors(new int[] {R.color.Bad , R.color.Average, R.color.High }, getActivity());
         PieData data = new PieData(dataSet);
+        mChart.getDescription().setEnabled(false);
         mChart.setData(data);
         mChart.invalidate();
 

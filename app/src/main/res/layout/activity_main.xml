@@ -44,6 +44,9 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" >
 
             <android.support.design.widget.TabLayout
+                app:tabTextAppearance="@style/FontsSizeForTabs"
+                app:tabSelectedTextColor="@android:color/black"
+                app:tabTextColor="@android:color/darker_gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top">

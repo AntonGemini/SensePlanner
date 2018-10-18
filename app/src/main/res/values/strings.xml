@@ -17,12 +17,12 @@
 
 
     <!-- Activity menu items -->
-    <string name="menu_edit_activity">Edit activity</string>
-    <string name="menu_delete_activity">Delete activity</string>
+    <string name="menu_edit_activity">Edit event</string>
+    <string name="menu_delete_activity">Delete event</string>
 
-    <string name="description_format">%1$s(%2$s - %3$s) - %4$s</string>
+    <string name="description_format">%1$s(%2$s - %3$s) %4$s</string>
     <string name="date_format">%1$s-%2$s-%3$s</string>
-    <string name="time_format">%1$s:%2$s</string>
+    <string name="time_format">%1$d:%2$02d</string>
 
     <!--Chart names-->
     <string name="best_appealing_chart">Your appealing/mood chart</string>
@@ -68,6 +68,7 @@
     <string name="lb_average">Average</string>
     <string name="lb_high">High</string>
     <string name="lb_good">Good</string>
+
     <string name="menu_record_desc">Options menu</string>
     <string name="widget_image">Chart image</string>
     <string name="appealing_str">By appealing</string>
@@ -101,8 +102,18 @@
     <string name="desc_yesterday_event">Add event for yesterday</string>
     <string name="desc_tomorrow_event">Add event for tomorrow</string>
 
-    <string name="activities_label">Activities:</string>
-    <string name="empty_chart_text">No records for today</string>
+    <string name="activities_label">Avg score for events:</string>
+    <string name="empty_chart_text">No records for this day</string>
+
+    <string name="category_label_tooltip">Category to view</string>
+    <string name="hour_chart_y_label">Hours</string>
+
+    <string name="chart_events_label">Show events by</string>
+
+    <string name="chart_appealing_short">Appealing</string>
+    <string name="chart_mood_short">Mood</string>
+
+    <string name="edit_cat_label">Editing category</string>
 
 
 </resources>

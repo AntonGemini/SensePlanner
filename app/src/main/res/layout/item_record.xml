@@ -48,11 +48,10 @@
         android:id="@+id/tv_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/double_padding_top"
-        android:layout_marginLeft="@dimen/item_small_margin"
         android:layout_marginStart="@dimen/item_small_margin"
+        android:layout_marginLeft="@dimen/item_small_margin"
         app:layout_constraintStart_toEndOf="@+id/tv_catLabel"
-        app:layout_constraintTop_toBottomOf="@+id/tv_full_description" />
+        app:layout_constraintTop_toTopOf="@+id/tv_catLabel" />
 
 
     <android.support.constraint.Guideline
@@ -60,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.33"
+        app:layout_constraintGuide_percent="0.4"
         />
 
 
@@ -69,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:text="@string/mood_label"
+        android:text="@string/chart_mood_short"
         app:layout_constraintStart_toEndOf="@+id/guideline1"
         app:layout_constraintTop_toTopOf="@+id/tv_category" />
     <!---->
@@ -78,8 +77,6 @@
         android:id="@+id/mood_color"
         android:layout_width="@dimen/indicator_radius"
         android:layout_height="@dimen/indicator_radius"
-        android:layout_marginLeft="@dimen/appbar_padding_top"
-        android:layout_marginStart="@dimen/appbar_padding_top"
         android:paddingBottom="8dp"
         android:background="@drawable/ic_baseline_sentiment_satisfied_24px"
         app:layout_constraintBottom_toTopOf="@+id/tv_mood"
@@ -91,7 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.66"
+        app:layout_constraintGuide_percent="0.62"
         />
 
     <TextView
@@ -101,7 +98,7 @@
         android:layout_marginLeft="@dimen/appbar_padding_top"
         android:layout_marginStart="@dimen/appbar_padding_top"
         android:textStyle="bold"
-        android:text="@string/job_label"
+        android:text="@string/chart_appealing_short"
         app:layout_constraintStart_toEndOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="@+id/tv_category" />
 
@@ -110,8 +107,6 @@
         android:id="@+id/job_appealing_color"
         android:layout_width="@dimen/indicator_radius"
         android:layout_height="@dimen/indicator_radius"
-        android:layout_marginLeft="@dimen/appbar_padding_top"
-        android:layout_marginStart="@dimen/appbar_padding_top"
         android:background="@drawable/shape_circle"
         app:layout_constraintBottom_toTopOf="@+id/tv_job_appealing"
         app:layout_constraintStart_toEndOf="@+id/tv_job_appealing"

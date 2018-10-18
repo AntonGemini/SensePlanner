@@ -21,6 +21,7 @@ public class EditCategoryActivity extends AppCompatActivity implements ActivityT
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_category);
+        getSupportActionBar().setTitle(getString(R.string.edit_cat_label));
         if (savedInstanceState == null)
         {
             ActivityTypeFragment fragment = ActivityTypeFragment.newInstance(1);

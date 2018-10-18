@@ -65,6 +65,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final String ACTIVITY_RECORD = "activity_record";
     public static final int CALENDAR_PERMISSION = 4;
+    public static final int UPDATE_CALENDAR_PERMISSION = 5;
 
 
     private static final String CATEGORY_POSITION = "category_position";
@@ -279,7 +280,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             mDescrText.setText(activityRecord.getDesciption());
 
             mDateText.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth+1), String.valueOf(recordYear)));
-            mTimeText.setText(getString(R.string.time_format, String.valueOf(recordHour), String.valueOf(recordMinute)));
+            mTimeText.setText(getString(R.string.time_format, recordHour, recordMinute));
 
             /*End date*/
             calendar.setTimeInMillis(activityRecord.getTimestampF());
@@ -289,7 +290,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             recordHour = calendar.get(Calendar.HOUR_OF_DAY);
             recordMinute = calendar.get(Calendar.MINUTE);
             mDateTextF.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth+1), String.valueOf(recordYear)));
-            mTimeTextF.setText(getString(R.string.time_format, String.valueOf(recordHour), String.valueOf(recordMinute)));
+            mTimeTextF.setText(getString(R.string.time_format, recordHour, recordMinute));
 
             mYearF = recordYear;
             mMonthF = recordMonth;
@@ -315,7 +316,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             int recordHour = calendar.get(Calendar.HOUR_OF_DAY);
             int recordMinute = calendar.get(Calendar.MINUTE);
             mDateText.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth+1), String.valueOf(recordYear)));
-            mTimeText.setText(getString(R.string.time_format, String.valueOf(recordHour), String.valueOf(recordMinute)));
+            mTimeText.setText(getString(R.string.time_format, recordHour, recordMinute));
             mYear = recordYear;
             mMonth = recordMonth;
             mDayOfMonth = recordDay;
@@ -330,7 +331,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             recordHour = calendar.get(Calendar.HOUR_OF_DAY);
             recordMinute = calendar.get(Calendar.MINUTE);
             mDateTextF.setText(getString(R.string.date_format, String.valueOf(recordDay), String.valueOf(recordMonth+1), String.valueOf(recordYear)));
-            mTimeTextF.setText(getString(R.string.time_format, String.valueOf(recordHour), String.valueOf(recordMinute)));
+            mTimeTextF.setText(getString(R.string.time_format, recordHour, recordMinute));
 
             mYearF = recordYear;
             mMonthF = recordMonth;
@@ -523,7 +524,8 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
 
         if (activityRecord!=null && activityRecord.getEventId()!=0)
         {
-            updateCalendarEvent(mNotifyCheckbox.isChecked());
+            //updateCalendarEvent(mNotifyCheckbox.isChecked());
+            updateCalendarEventPermission();
         }
         else if ((activityRecord==null || activityRecord.getEventId()==0) && mNotifyCheckbox.isChecked())
         {
@@ -575,7 +577,6 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
                     mMonthF = month;
                     mDayOfMonthF = dayOfMonth;
                 }
-
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         dialog.show();
@@ -589,14 +590,15 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         if (v.getId() == R.id.et_time) {
-                            mTimeText.setText(hourOfDay + ":" + minute);
                             mHour = hourOfDay;
                             mMinute = minute;
+                            mTimeText.setText(getString(R.string.time_format,hourOfDay,minute));
                         } else if (v.getId() == R.id.et_time_f) {
-                            mTimeTextF.setText(hourOfDay + ":" + minute);
                             mHourF = hourOfDay;
                             mMinuteF = minute;
+                            mTimeTextF.setText(getString(R.string.time_format,hourOfDay,minute));
                         }
+
 
                     }
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
@@ -653,11 +655,47 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
             }
             else
             {
-                getActivity().finish();
                 mNotifyCheckbox.setChecked(false);
+                getActivity().finish();
+
+            }
+        }
+        else if (requestCode == UPDATE_CALENDAR_PERMISSION)
+        {
+            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED)
+            {
+                updateCalendarEvent(mNotifyCheckbox.isChecked());
+                getActivity().finish();
+            }
+            else
+            {
+                mNotifyCheckbox.setChecked(false);
+                getActivity().finish();
             }
         }
     }
+
+
+    private void updateCalendarEventPermission()
+    {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR,Manifest.permission.READ_CALENDAR},UPDATE_CALENDAR_PERMISSION);
+        }
+        else
+        {
+            updateCalendarEvent(mNotifyCheckbox.isChecked());
+        }
+    }
+
 
     private void createCalendarEvent() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED
@@ -699,6 +737,7 @@ public class CreateTaskFragment extends Fragment implements FirebaseDatabaseHelp
         ContentValues reminderValues = new ContentValues();
         reminderValues.put(CalendarContract.Reminders.EVENT_ID,eventId);
         reminderValues.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+        reminderValues.put(CalendarContract.Reminders.MINUTES,2);
         uri = contentResolver.insert(CalendarContract.Reminders.CONTENT_URI,reminderValues);
     }
 

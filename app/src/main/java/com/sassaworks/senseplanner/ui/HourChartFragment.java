@@ -45,6 +45,7 @@ import com.sassaworks.senseplanner.data.Category;
 import com.sassaworks.senseplanner.data.Mood;
 
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -178,10 +179,10 @@ public class HourChartFragment extends Fragment {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (view != null) {
                 String selectedMenu = ((TextView) view).getText().toString();
-                if (selectedMenu == getString(R.string.best_appealing_chart)) {
+                if (position == 0) {
                     mCallback.onChartNameSelected("Chart");
                     //chartListener.fragment0Changed("Chart", getActivity().getSupportFragmentManager());
-                } else if (selectedMenu == getString(R.string.hour_chart)) {
+                } else if (position == 1) {
                     LoadHourChart();
                 }
                 else {
@@ -339,6 +340,7 @@ public class HourChartFragment extends Fragment {
         mFinishTimeInMillis = cF.getTimeInMillis();
 
         DatabaseReference ref = baseRef.child(getString(R.string.activity_records));
+        ref.keepSynced(true);
         Query query = ref.orderByChild(order);
 
         if (selectedCategory!=null && selectedCategory!="")
@@ -418,11 +420,15 @@ public class HourChartFragment extends Fragment {
                 for (ActivityRecord ac : entry.getValue()) {
                     String type = mAppealingRadio.isChecked() ? ac.getJobAddiction() : ac.getMoodType();
                     if (type.equals(entryAppealing.getKey())) {
-                        cal.setTimeInMillis(ac.getTimestampF() - ac.getTimestamp());
-                        Float hour = Float.valueOf(cal.get(Calendar.HOUR));
-                        Float minute = Float.valueOf(cal.get(Calendar.MINUTE));
-                        Float minuteToHour = minute / 60;
-                        Float totalHour = hour + minuteToHour;
+                        //cal.setTimeInMillis(ac.getTimestampF() - ac.getTimestamp());
+                        double seconds = Float.valueOf(ac.getTimestampF() - ac.getTimestamp())/1000;
+                        double hour =  Math.floor(seconds/3600);
+                        double minute = Math.ceil(seconds/60)%60;
+
+                        //Float minute = Float.valueOf(cal.get(Calendar.MINUTE));
+
+                        double minuteToHour = minute / 60;
+                        Float totalHour = (float)(hour + minuteToHour);
                         Float val = finishedValues.get(entry.getKey())[entryAppealing.getValue()-1];
                         finishedValues.get(entry.getKey())[entryAppealing.getValue()-1] = val + totalHour;
                     }
@@ -451,7 +457,7 @@ public class HourChartFragment extends Fragment {
         }
         BarDataSet dataSet = new BarDataSet(barEntries,"Type");
         dataSet.setColors(new int[] { R.color.Bad, R.color.Average, R.color.High }, getActivity());
-        dataSet.setValueFormatter(labelFormatter);
+        //dataSet.setValueFormatter(labelFormatter);
 
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.5f);
@@ -479,8 +485,9 @@ public class HourChartFragment extends Fragment {
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setGranularity(1f);
         leftAxis.setAxisMinimum(0f);
-        leftAxis.setAxisMaximum(25f);
+        //leftAxis.setAxisMaximum(25f);
         leftAxis.setDrawGridLines(false);
+
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
 
@@ -524,6 +531,8 @@ public class HourChartFragment extends Fragment {
         //getActivity().getSupportFragmentManager().popBackStackImmediate();
     }
 
+
+    //Format minutes in 60m format
     IValueFormatter labelFormatter = new IValueFormatter() {
 
         @Override

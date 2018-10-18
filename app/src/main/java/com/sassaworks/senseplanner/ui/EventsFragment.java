@@ -1,9 +1,11 @@
 package com.sassaworks.senseplanner.ui;
 
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +15,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +28,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -61,6 +67,8 @@ import butterknife.ButterKnife;
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
 
+import static com.sassaworks.senseplanner.ui.CreateTaskFragment.CALENDAR_PERMISSION;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link EventsFragment#newInstance} factory method to
@@ -84,11 +92,16 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     FirebaseDatabase db;
     FirebaseUser user;
     ActivityRecord selectedRecord;
+    ActivityRecord recordToDelete;
 
     @BindView(R.id.rv_events) RecyclerView mEventRecyclerView;
     @BindView(R.id.et_date_s) EditText mDateText;
     @BindView(R.id.et_date_f) EditText mDateTextF;
     @BindView(R.id.sp_activities) Spinner mActivityType;
+
+    @BindView(R.id.fabToday) FloatingActionButton fabToday;
+    @BindView(R.id.fabYesterday) FloatingActionButton mFabYesterday;
+    @BindView(R.id.fabTomorrow) FloatingActionButton mFabTomorrow;
 
     private ArrayList<String> activitiesList;
     private String selectedCategory = "";
@@ -158,6 +171,75 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
                     String.valueOf(calendar.get(Calendar.MONTH) + 1), String.valueOf(calendar.get(Calendar.YEAR))));
         }
 
+        FloatingActionButton fab = view.findViewById(R.id.fabMenu);
+        LinearLayout todayLayout = view.findViewById(R.id.todayLayout);
+        LinearLayout yesterdayLayout = view.findViewById(R.id.yesterdayLayout);
+        LinearLayout tomorrowLayout = view.findViewById(R.id.tomorrowLayout);
+
+        todayLayout.setVisibility(View.INVISIBLE);
+        yesterdayLayout.setVisibility(View.INVISIBLE);
+        tomorrowLayout.setVisibility(View.INVISIBLE);
+
+        Animation mShowButton = AnimationUtils.loadAnimation(getActivity(),R.anim.show_button);
+        Animation mHideButton = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_button);
+        Animation mShowLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.show_layout);
+        Animation mHideLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_layout);
+        Animation mShowTopLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.show_top_layout);
+        Animation mHideTopLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_top_layout);
+        Animation mShowBottomLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.show_bottom_layout);
+        Animation mHideBottomLayout = AnimationUtils.loadAnimation(getActivity(),R.anim.hide_bottom_layout);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (todayLayout.getVisibility() == View.VISIBLE)
+                {
+                    fab.startAnimation(mHideButton);
+                    todayLayout.setVisibility(View.INVISIBLE);
+                    yesterdayLayout.setVisibility(View.INVISIBLE);
+                    tomorrowLayout.setVisibility(View.INVISIBLE);
+                    yesterdayLayout.startAnimation(mHideBottomLayout);
+                    todayLayout.startAnimation(mHideLayout);
+                    tomorrowLayout.startAnimation(mHideTopLayout);
+                }
+                else {
+                    todayLayout.setVisibility(View.VISIBLE);
+                    yesterdayLayout.setVisibility(View.VISIBLE);
+                    fab.startAnimation(mShowButton);
+                    yesterdayLayout.startAnimation(mShowBottomLayout);
+                    todayLayout.startAnimation(mShowLayout);
+                    tomorrowLayout.startAnimation(mShowTopLayout);
+                }
+            }
+        });
+
+        fabToday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),CreateTaskActivity.class);
+                intent.putExtra(CreateTaskFragment.STARTING_DAY,0);
+                startActivity(intent);
+            }
+        });
+
+        mFabYesterday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),CreateTaskActivity.class);
+                intent.putExtra(CreateTaskFragment.STARTING_DAY,-1);
+                startActivity(intent);
+            }
+        });
+
+        mFabTomorrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),CreateTaskActivity.class);
+                intent.putExtra(CreateTaskFragment.STARTING_DAY,1);
+                startActivity(intent);
+            }
+        });
+
         loadActivitiesList();
         return view;
     }
@@ -179,7 +261,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private void fillCategorySpinner()
     {
         CategoriesAdapter mActivitiesAdapter = new CategoriesAdapter(getActivity(), activitiesList.toArray(new String[0]));
-        mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
+        //mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
         mActivityType.setAdapter(mActivitiesAdapter);
         mActivityType.setOnItemSelectedListener(onActivityItemSelected);
         if (activityPosition!=0)
@@ -199,18 +281,20 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private void loadEventsData()
     {
         Calendar calendar = Calendar.getInstance();
+
         DatabaseReference ref = db.getReference(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.activity_records));
         Query queryEvents = ref.orderByChild("timestamp");
         if (mDateS==0 && mDateF==0)
         {
-            calendar.set(Calendar.HOUR,23);
+            calendar.add(Calendar.DAY_OF_MONTH,1);
+            calendar.set(Calendar.HOUR_OF_DAY,23);
             calendar.set(Calendar.MINUTE,59);
             mDateF = calendar.getTimeInMillis();
             mDateTextF.setText(getString(R.string.date_format, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)),
                     String.valueOf(calendar.get(Calendar.MONTH) + 1), String.valueOf(calendar.get(Calendar.YEAR))));
 
             calendar.add(Calendar.MONTH,-1);
-            calendar.set(Calendar.HOUR,0);
+            calendar.set(Calendar.HOUR_OF_DAY,0);
             calendar.set(Calendar.MINUTE,0);
             mDateS = calendar.getTimeInMillis();
             mDateText.setText(getString(R.string.date_format, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)),
@@ -334,11 +418,44 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
 
     private void removeEventFromCalendar(ActivityRecord record)
     {
+        recordToDelete = record;
+
         if (record.getEventId()!= 0)
         {
-            Uri deleteUri = null;
-            deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, record.getEventId());
-            int rows = getActivity().getContentResolver().delete(deleteUri, null, null);
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                requestPermissions(new String[]{Manifest.permission.WRITE_CALENDAR,Manifest.permission.READ_CALENDAR},CALENDAR_PERMISSION);
+            }
+            else
+            {
+                deleteActivityRecord();
+            }
+        }
+    }
+
+    private void deleteActivityRecord()
+    {
+        Uri deleteUri = null;
+        deleteUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, recordToDelete.getEventId());
+        int rows = getActivity().getContentResolver().delete(deleteUri, null, null);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == CALENDAR_PERMISSION)
+        {
+            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED)
+            {
+                deleteActivityRecord();
+            }
         }
     }
 
@@ -353,6 +470,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
                     mDateText.setText(getString(R.string.date_format, String.valueOf(dayOfMonth), String.valueOf(month + 1), String.valueOf(year)));
                     c.set(year,month,dayOfMonth,0,0);
                     mDateS = c.getTimeInMillis();
+
                 } else if (v.getId() == R.id.et_date_f) {
                     mDateTextF.setText(getString(R.string.date_format, String.valueOf(dayOfMonth), String.valueOf(month + 1), String.valueOf(year)));
                     c.set(year,month,dayOfMonth,23,59);
@@ -405,19 +523,19 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         @Override
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
             super.getItemOffsets(outRect, view, parent, state);
-            View recordItem = view.findViewById(R.id.item_record);
+            //View recordItem = view.findViewById(R.id.item_record);
             View headerItem = view.findViewById(R.id.item_header);
-
+            int position = ((RecyclerView.LayoutParams)view.getLayoutParams()).getViewAdapterPosition();
             mPaint.setColor(Color.DKGRAY);
             float thickness = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,1f,
                     getContext().getResources().getDisplayMetrics());
             mPaint.setStrokeWidth(thickness);
-            if (recordItem!=null)
+            if (headerItem!=null && position == 0)
             {
-                outRect.bottom = (int)(mPaint.getStrokeWidth() + 2f);
+                outRect.top = (int)(mPaint.getStrokeWidth() + 2f);
 //                outRect.top = (int)(mPaint.getStrokeWidth() + 10f);
             }
-            else if (headerItem != null) {
+            else if (headerItem != null && position > 0) {
                 outRect.top = (int)(mPaint.getStrokeWidth() + 20f);
             }
         }
@@ -426,7 +544,6 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
             super.onDraw(c, parent, state);
 //            c.save();
-//            int left = parent.getPaddingLeft();
 //            int right = parent.getWidth() - parent.getPaddingRight();
             int childCount = parent.getChildCount();
 

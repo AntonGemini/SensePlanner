@@ -181,7 +181,9 @@ public class ActivityTypeFragment extends Fragment {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                FirebaseIdlingResource.decrement();
+                if (!mIsIdleSet) {
+                    FirebaseIdlingResource.decrement();
+                }
             }
         };
         dbRef.addChildEventListener(childEventListener);

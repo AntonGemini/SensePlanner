@@ -57,6 +57,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
+import io.reactivex.SingleSource;
+
 import android.util.Log;
 
 /**
@@ -183,9 +185,11 @@ public class ChartFragment extends Fragment {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (view != null) {
                 String selectedMenu = ((TextView) view).getText().toString();
-                if (selectedMenu == getString(R.string.best_appealing_chart)) {
+                //if (selectedMenu == getString(R.string.best_appealing_chart)) {
+                if (position == 0) {
                     LoadBestAppealingChart();
-                } else if (selectedMenu == getString(R.string.hour_chart)) {
+                    //} else if (selectedMenu == getString(R.string.hour_chart)) {
+                } else if (position == 1) {
                     mCallback.onChartNameSelected("Hour");
                     //chartListener.fragment0Changed("Hour", getActivity().getSupportFragmentManager());
                 }
@@ -213,13 +217,15 @@ public class ChartFragment extends Fragment {
     public AdapterView.OnItemSelectedListener onAppealingItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            if (pos > 0) {
-                String selection = getKeyByValue(appealingMap, pos);
-                selectedCategory = selection;
-            } else if (pos == 0) {
-                selectedCategory = "";
+            if (mAppealingRadio.isChecked()) {
+                if (pos > 0) {
+                    String selection = getKeyByValue(appealingMap, pos);
+                    selectedCategory = selection;
+                } else if (pos == 0) {
+                    selectedCategory = "";
+                }
+                GetDataBestAppealingChart();
             }
-            GetDataBestAppealingChart();
         }
 
         @Override
@@ -232,14 +238,15 @@ public class ChartFragment extends Fragment {
     public AdapterView.OnItemSelectedListener onMoodItemSelected = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            if (pos > 0) {
-                String selection = getKeyByValue(moodMap, pos);
-                selectedCategory = selection;
-            } else if (pos == 0) {
-                selectedCategory = "";
+            if (mMoodRadio.isChecked()) {
+                if (pos > 0) {
+                    String selection = getKeyByValue(moodMap, pos);
+                    selectedCategory = selection;
+                } else if (pos == 0) {
+                    selectedCategory = "";
+                }
+                GetDataBestAppealingChart();
             }
-            GetDataBestAppealingChart();
-
         }
 
         @Override
@@ -419,6 +426,9 @@ public class ChartFragment extends Fragment {
         }
 
         RxFirebaseDatabase.observeSingleValueEvent(query,DataSnapshotMapper.listOf(ActivityRecord.class))
+                .switchIfEmpty((SingleSource<? extends List<ActivityRecord>>) emp->{
+                    DrawBestAppealingChart(rawEntries);
+                })
                 .subscribe(events -> {
                     for (ActivityRecord ac : events)
                     {

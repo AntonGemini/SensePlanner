@@ -44,11 +44,11 @@ public class ActivityViewHolder extends BaseViewHolder {
         ActivityRecord activityRecord = (ActivityRecord)record;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(activityRecord.getTimestamp());
-        String time = calendar.get(Calendar.HOUR_OF_DAY) + " : " + calendar.get(Calendar.MINUTE);
+        String time = context.getString(R.string.time_format,calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE));
 
         //Setting ending date
         calendar.setTimeInMillis(activityRecord.getTimestampF());
-        String timeF = calendar.get(Calendar.HOUR_OF_DAY) + " : " + calendar.get(Calendar.MINUTE);
+        String timeF = context.getString(R.string.time_format,calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE));
 
         mDescription.setText(context.getString(R.string.description_format,activityRecord.getName(),
                 time,timeF,activityRecord.getDesciption()));

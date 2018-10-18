@@ -58,6 +58,7 @@ public class EditCategoryFragment extends DialogFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_category, container, false);
         ButterKnife.bind(this,view);
+
         mButtonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
