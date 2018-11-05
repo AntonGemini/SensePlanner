@@ -1,18 +1,23 @@
 package com.sassaworks.senseplanner.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.gmail.samehadar.iosdialog.IOSDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -21,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sassaworks.senseplanner.FirebaseIdlingResource;
+import com.sassaworks.senseplanner.LoginActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.MyActivityTypeRecyclerViewAdapter;
 import com.sassaworks.senseplanner.data.Activity;
@@ -29,6 +35,8 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 /**
  * A fragment representing a list of Items.
@@ -40,6 +48,7 @@ public class ActivityTypeFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String OPEN_MODE = "open_mode";
+    public static final String WELCOME_LABEL = "welcome_label";
 
     private static final int READ_MODE = 0;
     private static final int EDIT_MODE = 1;
@@ -57,6 +66,11 @@ public class ActivityTypeFragment extends Fragment {
     @BindView(R.id.list) RecyclerView recyclerView;
     @BindView(R.id.fabAddCategory) FloatingActionButton mAddButton;
     @BindView(R.id.tv_welcome_text) TextView mIntroText;
+
+    public interface OnLoadCompleted{
+        void onDataLoadCompleted();
+        void onDataLoadStarted();
+    }
 
 
 
@@ -84,7 +98,6 @@ public class ActivityTypeFragment extends Fragment {
         if (getArguments() != null) {
             mOpenMode = getArguments().getInt(OPEN_MODE);
         }
-
     }
 
 
@@ -93,7 +106,32 @@ public class ActivityTypeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_activitytype_list, container, false);
         ButterKnife.bind(this,view);
+        SharedPreferences sharedPreferences =
+                getDefaultSharedPreferences(getContext());
 
+//        IOSDialog dialog2 = new IOSDialog.Builder(getActivity())
+//                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+//                    @Override
+//                    public void onCancel(DialogInterface dialog) {
+//                        //dialog1.show();
+//                    }
+//                })
+//                .setSpinnerColorRes(R.color.ios_gray_text)
+//                .setMessageColorRes(R.color.primaryDark)
+//                .setTitleColorRes(R.color.accent)
+//                .setMessageContent("My message")
+//                //.setCancelable(true)
+//                .setSpinnerClockwise(false)
+//                .setSpinnerDuration(120)
+//                .setMessageContentGravity(Gravity.END)
+//                //.setOneShot(false)
+//                .build();
+//        dialog2.show();
+
+        if (!sharedPreferences.getBoolean(WELCOME_LABEL,false))
+        {
+            mIntroText.setVisibility(View.VISIBLE);
+        }
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -106,12 +144,12 @@ public class ActivityTypeFragment extends Fragment {
         if (mOpenMode == READ_MODE)
         {
             mAddButton.setVisibility(View.GONE);
-            mIntroText.setVisibility(View.VISIBLE);
+            //mIntroText.setVisibility(View.VISIBLE);
         }
         else
         {
             mAddButton.setVisibility(View.VISIBLE);
-            mIntroText.setVisibility(View.GONE);
+            //mIntroText.setVisibility(View.GONE);
         }
 
         Context context = view.getContext();
@@ -200,6 +238,42 @@ public class ActivityTypeFragment extends Fragment {
 
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        SharedPreferences sharedPreferences =
+                getDefaultSharedPreferences(getContext());
+        if (!sharedPreferences.getBoolean(WELCOME_LABEL, false)) {
+            mIntroText.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mIntroText.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (mIntroText != null) {
+            SharedPreferences sharedPreferences =
+                    getDefaultSharedPreferences(getContext());
+            if (!sharedPreferences.getBoolean(WELCOME_LABEL, false)) {
+                mIntroText.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                mIntroText.setVisibility(View.GONE);
+            }
+
+        }
+    }
+
+
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnListFragmentInteractionListener) {
@@ -220,6 +294,15 @@ public class ActivityTypeFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        SharedPreferences.Editor editor
+                = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+        editor.putBoolean(WELCOME_LABEL,true).apply();
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this

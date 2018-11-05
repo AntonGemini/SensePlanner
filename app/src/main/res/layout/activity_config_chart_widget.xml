@@ -7,59 +7,59 @@
     tools:context=".ConfigChartWidgetActivity">
 
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/et_date_config_layout"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="@dimen/create_form_padding"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="@dimen/create_form_padding"
-        android:layout_marginTop="@dimen/appbar_padding_top"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6">
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/et_date_config_layout"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:layout_marginLeft="@dimen/create_form_padding"
+      android:layout_marginRight="8dp"
+      android:layout_marginStart="@dimen/create_form_padding"
+      android:layout_marginTop="@dimen/appbar_padding_top"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/textView6">
 
-        <EditText
-            android:id="@+id/et_date_config"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusableInTouchMode="false"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:hint="@string/widget_date"
-            android:ems="10"
-            android:inputType="date" />
-    </android.support.design.widget.TextInputLayout>
-
-    <Button
-        android:id="@+id/bt_config"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/et_date_config"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusableInTouchMode="false"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/widget_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_date_config_layout" />
+        android:layout_marginTop="8dp"
+        android:hint="@string/widget_date"
+        android:ems="10"
+        android:inputType="date" />
+  </android.support.design.widget.TextInputLayout>
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/widget_label"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+  <Button
+      android:id="@+id/bt_config"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:layout_marginLeft="8dp"
+      android:layout_marginRight="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="16dp"
+      android:text="@string/widget_button"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/et_date_config_layout" />
+
+  <TextView
+      android:id="@+id/textView6"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:layout_marginLeft="8dp"
+      android:layout_marginRight="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="16dp"
+      android:text="@string/widget_label"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

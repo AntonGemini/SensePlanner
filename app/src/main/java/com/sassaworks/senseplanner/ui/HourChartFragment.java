@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +58,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
+import io.reactivex.SingleSource;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -93,6 +95,7 @@ public class HourChartFragment extends Fragment {
     @BindView(R.id.rb_mood) RadioButton mMoodRadio;
     @BindView(R.id.et_dateS1) EditText mDateS;
     @BindView(R.id.chart) BarChart mChart;
+    @BindView(R.id.onboardingHourChart) ConstraintLayout mOnboardingHourChart;
 
     public static SectionsPageAdapter.nextFragmentListener chartListener;
 
@@ -349,6 +352,9 @@ public class HourChartFragment extends Fragment {
         }
 
         RxFirebaseDatabase.observeSingleValueEvent(query,DataSnapshotMapper.listOf(ActivityRecord.class))
+                .switchIfEmpty((SingleSource<? extends List<ActivityRecord>>) empty->{
+                    showEmptyImage();
+                })
                 .subscribe(events -> {
                     eventsList = new ArrayList<>();
                     for (ActivityRecord ac : events)
@@ -357,9 +363,25 @@ public class HourChartFragment extends Fragment {
                             eventsList.add(ac);
                         }
                     }
+                    if (eventsList.size()==0)
+                        showEmptyImage();
+                    else
+                        hideEmptyImage();
+
                     BreakListIntoDatesMap();
 
                 });
+    }
+
+
+    private void showEmptyImage()
+    {
+        mOnboardingHourChart.setVisibility(View.VISIBLE);
+    }
+
+    private void hideEmptyImage()
+    {
+        mOnboardingHourChart.setVisibility(View.GONE);
     }
 
     private void BreakListIntoDatesMap() {

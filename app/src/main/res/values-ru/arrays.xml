@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="tabs_name">
-        <item>Главная</item>
-        <item>Занятия</item>
-        <item>Календарь</item>
-        <item>Графики</item>
-    </string-array>
-    <string-array name="charts_name">
-        <item>График лучшего настроения/работы</item>
-        <item>Почасовой график</item>
-        <item>Ежедневная общая сводка</item>
-    </string-array>
+  <string-array name="tabs_name">
+    <item>Главная</item>
+    <item>Занятия</item>
+    <item>Календарь</item>
+    <item>Графики</item>
+  </string-array>
+  <string-array name="charts_name">
+    <item>График лучшего настроения/работы</item>
+    <item>Почасовой график</item>
+    <item>Ежедневная общая сводка</item>
+  </string-array>
 </resources>

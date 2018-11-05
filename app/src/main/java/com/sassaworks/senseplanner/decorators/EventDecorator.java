@@ -11,24 +11,24 @@ import java.util.ArrayList;
 
 public class EventDecorator implements DayViewDecorator {
 
-    private ArrayList<CalendarDay> events;
-    Context context;
-    ColorDrawable drawable;
+  private ArrayList<CalendarDay> events;
+  Context context;
+  ColorDrawable drawable;
 
-    public EventDecorator(ArrayList<CalendarDay> events, Context context, ColorDrawable color)
-    {
-        this.events = events;
-        this.context = context;
-        this.drawable = color;
-    }
+  public EventDecorator(ArrayList<CalendarDay> events, Context context, ColorDrawable color)
+  {
+    this.events = events;
+    this.context = context;
+    this.drawable = color;
+  }
 
-    @Override
-    public boolean shouldDecorate(CalendarDay calendarDay) {
-        return events.contains(calendarDay);
-    }
+  @Override
+  public boolean shouldDecorate(CalendarDay calendarDay) {
+    return events.contains(calendarDay);
+  }
 
-    @Override
-    public void decorate(DayViewFacade dayViewFacade) {
-        dayViewFacade.setBackgroundDrawable(drawable);
-    }
+  @Override
+  public void decorate(DayViewFacade dayViewFacade) {
+    dayViewFacade.setBackgroundDrawable(drawable);
+  }
 }

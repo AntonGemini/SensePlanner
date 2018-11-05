@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -54,6 +55,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
+import io.reactivex.SingleSource;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -87,6 +89,7 @@ public class DailyChartFragment extends Fragment {
     @BindView(R.id.rb_mood) RadioButton mMoodRadio;
     @BindView(R.id.et_dateS) EditText mDateS;
     @BindView(R.id.chart) PieChart mChart;
+    @BindView(R.id.onboardingDailyChart) ConstraintLayout mOnboardingLayout;
 
     public static SectionsPageAdapter.nextFragmentListener chartListener;
 
@@ -127,7 +130,7 @@ public class DailyChartFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_daily_chart, container, false);
         ButterKnife.bind(this,view);
 
-        mChart.setNoDataText(getString(R.string.empty_chart_text));
+        //mChart.setNoDataText(getString(R.string.empty_chart_text));
         ArrayAdapter<CharSequence> chartAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.charts_name,android.R.layout.simple_spinner_item);
         chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -313,6 +316,9 @@ public class DailyChartFragment extends Fragment {
 
         eventsList = new ArrayList<>();
         RxFirebaseDatabase.observeSingleValueEvent(query,DataSnapshotMapper.listOf(ActivityRecord.class))
+                .switchIfEmpty((SingleSource<? extends List<ActivityRecord>>) empty -> {
+                    showEmptyImage();
+                })
                 .subscribe(events -> {
                     for (ActivityRecord ac : events)
                     {
@@ -321,8 +327,26 @@ public class DailyChartFragment extends Fragment {
                             eventsList.add(ac);
                         }
                     }
+
+                    if (eventsList.size()==0)
+                    {
+                        showEmptyImage();
+                    }
+                    else {
+                        hideEmptyImage();
+                    }
                     loadMoodAddictionData();
                 });
+    }
+
+    private void showEmptyImage()
+    {
+        mOnboardingLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void hideEmptyImage()
+    {
+        mOnboardingLayout.setVisibility(View.GONE);
     }
 
     private void loadMoodAddictionData() {

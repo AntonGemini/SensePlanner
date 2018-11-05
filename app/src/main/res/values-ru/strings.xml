@@ -85,7 +85,8 @@
     <string name="tomorrow">Завтра</string>
     <string name="event_name">Имя события</string>
     <string name="event_desc">Описание события</string>
-    <string name="hint_1_label">Нажмите на занятие для создания записи</string>
+    <string name="hint_1_label">Нажмите на занятие для создания записи или создайте новое
+        в настройках приложения!</string>
 
     <string name="widget_label">Пожалуйста, введите дату для ежедневного графика!</string>
 
@@ -113,5 +114,12 @@
     <string name="chart_mood_short">Настр.</string>
 
     <string name="edit_cat_label">Редактирование категорий</string>
+
+    <string name="onboard_swipe">Проведите в сторону, чтобы удалить, категорию</string>
+    <string name="onboard_touch">Коснитесь "+", чтобы добавить категорию</string>
+    <string name="onboard_ok">ПОНЯТНО!</string>
+
+    <string name="empty_data">Кажется нет ни одной записи, давайте попробуем добавить одну.</string>
+    <string name="empty_list">Кажется для данных условий поиска нет данных.</string>
 
 </resources>

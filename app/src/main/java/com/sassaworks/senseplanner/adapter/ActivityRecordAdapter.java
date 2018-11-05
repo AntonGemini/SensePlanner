@@ -14,48 +14,48 @@ import java.util.ArrayList;
 
 public class ActivityRecordAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
-    Context context;
-    ArrayList<CollectionItem> records;
-    ActivityViewHolder.OnMoreClickListener moreClickListener;
+  Context context;
+  ArrayList<CollectionItem> records;
+  ActivityViewHolder.OnMoreClickListener moreClickListener;
 
-    public ActivityRecordAdapter(Context context, ArrayList<CollectionItem> records, ActivityViewHolder.OnMoreClickListener listener)
+  public ActivityRecordAdapter(Context context, ArrayList<CollectionItem> records, ActivityViewHolder.OnMoreClickListener listener)
+  {
+    this.context = context;
+    this.records = records;
+    this.moreClickListener = listener;
+  }
+
+  @NonNull
+  @Override
+  public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    View view;
+    switch (viewType)
     {
-        this.context = context;
-        this.records = records;
-        this.moreClickListener = listener;
+      case CollectionItem.TYPE_DATE:
+        view = LayoutInflater.from(context).inflate(R.layout.item_header,parent,false);
+        return new HeaderViewHolder(view);
+      case CollectionItem.TYPE_DESC:
+        view = LayoutInflater.from(context).inflate(R.layout.item_record,parent,false);
+        return new ActivityViewHolder(view);
     }
+    return null;
+  }
 
-    @NonNull
-    @Override
-    public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
-        switch (viewType)
-        {
-            case CollectionItem.TYPE_DATE:
-                view = LayoutInflater.from(context).inflate(R.layout.item_header,parent,false);
-                return new HeaderViewHolder(view);
-            case CollectionItem.TYPE_DESC:
-                view = LayoutInflater.from(context).inflate(R.layout.item_record,parent,false);
-                return new ActivityViewHolder(view);
-        }
-        return null;
-    }
+  @Override
+  public int getItemViewType(int position) {
 
-    @Override
-    public int getItemViewType(int position) {
+    return records.get(position).getItemType();
+  }
 
-        return records.get(position).getItemType();
-    }
+  @Override
+  public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
+    //bind data of list(position)
+    holder.bindValues(records.get(position),context, moreClickListener);
+  }
 
-    @Override
-    public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
-        //bind data of list(position)
-        holder.bindValues(records.get(position),context, moreClickListener);
-    }
-
-    @Override
-    public int getItemCount() {
-        return records.size();
-    }
+  @Override
+  public int getItemCount() {
+    return records.size();
+  }
 
 }

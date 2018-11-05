@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,6 +100,7 @@ public class ChartFragment extends Fragment {
     @BindView(R.id.et_dateF) EditText mDateF;
     @BindView(R.id.chart) BarChart mChart;
     @BindView(R.id.rg_typeGroup) RadioGroup mTypeGroup;
+    @BindView(R.id.onboardingChart) ConstraintLayout onboardingChart;
 
     private long mStartTimeInMillis = 0;
     private long mFinishTimeInMillis = 0;
@@ -177,7 +179,6 @@ public class ChartFragment extends Fragment {
         {
             throw new ClassCastException(context.toString());
         }
-
     }
 
     public AdapterView.OnItemSelectedListener onChartItemSelected = new AdapterView.OnItemSelectedListener() {
@@ -308,6 +309,8 @@ public class ChartFragment extends Fragment {
         });
     }
 
+
+
     private void fillAppMoodSpinners() {
         mAppealingType.setVisibility(View.VISIBLE);
         mMoodType.setVisibility(View.VISIBLE);
@@ -427,6 +430,7 @@ public class ChartFragment extends Fragment {
 
         RxFirebaseDatabase.observeSingleValueEvent(query,DataSnapshotMapper.listOf(ActivityRecord.class))
                 .switchIfEmpty((SingleSource<? extends List<ActivityRecord>>) emp->{
+                    showEmptyImage();
                     DrawBestAppealingChart(rawEntries);
                 })
                 .subscribe(events -> {
@@ -440,8 +444,23 @@ public class ChartFragment extends Fragment {
                             }
                         }
                     }
+                    if (rawEntries.isEmpty())
+                        showEmptyImage();
+                    else
+                        hideEmptyImage();
+
                     DrawBestAppealingChart(rawEntries);
                 });
+    }
+
+    private void showEmptyImage()
+    {
+        onboardingChart.setVisibility(View.VISIBLE);
+    }
+
+    private void hideEmptyImage()
+    {
+        onboardingChart.setVisibility(View.GONE);
     }
 
     private void DrawBestAppealingChart(Map<String, Float> rawEntries) {

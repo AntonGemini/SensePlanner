@@ -9,156 +9,179 @@ import java.util.Calendar;
 
 public class ActivityRecord extends Category implements CollectionItem {
 
-    @Exclude
-    private String key;
+  @Exclude
+  private String key;
 
-    private long timestamp;
-    private long timestampF;
+  private long timestamp;
+  private long timestampF;
 
-    private String category;
-    private String moodType;
-    private String jobAddiction;
-    private String desciption;
+  private String category;
+  private String moodType;
+  private String jobAddiction;
+  private String desciption;
 
-    private boolean withNotify;
-    private long eventId;
-
-    public ActivityRecord()
-    {}
-
-    public ActivityRecord(String name, long timestamp, String category, String moodType,
-                          String jobAddiction, String desciption, boolean withNotify, long timestampF)
-    {
-        super.setName(name);
-        this.timestamp = timestamp;
-        this.category = category;
-        this.moodType = moodType;
-        this.jobAddiction = jobAddiction;
-        this.desciption = desciption;
-        this.withNotify = withNotify;
-        this.timestampF = timestampF;
-    }
+  private boolean withNotify;
+  private long eventId;
+  private int appealInd;
 
 
-    protected ActivityRecord(Parcel in) {
-        super(in);
-        key = in.readString();
-        timestamp = in.readLong();
-        category = in.readString();
-        moodType = in.readString();
-        jobAddiction = in.readString();
-        desciption = in.readString();
-        withNotify = in.readByte() != 0;
-        timestampF = in.readLong();
-        eventId = in.readLong();
+
+  private int moodInd;
+
+  public ActivityRecord()
+  {}
+
+  public ActivityRecord(String name, long timestamp, String category, String moodType,
+                        String jobAddiction, String desciption, boolean withNotify, long timestampF,
+                        int appealInd, int moodInd)
+  {
+    super.setName(name);
+    this.timestamp = timestamp;
+    this.category = category;
+    this.moodType = moodType;
+    this.jobAddiction = jobAddiction;
+    this.desciption = desciption;
+    this.withNotify = withNotify;
+    this.timestampF = timestampF;
+    this.appealInd = appealInd;
+    this.moodInd = moodInd;
+  }
+
+
+  protected ActivityRecord(Parcel in) {
+    super(in);
+    key = in.readString();
+    timestamp = in.readLong();
+    category = in.readString();
+    moodType = in.readString();
+    jobAddiction = in.readString();
+    desciption = in.readString();
+    withNotify = in.readByte() != 0;
+    timestampF = in.readLong();
+    eventId = in.readLong();
+    appealInd = in.readInt();
+    moodInd = in.readInt();
+  }
+
+  @Override
+  public void writeToParcel(Parcel dest, int flags) {
+    super.writeToParcel(dest,flags);
+    dest.writeString(key);
+    dest.writeLong(timestamp);
+    dest.writeString(category);
+    dest.writeString(moodType);
+    dest.writeString(jobAddiction);
+    dest.writeString(desciption);
+    dest.writeByte((byte) (withNotify ? 1 : 0));
+    dest.writeLong(timestampF);
+    dest.writeLong(eventId);
+    dest.writeInt(appealInd);
+    dest.writeInt(moodInd);
+  }
+
+  @Override
+  public int describeContents() {
+    return 0;
+  }
+
+  public static final Creator<ActivityRecord> CREATOR = new Creator<ActivityRecord>() {
+    @Override
+    public ActivityRecord createFromParcel(Parcel in) {
+      return new ActivityRecord(in);
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest,flags);
-        dest.writeString(key);
-        dest.writeLong(timestamp);
-        dest.writeString(category);
-        dest.writeString(moodType);
-        dest.writeString(jobAddiction);
-        dest.writeString(desciption);
-        dest.writeByte((byte) (withNotify ? 1 : 0));
-        dest.writeLong(timestampF);
-        dest.writeLong(eventId);
+    public ActivityRecord[] newArray(int size) {
+      return new ActivityRecord[size];
     }
+  };
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+  public long getTimestamp() {
+    return timestamp;
+  }
 
-    public static final Creator<ActivityRecord> CREATOR = new Creator<ActivityRecord>() {
-        @Override
-        public ActivityRecord createFromParcel(Parcel in) {
-            return new ActivityRecord(in);
-        }
+  public void setTimestamp(long timestamp) {
+    this.timestamp = timestamp;
+  }
 
-        @Override
-        public ActivityRecord[] newArray(int size) {
-            return new ActivityRecord[size];
-        }
-    };
+  public String getCategory() {
+    return category;
+  }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
+  public void setCategory(String category) {
+    this.category = category;
+  }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
+  public String getMoodType() {
+    return moodType;
+  }
 
-    public String getCategory() {
-        return category;
-    }
+  public void setMoodType(String moodType) {
+    this.moodType = moodType;
+  }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+  public String getJobAddiction() {
+    return jobAddiction;
+  }
 
-    public String getMoodType() {
-        return moodType;
-    }
+  public void setJobAddiction(String jobAddiction) {
+    this.jobAddiction = jobAddiction;
+  }
 
-    public void setMoodType(String moodType) {
-        this.moodType = moodType;
-    }
+  public String getDesciption() {
+    return desciption;
+  }
 
-    public String getJobAddiction() {
-        return jobAddiction;
-    }
+  public void setDesciption(String desciption) {
+    this.desciption = desciption;
+  }
 
-    public void setJobAddiction(String jobAddiction) {
-        this.jobAddiction = jobAddiction;
-    }
+  public boolean isWithNotify() {
+    return withNotify;
+  }
 
-    public String getDesciption() {
-        return desciption;
-    }
+  public void setWithNotify(boolean withNotify) {
+    this.withNotify = withNotify;
+  }
 
-    public void setDesciption(String desciption) {
-        this.desciption = desciption;
-    }
+  public String getKey() {
+    return key;
+  }
 
-    public boolean isWithNotify() {
-        return withNotify;
-    }
+  public void setKey(String key) {
+    this.key = key;
+  }
 
-    public void setWithNotify(boolean withNotify) {
-        this.withNotify = withNotify;
-    }
+  public long getTimestampF() { return timestampF; }
 
-    public String getKey() {
-        return key;
-    }
+  public void setTimestampF(long timestampF) {this.timestampF = timestampF; }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+  public long getEventId() { return eventId; }
 
-    public long getTimestampF() { return timestampF; }
+  public void setEventId(long eventId) {this.eventId = eventId; }
 
-    public void setTimestampF(long timestampF) {this.timestampF = timestampF; }
+  public int getAppealInd() { return appealInd; }
+  public void setAppealInd(int appealInd) { this.appealInd = appealInd; }
 
-    public long getEventId() { return eventId; }
+  public int getMoodInd() {
+    return moodInd;
+  }
 
-    public void setEventId(long eventId) {this.eventId = eventId; }
+  public void setMoodInd(int moodInd) {
+    this.moodInd = moodInd;
+  }
 
 
 
-    @Override
-    public int getItemType() {
-        return CollectionItem.TYPE_DESC;
-    }
+  @Override
+  public int getItemType() {
+    return CollectionItem.TYPE_DESC;
+  }
 
-    @Override
-    public String getFormattedDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp);
-        return new SimpleDateFormat("dd-MM-yyyy").format(calendar.getTime());
-    }
+  @Override
+  public String getFormattedDate() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTimeInMillis(timestamp);
+    return new SimpleDateFormat("dd-MM-yyyy").format(calendar.getTime());
+  }
 }

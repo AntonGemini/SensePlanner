@@ -5,16 +5,17 @@ import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -43,6 +44,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.sassaworks.senseplanner.CreateTaskActivity;
+import com.sassaworks.senseplanner.LoginActivity;
 import com.sassaworks.senseplanner.R;
 import com.sassaworks.senseplanner.adapter.ActivityRecordAdapter;
 import com.sassaworks.senseplanner.adapter.ActivityViewHolder;
@@ -86,6 +88,8 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private static final String START_DATE = "date_s";
     private static final String ACTIVITY_POSITION = "activity_position";
 
+    public static final String WELCOME_LABEL_EVENTS = "welcome_label_events";
+
     // TODO: Rename and change types of parameters
     private long mDateS=0;
     private long mDateF=0;
@@ -98,6 +102,8 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     @BindView(R.id.et_date_s) EditText mDateText;
     @BindView(R.id.et_date_f) EditText mDateTextF;
     @BindView(R.id.sp_activities) Spinner mActivityType;
+    @BindView(R.id.onboardingEvents) ConstraintLayout mOnboardingEvents;
+    @BindView(R.id.onboardingEventsList) ConstraintLayout mOnboardingEventsList;
 
     @BindView(R.id.fabToday) FloatingActionButton fabToday;
     @BindView(R.id.fabYesterday) FloatingActionButton mFabYesterday;
@@ -109,6 +115,9 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private long finalDate = 0;
     private long startDate = 0;
     private int activityPosition;
+    LinearSpacingItemDecoration dividerItemDecoration;
+    //SharedPreferences sharedPreferences;
+    private boolean mIsEmpty = true;
 
 
     public EventsFragment() {
@@ -145,6 +154,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -152,10 +162,27 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events, container, false);
         ButterKnife.bind(this,view);
+
+        /*sharedPreferences = getDefaultSharedPreferences(getContext());
+        if (!sharedPreferences.getBoolean(WELCOME_LABEL_EVENTS,false))
+        {
+            mOnboardingEvents.setVisibility(View.VISIBLE);
+        }*/
+
         db = FirebaseDatabase.getInstance();
+
         user = FirebaseAuth.getInstance().getCurrentUser();
         mDateText.setOnClickListener(onDateClickListener);
         mDateTextF.setOnClickListener(onDateClickListener);
+
+//        if (LoginActivity.IS_FIRST_TIME) {
+//            mOnboardingEvents.setVisibility(View.VISIBLE);
+//        }
+//        else
+//        {
+//            mOnboardingEvents.setVisibility(View.GONE);
+//        }
+
         if (savedInstanceState != null) {
             adapterPosition = savedInstanceState.getInt(ADAPTER_POSITION);
             activityPosition = savedInstanceState.getInt(ACTIVITY_POSITION);
@@ -261,7 +288,7 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private void fillCategorySpinner()
     {
         CategoriesAdapter mActivitiesAdapter = new CategoriesAdapter(getActivity(), activitiesList.toArray(new String[0]));
-        //mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
+
         mActivityType.setAdapter(mActivitiesAdapter);
         mActivityType.setOnItemSelectedListener(onActivityItemSelected);
         if (activityPosition!=0)
@@ -308,6 +335,19 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
 
     @Override
     public void onActivityRecordsLoaded(ArrayList<ActivityRecord> data) {
+        if (data.size()==0 && !LoginActivity.IS_FIRST_TIME)
+        {
+            LoginActivity.IS_FIRST_TIME = false;
+            mIsEmpty = true;
+            showEmptyImage();
+        }
+        else
+        {
+            LoginActivity.IS_FIRST_TIME = false;
+            mIsEmpty = false;
+            hideEmptyImage();
+        }
+
         ArrayList<CollectionItem> formatedRecords = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         Date currentItemDate = new Date(1970,1,1);
@@ -329,15 +369,29 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
 
         ActivityRecordAdapter adapter = new ActivityRecordAdapter(getActivity(),formatedRecords,this);
         mEventRecyclerView.setAdapter(adapter);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         mEventRecyclerView.setLayoutManager(layoutManager);
-        LinearSpacingItemDecoration dividerItemDecoration = new LinearSpacingItemDecoration();
-        mEventRecyclerView.addItemDecoration(dividerItemDecoration);
-//
-//          ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).getOrientation());
-//        mEventRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        if (mEventRecyclerView.getItemDecorationCount() == 0
+                || mEventRecyclerView.getItemDecorationAt(0) == null) {
+            dividerItemDecoration = new LinearSpacingItemDecoration();
+            mEventRecyclerView.addItemDecoration(dividerItemDecoration);
+        }
+
         if (adapterPosition != -1)
             mEventRecyclerView.getLayoutManager().scrollToPosition(adapterPosition);
+    }
+
+    private void showEmptyImage()
+    {
+
+        mOnboardingEventsList.setVisibility(View.VISIBLE);
+    }
+
+    private void hideEmptyImage()
+    {
+        mOnboardingEventsList.setVisibility(View.GONE);
     }
 
 
@@ -502,12 +556,63 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     };
 
     @Override
+    public void onPause() {
+        super.onPause();
+        //LoginActivity.IS_FIRST_TIME = false;
+        /*SharedPreferences.Editor editor
+                = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+        editor.putBoolean(WELCOME_LABEL_EVENTS,true).apply();*/
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mIsEmpty)
+        {
+            showEmptyImage();
+        }
+//        if (LoginActivity.IS_FIRST_TIME) {
+//            mOnboardingEvents.setVisibility(View.VISIBLE);
+//        }
+//        else
+//        {
+//            mOnboardingEvents.setVisibility(View.GONE);
+//        }
+        /*SharedPreferences sharedPreferences =
+                getDefaultSharedPreferences(getContext());
+        if (!sharedPreferences.getBoolean(WELCOME_LABEL_EVENTS, false)) {
+            mOnboardingEvents.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mOnboardingEvents.setVisibility(View.GONE);
+        }*/
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && mIsEmpty)
+        {
+            showEmptyImage();
+        }
+//        if (mOnboardingEvents != null) {
+//            if (LoginActivity.IS_FIRST_TIME) {
+//                mOnboardingEvents.setVisibility(View.VISIBLE);
+//            } else {
+//                mOnboardingEvents.setVisibility(View.GONE);
+//            }
+//        }
+
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mEventRecyclerView!=null && mEventRecyclerView.getAdapter()!=null && mEventRecyclerView.getAdapter().getItemCount()!= 0)
         {
-            outState.putInt(ADAPTER_POSITION,
-                    ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition());
+            adapterPosition = ((LinearLayoutManager)mEventRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+            outState.putInt(ADAPTER_POSITION,adapterPosition);
         }
         if (mActivityType!=null) {
             outState.putInt(ACTIVITY_POSITION, mActivityType.getSelectedItemPosition());
