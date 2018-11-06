@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
-import com.gmail.samehadar.iosdialog.IOSDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -69,7 +68,6 @@ public class MainActivity extends AppCompatActivity
   private String[] tabNames;
   private AdView mAdBanner;
   FirebaseUser user;
-  IOSDialog dialog2;
 
 
   public static final String ACTIVITY_EXTRA = "activity";
