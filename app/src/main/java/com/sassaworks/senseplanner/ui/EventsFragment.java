@@ -386,7 +386,8 @@ public class EventsFragment extends Fragment implements FirebaseDatabaseHelper.O
     private void showEmptyImage()
     {
 
-        mOnboardingEventsList.setVisibility(View.VISIBLE);
+        if (mOnboardingEvents!= null)
+            mOnboardingEventsList.setVisibility(View.VISIBLE);
     }
 
     private void hideEmptyImage()
