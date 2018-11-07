@@ -11,36 +11,36 @@ import com.sassaworks.senseplanner.ui.CreateTaskFragment;
 
 public class CreateTaskActivity extends FragmentActivity {
 
-    CreateTaskFragment taskFragment;
+  CreateTaskFragment taskFragment;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_task);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_create_task);
 
-        if (savedInstanceState == null) {
-            ActivityRecord record = getIntent().getExtras().getParcelable(CreateTaskFragment.ACTIVITY_RECORD);
-            String activity = getIntent().getExtras().getString(MainActivity.ACTIVITY_EXTRA);
-            int startingDay;
+    if (savedInstanceState == null) {
+      ActivityRecord record = getIntent().getExtras().getParcelable(CreateTaskFragment.ACTIVITY_RECORD);
+      String activity = getIntent().getExtras().getString(MainActivity.ACTIVITY_EXTRA);
+      int startingDay;
 
-            if (record != null) {
-                taskFragment = CreateTaskFragment.newInstance(record);
-            } else if (activity != null) {
-                taskFragment = CreateTaskFragment.newInstance(activity);
-            }
-            else if(getIntent().getExtras().containsKey(CreateTaskFragment.STARTING_DAY))
-            {
-                startingDay = getIntent().getExtras().getInt(CreateTaskFragment.STARTING_DAY);
-                taskFragment = CreateTaskFragment.newInstance(startingDay);
-            }
-            else
-            {
-                taskFragment = CreateTaskFragment.newInstance("");
-            }
+      if (record != null) {
+        taskFragment = CreateTaskFragment.newInstance(record);
+      } else if (activity != null) {
+        taskFragment = CreateTaskFragment.newInstance(activity);
+      }
+      else if(getIntent().getExtras().containsKey(CreateTaskFragment.STARTING_DAY))
+      {
+        startingDay = getIntent().getExtras().getInt(CreateTaskFragment.STARTING_DAY);
+        taskFragment = CreateTaskFragment.newInstance(startingDay);
+      }
+      else
+      {
+        taskFragment = CreateTaskFragment.newInstance("");
+      }
 
-            FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(R.id.frameTask, taskFragment).commit();
-        }
+      FragmentManager fm = getSupportFragmentManager();
+      fm.beginTransaction().replace(R.id.frameTask, taskFragment).commit();
     }
+  }
 
 }

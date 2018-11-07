@@ -68,7 +68,8 @@ public class EditCategoryFragment extends DialogFragment {
                     Activity activity = new Activity();
                     activity.setName(mCategory.getText().toString());
                     db.getReference(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_activities))
-                            .child(activity.getName().toLowerCase()).setValue(activity);
+                            .child(activity.getName().toLowerCase()
+                                    .replaceAll("\\s","")).setValue(activity);
                     dismiss();
                 }
 

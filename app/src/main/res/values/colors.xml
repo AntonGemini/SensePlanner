@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#03a9f4</color>
-    <color name="colorPrimaryDark">#0288d1</color>
-    <color name="colorAccent">#ff4081</color>
+  <color name="colorPrimary">#5c6bc0</color>
+  <color name="colorPrimaryDark">#26418f</color>
+  <color name="colorAccent">#b4004e</color>
 
-    <!--Colors for job appealing-->
-    <color name="low_job">#db4643</color>
-    <color name="avg_job">#e5de50</color>
-    <color name="high_job">#55e881</color>
+  <!--Colors for job appealing-->
+  <color name="low_job">#db4643</color>
+  <color name="avg_job">#e5de50</color>
+  <color name="high_job">#55e881</color>
 
-    <!--Colors for mood-->
-    <color name="low_mood">#db4643</color>
-    <color name="avg_mood">#e5de50</color>
-    <color name="high_mood">#55e881</color>
+  <!--Colors for mood-->
+  <color name="low_mood">#db4643</color>
+  <color name="avg_mood">#e5de50</color>
+  <color name="high_mood">#55e881</color>
 
 
-    <color name="High">@color/high_mood</color>
-    <color name="Good">@color/high_mood</color>
-    <color name="Bad">@color/low_mood</color>
-    <color name="Low">@color/low_mood</color>
-    <color name="Average">@color/avg_mood</color>
-    
-    <color name="rv_background">#e9e9e9</color>
+  <color name="High">@color/high_mood</color>
+  <color name="Good">@color/high_mood</color>
+  <color name="Bad">@color/low_mood</color>
+  <color name="Low">@color/low_mood</color>
+  <color name="Average">@color/avg_mood</color>
+
+  <color name="rv_background">#e9e9e9</color>
+
+  <color name="empty_background">#88d8caf9</color>
 
 </resources>

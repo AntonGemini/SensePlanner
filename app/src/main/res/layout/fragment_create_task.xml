@@ -5,11 +5,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-<android.support.constraint.ConstraintLayout
-    android:id="@+id/linearLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.CreateTaskFragment">
+  <android.support.constraint.ConstraintLayout
+      android:id="@+id/linearLayout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      tools:context=".ui.CreateTaskFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -23,12 +23,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
-        <EditText
-            android:id="@+id/et_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textShortMessage"
-            android:hint="@string/event_name" />
+      <EditText
+          android:id="@+id/et_name"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:inputType="textShortMessage"
+          android:hint="@string/event_name" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -39,13 +39,13 @@
         android:layout_marginStart="@dimen/create_form_padding"
         app:layout_constraintStart_toStartOf="@+id/et_name_layout"
         app:layout_constraintTop_toBottomOf="@+id/et_name_layout">
-        <EditText
-            android:id="@+id/et_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="@string/event_desc"
-            />
+      <EditText
+          android:id="@+id/et_description"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:inputType="text"
+          android:hint="@string/event_desc"
+          />
     </android.support.design.widget.TextInputLayout>
 
     <TextView
@@ -101,16 +101,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sp_mood">
 
-        <EditText
-            android:id="@+id/et_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/create_form_padding"
-            android:layout_marginStart="@dimen/create_form_padding"
-            android:layout_marginTop="@dimen/create_form_padding"
-            android:focusableInTouchMode="false"
-            android:hint="@string/start_date_hint"
-            android:inputType="date" />
+      <EditText
+          android:id="@+id/et_date"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="@dimen/create_form_padding"
+          android:layout_marginStart="@dimen/create_form_padding"
+          android:layout_marginTop="@dimen/create_form_padding"
+          android:focusableInTouchMode="false"
+          android:hint="@string/start_date_hint"
+          android:inputType="date" />
     </android.support.design.widget.TextInputLayout>
 
 
@@ -120,17 +120,17 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_date_layout">
-    <EditText
-        android:id="@+id/et_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/create_form_padding"
-        android:layout_marginStart="@dimen/create_form_padding"
-        android:layout_marginTop="@dimen/create_form_padding"
-        android:focusableInTouchMode="false"
-        android:hint="@string/start_time_hint"
-        android:inputType="time"
-         />
+      <EditText
+          android:id="@+id/et_time"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="@dimen/create_form_padding"
+          android:layout_marginStart="@dimen/create_form_padding"
+          android:layout_marginTop="@dimen/create_form_padding"
+          android:focusableInTouchMode="false"
+          android:hint="@string/start_time_hint"
+          android:inputType="time"
+          />
     </android.support.design.widget.TextInputLayout>
 
 
@@ -167,16 +167,16 @@
         app:layout_constraintStart_toEndOf="@+id/et_date_layout"
         app:layout_constraintTop_toBottomOf="@+id/sp_mood">
 
-        <EditText
-            android:id="@+id/et_date_f"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/create_form_padding"
-            android:layout_marginStart="@dimen/create_form_padding"
-            android:layout_marginTop="@dimen/create_form_padding"
-            android:focusableInTouchMode="false"
-            android:hint="@string/finish_date_hint"
-            android:inputType="date" />
+      <EditText
+          android:id="@+id/et_date_f"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="@dimen/create_form_padding"
+          android:layout_marginStart="@dimen/create_form_padding"
+          android:layout_marginTop="@dimen/create_form_padding"
+          android:focusableInTouchMode="false"
+          android:hint="@string/finish_date_hint"
+          android:inputType="date" />
     </android.support.design.widget.TextInputLayout>
 
 
@@ -189,16 +189,16 @@
         app:layout_constraintStart_toEndOf="@+id/et_time_layout"
         app:layout_constraintTop_toBottomOf="@+id/et_date_f_layout">
 
-        <EditText
-            android:id="@+id/et_time_f"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/create_form_padding"
-            android:layout_marginStart="@dimen/create_form_padding"
-            android:layout_marginTop="@dimen/create_form_padding"
-            android:focusableInTouchMode="false"
-            android:hint="@string/finish_time_hint"
-            android:inputType="time" />
+      <EditText
+          android:id="@+id/et_time_f"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="@dimen/create_form_padding"
+          android:layout_marginStart="@dimen/create_form_padding"
+          android:layout_marginTop="@dimen/create_form_padding"
+          android:focusableInTouchMode="false"
+          android:hint="@string/finish_time_hint"
+          android:inputType="time" />
     </android.support.design.widget.TextInputLayout>
 
     <TextView
@@ -224,5 +224,5 @@
         app:layout_constraintTop_toBottomOf="@+id/sp_appealing" />
 
 
-</android.support.constraint.ConstraintLayout>
+  </android.support.constraint.ConstraintLayout>
 </ScrollView>

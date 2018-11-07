@@ -88,7 +88,7 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="event_name">Event name</string>
     <string name="event_desc">Event description</string>
-    <string name="hint_1_label">Tap category to begin</string>
+    <string name="hint_1_label">Tap category to begin or add new in the app settings!</string>
 
     <string name="widget_label">Please, select date that daily chart will show your mood for!</string>
     <string name="widget_date">Enter date</string>
@@ -114,6 +114,13 @@
     <string name="chart_mood_short">Mood</string>
 
     <string name="edit_cat_label">Editing category</string>
+
+    <string name="onboard_swipe">Swipe to delete activity</string>
+    <string name="onboard_touch">Touch to add new category</string>
+    <string name="onboard_ok">GOT IT!</string>
+
+    <string name="empty_data">Looks like there is no records, let\'s dive into this process.</string>
+    <string name="empty_list">Guess there is no data to show for this conditions</string>
 
 
 </resources>

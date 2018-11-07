@@ -72,7 +72,6 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-
      * @return A new instance of fragment CalendarFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -232,7 +231,7 @@ public class CalendarFragment extends Fragment implements FirebaseDatabaseHelper
                 mCalendarView.addDecorator(
                         new EventDecorator(getDaysByType(Float.valueOf(FIrebaseApp.getInstance().getBaseContext().getApplicationContext().getString(R.string.bound1)),
                                 Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound2)), mEvents),  FIrebaseApp.getInstance().getApplicationContext(),
-                        new ColorDrawable(FIrebaseApp.getInstance().getApplicationContext().getResources().getColor(R.color.low_mood))));
+                                new ColorDrawable(FIrebaseApp.getInstance().getApplicationContext().getResources().getColor(R.color.low_mood))));
 
                 mCalendarView.addDecorator(new EventDecorator(getDaysByType(Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound2)),
                         Float.valueOf(FIrebaseApp.getInstance().getApplicationContext().getString(R.string.bound3)), mEvents), FIrebaseApp.getInstance().getApplicationContext(),

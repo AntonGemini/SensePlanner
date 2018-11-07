@@ -5,71 +5,73 @@
     android:layout_height="match_parent"
     android:id="@+id/radial_menu_widget">
 
+  <android.support.design.widget.FloatingActionButton
+      android:id="@+id/fabMenu"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/dimen_margin_30"
+      android:layout_marginEnd="@dimen/dimen_margin_30"
+      android:layout_marginRight="@dimen/dimen_margin_30"
+      android:layout_gravity="bottom|end"
+      android:contentDescription="@string/desc_show_add_buttons"
+      android:clickable="true"
+      app:srcCompat="@drawable/ic_add_event"
+      android:focusable="true" />
+
+
+
+  <LinearLayout
+      android:id="@+id/yesterdayLayout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_gravity="bottom|end"
+      android:layout_marginBottom="@dimen/dimen_margin_30"
+      android:layout_marginEnd="120dp"
+      android:layout_marginRight="120dp"
+
+      >
+
+    <TextView
+        android:id="@+id/textView"
+        style="@style/Base.TextAppearance.AppCompat.Small"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        android:text="@string/yesterday" />
+
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabMenu"
+        android:id="@+id/fabYesterday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dimen_margin_30"
-        android:layout_marginEnd="@dimen/dimen_margin_30"
-        android:layout_marginRight="@dimen/dimen_margin_30"
-        android:layout_gravity="bottom|end"
-        android:contentDescription="@string/desc_show_add_buttons"
+        android:layout_gravity="center"
         android:clickable="true"
-        app:srcCompat="@drawable/ic_add_event"
+        app:backgroundTint="@color/colorPrimary"
+        android:contentDescription="@string/desc_yesterday_event"
+        app:srcCompat="@drawable/ic_add_yesterday"
         android:focusable="true" />
+  </LinearLayout>
 
-
-
-    <LinearLayout
-        android:id="@+id/yesterdayLayout"
+  <LinearLayout
+      android:id="@+id/todayLayout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:layout_marginBottom="100dp"
+      android:layout_marginEnd="75dp"
+      android:layout_marginRight="75dp"
+      android:orientation="vertical">
+    <TextView
+        android:id="@+id/textView2"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/dimen_margin_30"
-        android:layout_marginEnd="120dp"
-        android:layout_marginRight="120dp"
-
-        >
-
-        <TextView
-            android:id="@+id/textView"
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
-            android:text="@string/yesterday" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabYesterday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:clickable="true"
-            app:backgroundTint="@color/colorPrimary"
-            android:contentDescription="@string/desc_yesterday_event"
-            app:srcCompat="@drawable/ic_add_yesterday"
-            android:focusable="true" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/todayLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="100dp"
-        android:layout_marginEnd="75dp"
-        android:layout_marginRight="75dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_marginEnd="5dp"
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:text="@string/today" />
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        style="@style/Base.TextAppearance.AppCompat.Small"
+        android:text="@string/today" />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabToday"
         android:layout_width="wrap_content"
@@ -80,47 +82,41 @@
         app:backgroundTint="@color/colorPrimary"
         app:srcCompat="@drawable/ic_action_name"
         android:focusable="true" />
-    </LinearLayout>
+  </LinearLayout>
 
 
 
-    <LinearLayout
-        android:id="@+id/tomorrowLayout"
+  <LinearLayout
+      android:id="@+id/tomorrowLayout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:layout_marginBottom="140dp"
+      android:layout_marginEnd="0dp"
+      android:layout_marginRight="0dp"
+      android:orientation="vertical">
+    <TextView
+        android:id="@+id/textView3"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="140dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginRight="0dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_marginEnd="5dp"
-            android:gravity="center"
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:text="@string/tomorrow"
-            />
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabTomorrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:contentDescription="@string/desc_tomorrow_event"
-            app:backgroundTint="@color/colorPrimary"
-            app:srcCompat="@drawable/ic_add_tomorrow"
-            android:focusable="true" />
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        android:gravity="center"
+        style="@style/Base.TextAppearance.AppCompat.Small"
+        android:text="@string/tomorrow"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabTomorrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:contentDescription="@string/desc_tomorrow_event"
+        app:backgroundTint="@color/colorPrimary"
+        app:srcCompat="@drawable/ic_add_tomorrow"
+        android:focusable="true" />
 
-    </LinearLayout>
-
-
-
-
-
-
-
+  </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

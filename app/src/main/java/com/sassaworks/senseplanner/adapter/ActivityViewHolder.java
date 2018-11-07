@@ -57,24 +57,43 @@ public class ActivityViewHolder extends BaseViewHolder {
         Drawable moodDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_satisfied_24px);
         Drawable appealingDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_satisfied_24px);
 
-        if (activityRecord.getMoodType().equals(context.getString(R.string.lb_bad))
-                || activityRecord.getMoodType().equals(context.getString(R.string.lb_low)))
+//        if (activityRecord.getMoodType().equals(context.getString(R.string.lb_bad))
+//                || activityRecord.getMoodType().equals(context.getString(R.string.lb_low)))
+//        {
+//            moodDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_dissatisfied_24px);
+//        }
+//        else if (activityRecord.getMoodType().equals(context.getString(R.string.lb_good)))
+//        {
+//            moodDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_satisfied_24px);
+//        }
+
+        if (activityRecord.getMoodInd() == 0)
         {
             moodDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_dissatisfied_24px);
         }
-        else if (activityRecord.getMoodType().equals(context.getString(R.string.lb_good)))
+        else if (activityRecord.getMoodInd() == 2)
         {
             moodDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_satisfied_24px);
         }
-        if (activityRecord.getJobAddiction().equals(context.getString(R.string.lb_bad))
-                || activityRecord.getJobAddiction().equals(context.getString(R.string.lb_low)))
+
+        if (activityRecord.getAppealInd() == 0)
         {
             appealingDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_dissatisfied_24px);
         }
-        else if (activityRecord.getJobAddiction().equals(context.getString(R.string.lb_high)))
+        else if (activityRecord.getAppealInd() == 2)
         {
             appealingDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_satisfied_24px);
         }
+
+//        if (activityRecord.getJobAddiction().equals(context.getString(R.string.lb_bad))
+//                || activityRecord.getJobAddiction().equals(context.getString(R.string.lb_low)))
+//        {
+//            appealingDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_dissatisfied_24px);
+//        }
+//        else if (activityRecord.getJobAddiction().equals(context.getString(R.string.lb_high)))
+//        {
+//            appealingDrawable = context.getResources().getDrawable(R.drawable.ic_baseline_sentiment_very_satisfied_24px);
+//        }
 //        GradientDrawable colorDrawable = (GradientDrawable)moodDrawable;
 //        GradientDrawable colorAppealingDrawable = (GradientDrawable)appealingDrawable;
 

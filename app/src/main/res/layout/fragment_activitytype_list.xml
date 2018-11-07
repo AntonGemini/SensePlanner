@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -10,37 +12,45 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:layout_margin="@dimen/appbar_padding_top"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:paddingTop="8dp"
-        android:layout_marginBottom="@dimen/double_padding_top"
         android:text="@string/hint_1_label"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20sp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-<android.support.v7.widget.RecyclerView
-    android:layout_marginTop="45dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list"
-    android:name="com.sassaworks.senseplanner.ActivityTypeFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="@dimen/text_margin"
-    android:layout_marginRight="@dimen/text_margin"
-    app:layoutManager="LinearLayoutManager"
-    tools:context=".ui.ActivityTypeFragment"
-    tools:listitem="@layout/fragment_activitytype" />
+    <android.support.v7.widget.RecyclerView xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/list"
+        android:name="com.sassaworks.senseplanner.ActivityTypeFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_welcome_text"
+        tools:context=".ui.ActivityTypeFragment"
+        tools:listitem="@layout/fragment_activitytype" />
 
     <android.support.design.widget.FloatingActionButton
-        android:contentDescription="@string/desc_add_category"
         android:id="@+id/fabAddCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dimen_margin_30"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/dimen_margin_30"
         android:layout_marginRight="@dimen/dimen_margin_30"
-        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/dimen_margin_30"
         android:clickable="true"
-        app:srcCompat="@drawable/ic_add_event"
-        android:focusable="true" />
+        android:contentDescription="@string/desc_add_category"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/list"
+        app:srcCompat="@drawable/ic_add_event" />
 
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>

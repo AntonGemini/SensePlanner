@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +58,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import durdinapps.rxfirebase2.DataSnapshotMapper;
 import durdinapps.rxfirebase2.RxFirebaseDatabase;
+import io.reactivex.SingleSource;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,480 +66,500 @@ import durdinapps.rxfirebase2.RxFirebaseDatabase;
  * create an instance of this fragment.
  */
 public class HourChartFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String START_DATE = "start_date1";
-    private static final String FINISH_DATE = "finish_date1";
-    private static final String CATEGORY_POSITION = "cat_position";
-    private static final String SELECTED_CATEGORY = "selected_category";
+  // TODO: Rename parameter arguments, choose names that match
+  // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+  private static final String START_DATE = "start_date1";
+  private static final String FINISH_DATE = "finish_date1";
+  private static final String CATEGORY_POSITION = "cat_position";
+  private static final String SELECTED_CATEGORY = "selected_category";
 
-    FirebaseDatabase db;
-    DatabaseReference baseRef;
-    FirebaseUser user;
+  FirebaseDatabase db;
+  DatabaseReference baseRef;
+  FirebaseUser user;
 
-    int mYear;
-    int mMonth;
-    int mDayOfMonth;
-    String selectedCategory;
-    String selectedType;
-    private boolean isDrawing = true;
-    List<String> activitiesList;
-    List<ActivityRecord> eventsList;
-    Map<String,Integer> moodMap = new HashMap<>();
-    Map<String,Integer> appealingMap = new HashMap<>();
-    Map<Float, String> lables;
+  int mYear;
+  int mMonth;
+  int mDayOfMonth;
+  String selectedCategory;
+  String selectedType;
+  private boolean isDrawing = true;
+  List<String> activitiesList;
+  List<ActivityRecord> eventsList;
+  Map<String,Integer> moodMap = new HashMap<>();
+  Map<String,Integer> appealingMap = new HashMap<>();
+  Map<Float, String> lables;
 
-    @BindView(R.id.sp_chartName) Spinner mChartName;
-    @BindView(R.id.sp_categories) Spinner mActivityType;
-    @BindView(R.id.rb_appealing) RadioButton mAppealingRadio;
-    @BindView(R.id.rb_mood) RadioButton mMoodRadio;
-    @BindView(R.id.et_dateS1) EditText mDateS;
-    @BindView(R.id.chart) BarChart mChart;
+  @BindView(R.id.sp_chartName) Spinner mChartName;
+  @BindView(R.id.sp_categories) Spinner mActivityType;
+  @BindView(R.id.rb_appealing) RadioButton mAppealingRadio;
+  @BindView(R.id.rb_mood) RadioButton mMoodRadio;
+  @BindView(R.id.et_dateS1) EditText mDateS;
+  @BindView(R.id.chart) BarChart mChart;
+  @BindView(R.id.onboardingHourChart) ConstraintLayout mOnboardingHourChart;
 
-    public static SectionsPageAdapter.nextFragmentListener chartListener;
+  public static SectionsPageAdapter.nextFragmentListener chartListener;
 
-    private long mStartTimeInMillis = 0;
-    private long mFinishTimeInMillis = 0;
-    private int mCategoryPosition;
+  private long mStartTimeInMillis = 0;
+  private long mFinishTimeInMillis = 0;
+  private int mCategoryPosition;
 
-    private ChartFragment.OnChartNameSelected mCallback;
-
-
-    public HourChartFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment HourChartFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HourChartFragment newInstance() {
-        HourChartFragment fragment = new HourChartFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        //chartListener = listener;
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_hour_chart, container, false);
-
-        ButterKnife.bind(this,view);
-
-        db = FirebaseDatabase.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        baseRef = db.getReference(getString(R.string.ref_planner)).child(user.getUid());
-
-        ArrayAdapter<CharSequence> chartAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.charts_name,android.R.layout.simple_spinner_item);
-        chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mChartName.setAdapter(chartAdapter);
-        mChartName.setOnItemSelectedListener(onChartItemSelected);
-        mChartName.setSelection(1,false);
-
-        mDateS.setOnClickListener(onDateClickListener);
-        mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
-        mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
-
-        if (savedInstanceState != null)
-        {
-            mStartTimeInMillis = savedInstanceState.getLong(START_DATE);
-            mFinishTimeInMillis = savedInstanceState.getLong(FINISH_DATE);
-            mCategoryPosition = savedInstanceState.getInt(CATEGORY_POSITION);
-            selectedCategory = savedInstanceState.getString(SELECTED_CATEGORY);
-        }
-
-        return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mCallback = (ChartFragment.OnChartNameSelected)context;
-        } catch(ClassCastException ex)
-        {
-            throw new ClassCastException(context.toString());
-        }
-
-    }
+  private ChartFragment.OnChartNameSelected mCallback;
 
 
-    public AdapterView.OnItemSelectedListener onChartItemSelected = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (view != null) {
-                String selectedMenu = ((TextView) view).getText().toString();
-                if (position == 0) {
-                    mCallback.onChartNameSelected("Chart");
-                    //chartListener.fragment0Changed("Chart", getActivity().getSupportFragmentManager());
-                } else if (position == 1) {
-                    LoadHourChart();
-                }
-                else {
-                    mCallback.onChartNameSelected("Daily");
-                    //chartListener.fragment0Changed("Daily", getActivity().getSupportFragmentManager());
-                }
-            }
-        }
+  public HourChartFragment() {
+    // Required empty public constructor
+  }
 
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
+  /**
+   * Use this factory method to create a new instance of
+   * this fragment using the provided parameters.
+   *
+   * @return A new instance of fragment HourChartFragment.
+   */
+  // TODO: Rename and change types and number of parameters
+  public static HourChartFragment newInstance() {
+    HourChartFragment fragment = new HourChartFragment();
+    Bundle args = new Bundle();
+    fragment.setArguments(args);
+    //chartListener = listener;
+    return fragment;
+  }
 
-        }
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  }
 
-    };
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
+    // Inflate the layout for this fragment
+    View view = inflater.inflate(R.layout.fragment_hour_chart, container, false);
 
-    private void LoadHourChart() {
+    ButterKnife.bind(this,view);
 
-        selectedCategory = "";
+    db = FirebaseDatabase.getInstance();
+    user = FirebaseAuth.getInstance().getCurrentUser();
+    baseRef = db.getReference(getString(R.string.ref_planner)).child(user.getUid());
 
-        DatabaseReference referActivities = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_activities));
-        activitiesList = new ArrayList<>();
-        activitiesList.add(getString(R.string.all_types));
-        RxFirebaseDatabase.observeSingleValueEvent(referActivities, DataSnapshotMapper.listOf(com.sassaworks.senseplanner.data.Activity.class))
-                .subscribe(activities -> {
-                    for (Category c : activities) {
-                        activitiesList.add(c.getName());
-                        //moodMap.put(m.getName(), m.getNumValue());
-                    }
-                    fillCategorySpinner();
-                });
+    ArrayAdapter<CharSequence> chartAdapter = ArrayAdapter.createFromResource(getContext(),
+            R.array.charts_name,android.R.layout.simple_spinner_item);
+    chartAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    mChartName.setAdapter(chartAdapter);
+    mChartName.setOnItemSelectedListener(onChartItemSelected);
+    mChartName.setSelection(1,false);
 
-    }
+    mDateS.setOnClickListener(onDateClickListener);
+    mAppealingRadio.setOnCheckedChangeListener(onCheckedListener);
+    mMoodRadio.setOnCheckedChangeListener(onCheckedListener);
 
-
-    private void fillCategorySpinner()
+    if (savedInstanceState != null)
     {
-        CategoriesAdapter mActivitiesAdapter = new CategoriesAdapter(getActivity(), activitiesList.toArray(new String[0]));
-        mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
-        mActivityType.setAdapter(mActivitiesAdapter);
-        mActivityType.setOnItemSelectedListener(onActivityItemSelected);
-        if (mCategoryPosition!=0)
-        {
-            mActivityType.setSelection(mCategoryPosition);
-        }
+      mStartTimeInMillis = savedInstanceState.getLong(START_DATE);
+      mFinishTimeInMillis = savedInstanceState.getLong(FINISH_DATE);
+      mCategoryPosition = savedInstanceState.getInt(CATEGORY_POSITION);
+      selectedCategory = savedInstanceState.getString(SELECTED_CATEGORY);
     }
 
-    private View.OnClickListener onDateClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            dateSelected(v);
-        }
-    };
+    return view;
+  }
 
-    public void dateSelected(View v)
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    try {
+      mCallback = (ChartFragment.OnChartNameSelected)context;
+    } catch(ClassCastException ex)
     {
-        final Calendar calendar = Calendar.getInstance();
-
-        DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                //mDateText.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
-                mDateS.setText(getString(R.string.date_format,String.valueOf(dayOfMonth),String.valueOf(month+1),String.valueOf(year)));
-                mYear = year;
-                mMonth = month;
-                mDayOfMonth = dayOfMonth;
-                mStartTimeInMillis = 0;
-                mFinishTimeInMillis = 0;
-                GetDataHourChart();
-            }
-        },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
-
-        dialog.show();
+      throw new ClassCastException(context.toString());
     }
 
-    public AdapterView.OnItemSelectedListener onActivityItemSelected = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-//            if (!isDrawing) {
-                if (pos > 0) {
-                    TextView tv = view.findViewById(R.id.item_tv_category);
-                    //String selection = getKeyByValue(appealingMap, pos);
-                    selectedCategory = tv.getText().toString();
-                } else if (pos == 0) {
-                    selectedCategory = "";
-                }
-                GetDataHourChart();
-//            }
-        }
+  }
 
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
 
-        }
-
-    };
-
-    private CompoundButton.OnCheckedChangeListener onCheckedListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-            if (mAppealingRadio.isChecked())
-            {
-                selectedType = getString(R.string.ref_appealing);
-            }
-            else if (mMoodRadio.isChecked())
-            {
-                selectedType = getString(R.string.ref_mood);
-            }
-            GetDataHourChart();
-        }
-    };
-
-    private void GetDataHourChart() {
-
-        if (mChart.getBarData()!=null){
-            mChart.getBarData().removeDataSet(0);
-            mChart.invalidate();
-        }
-        String order;
-        order = "category";
-
-        Calendar cS = Calendar.getInstance();
-        Calendar cF = Calendar.getInstance();
-
-        if (mStartTimeInMillis!= 0)
-        {
-            cS.setTimeInMillis(mStartTimeInMillis);
-            cF.setTimeInMillis(mFinishTimeInMillis);
-            mYear = cS.get(Calendar.YEAR);
-            mMonth = cS.get(Calendar.MONTH);
-            mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
-            mDateS.setText(getResources().getString(R.string.date_format,String.valueOf(mYear),
-                    String.valueOf(mMonth+1),String.valueOf(mDayOfMonth)));
-
-        }
-        else if (!mDateS.getText().toString().equals(""))
-        {
-            cS.set(mYear,mMonth,mDayOfMonth,0,0);
-            cF.set(cF.get(Calendar.YEAR)+10,cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH),23,59);
+  public AdapterView.OnItemSelectedListener onChartItemSelected = new AdapterView.OnItemSelectedListener() {
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+      if (view != null) {
+        String selectedMenu = ((TextView) view).getText().toString();
+        if (position == 0) {
+          mCallback.onChartNameSelected("Chart");
+          //chartListener.fragment0Changed("Chart", getActivity().getSupportFragmentManager());
+        } else if (position == 1) {
+          LoadHourChart();
         }
         else {
-            cS.set(cS.get(Calendar.YEAR),cS.get(Calendar.MONTH),cS.get(Calendar.DAY_OF_MONTH), 0,0);
-            cS.add(Calendar.DAY_OF_MONTH,-10);
-            cF.set(cF.get(Calendar.YEAR),cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH),23,59);
-            mYear = cS.get(Calendar.YEAR);
-            mMonth = cS.get(Calendar.MONTH);
-            mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
-            mDateS.setText(getResources().getString(R.string.date_format,String.valueOf(mYear),
-                    String.valueOf(mMonth+1),String.valueOf(mDayOfMonth)));
-
+          mCallback.onChartNameSelected("Daily");
+          //chartListener.fragment0Changed("Daily", getActivity().getSupportFragmentManager());
         }
-
-        mStartTimeInMillis = cS.getTimeInMillis();
-        mFinishTimeInMillis = cF.getTimeInMillis();
-
-        DatabaseReference ref = baseRef.child(getString(R.string.activity_records));
-        ref.keepSynced(true);
-        Query query = ref.orderByChild(order);
-
-        if (selectedCategory!=null && selectedCategory!="")
-        {
-            query = query.equalTo(selectedCategory);
-        }
-
-        RxFirebaseDatabase.observeSingleValueEvent(query,DataSnapshotMapper.listOf(ActivityRecord.class))
-                .subscribe(events -> {
-                    eventsList = new ArrayList<>();
-                    for (ActivityRecord ac : events)
-                    {
-                        if (ac.getTimestamp()>=cS.getTimeInMillis() && ac.getTimestamp()<= cF.getTimeInMillis()) {
-                            eventsList.add(ac);
-                        }
-                    }
-                    BreakListIntoDatesMap();
-
-                });
-    }
-
-    private void BreakListIntoDatesMap() {
-        lables = new HashMap<>();
-        Map<String,List<ActivityRecord>> mappedEvents = new HashMap<>();
-        Calendar cl = Calendar.getInstance();
-        cl.set(mYear,mMonth,mDayOfMonth);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        for (int i = 0; i < 11; i++) {
-            lables.put(Float.valueOf(i), sdf.format(cl.getTime()));
-            for (ActivityRecord ac : eventsList) {
-                if (ac.getFormattedDate().equals(sdf.format(cl.getTime()))) {
-                    if (mappedEvents.containsKey(sdf.format(cl.getTime()))) {
-                        mappedEvents.get(sdf.format(cl.getTime())).add(ac);
-                    } else {
-                        List<ActivityRecord> list = new ArrayList<>();
-                        list.add(ac);
-                        mappedEvents.put(sdf.format(cl.getTime()), list);
-                    }
-                }
-            }
-            cl.add(Calendar.DAY_OF_MONTH,1);
-        }
-        mappedEvents.size();
-
-        Query referAppealing = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_appealing)).orderByChild("numValue");
-        Query referMood = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_mood)).orderByChild("numValue");
-
-        RxFirebaseDatabase.observeSingleValueEvent(referMood, DataSnapshotMapper.listOf(Mood.class))
-                .concatMap(mood->{
-                    for(Mood m:mood)
-                    {
-                        moodMap.put(m.getName(),m.getNumValue());
-                    }
-                    return RxFirebaseDatabase.observeSingleValueEvent(referAppealing, DataSnapshotMapper.listOf(Appealing.class));
-                }).subscribe(apps->{
-            for(Appealing a:apps)
-            {
-                appealingMap.put(a.getName(),a.getNumValue());
-            }
-            distributeForStackedBarValues(mappedEvents);
-
-        });
-
-    }
-
-    private void distributeForStackedBarValues(Map<String,List<ActivityRecord>> mappedEvents) {
-
-        Calendar cal = Calendar.getInstance();
-        Map<String,float[]> finishedValues = new HashMap<>();
-        Map<String,Integer> categoryMap = mAppealingRadio.isChecked() ? appealingMap : moodMap;
-
-        for (Map.Entry<String, List<ActivityRecord>> entry : mappedEvents.entrySet())  {
-            float[] barValues = new float[categoryMap.size()];
-            finishedValues.put(entry.getKey(),barValues);
-            for (Map.Entry<String,Integer> entryAppealing : categoryMap.entrySet()){
-                barValues[entryAppealing.getValue()-1] = 0f;
-                for (ActivityRecord ac : entry.getValue()) {
-                    String type = mAppealingRadio.isChecked() ? ac.getJobAddiction() : ac.getMoodType();
-                    if (type.equals(entryAppealing.getKey())) {
-                        //cal.setTimeInMillis(ac.getTimestampF() - ac.getTimestamp());
-                        double seconds = Float.valueOf(ac.getTimestampF() - ac.getTimestamp())/1000;
-                        double hour =  Math.floor(seconds/3600);
-                        double minute = Math.ceil(seconds/60)%60;
-
-                        //Float minute = Float.valueOf(cal.get(Calendar.MINUTE));
-
-                        double minuteToHour = minute / 60;
-                        Float totalHour = (float)(hour + minuteToHour);
-                        Float val = finishedValues.get(entry.getKey())[entryAppealing.getValue()-1];
-                        finishedValues.get(entry.getKey())[entryAppealing.getValue()-1] = val + totalHour;
-                    }
-                }
-            }
-        }
-
-        drawHourChart(finishedValues);
-    }
-
-    private void drawHourChart(Map<String, float[]> finishedValues) {
-        List<BarEntry> barEntries = new ArrayList<>();
-
-        for (Map.Entry<Float,String> lable : lables.entrySet())
-        {
-            BarEntry barEntry;
-            if (finishedValues.containsKey(lable.getValue()))
-            {
-                float[] vals = finishedValues.get(lable.getValue());
-                barEntry = new BarEntry(Float.valueOf(lable.getKey()),vals);
-                barEntries.add(barEntry);
-            }
-            else {
-                barEntry = new BarEntry(Float.valueOf(lable.getKey()),0f);
-            }
-        }
-        BarDataSet dataSet = new BarDataSet(barEntries,"Type");
-        dataSet.setColors(new int[] { R.color.Bad, R.color.Average, R.color.High }, getActivity());
-        //dataSet.setValueFormatter(labelFormatter);
-
-        BarData data = new BarData(dataSet);
-        data.setBarWidth(0.5f);
-
-        Legend legend = mChart.getLegend();
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-
-        LegendEntry legendEntryB = new LegendEntry();
-        legendEntryB.label = mAppealingRadio.isChecked() ? getString(R.string.lb_low) : getString(R.string.lb_bad);
-        legendEntryB.formColor = getActivity().getResources().getColor(R.color.low_mood);
-        LegendEntry legendEntryA = new LegendEntry();
-        legendEntryA.label = getString(R.string.lb_average);
-        legendEntryA.formColor = getActivity().getResources().getColor(R.color.avg_mood);
-        LegendEntry legendEntryH = new LegendEntry();
-        legendEntryH.label = getString(R.string.lb_high);
-        legendEntryH.formColor = getActivity().getResources().getColor(R.color.high_mood);
-        legend.setCustom(Arrays.asList(legendEntryB,legendEntryA,legendEntryH));
-
-        mChart.setFitBars(true);
-        mChart.setData(data);
-        mChart.setExtraOffsets(20, 20, 20, 40);
-        mChart.getDescription().setEnabled(false);
-
-        YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setGranularity(1f);
-        leftAxis.setAxisMinimum(0f);
-        //leftAxis.setAxisMaximum(25f);
-        leftAxis.setDrawGridLines(false);
-
-        YAxis rightAxis = mChart.getAxisRight();
-        rightAxis.setEnabled(false);
-
-        XAxis xAxis = mChart.getXAxis();
-        xAxis.setDrawGridLines(false);
-        xAxis.setGranularityEnabled(true);
-        xAxis.setGranularity(1f);
-        xAxis.setAxisMinimum(-0.5f);
-        xAxis.setAvoidFirstLastClipping(true);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(formatter);
-        xAxis.setLabelRotationAngle(-45);
-        xAxis.setLabelCount(11,false);
-
-        mChart.setDrawGridBackground(false);
-        mChart.invalidate();
-        isDrawing = false;
-    }
-
-    IAxisValueFormatter formatter = new IAxisValueFormatter() {
-        @Override
-        public String getFormattedValue(float value, AxisBase axis) {
-            return lables.get(value);
-        }
-
-        public int getDecimalDigits() {  return 0; }
-    };
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(START_DATE,mStartTimeInMillis);
-        outState.putLong(FINISH_DATE,mFinishTimeInMillis);
-        outState.putInt(CATEGORY_POSITION,mActivityType.getSelectedItemPosition());
-        outState.putString(SELECTED_CATEGORY,selectedCategory);
+      }
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        //getActivity().getSupportFragmentManager().popBackStackImmediate();
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
+  };
 
-    //Format minutes in 60m format
-    IValueFormatter labelFormatter = new IValueFormatter() {
+  private void LoadHourChart() {
 
-        @Override
-        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-            return String.valueOf((int)value);
+    selectedCategory = "";
+
+    DatabaseReference referActivities = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_activities));
+    activitiesList = new ArrayList<>();
+    activitiesList.add(getString(R.string.all_types));
+    RxFirebaseDatabase.observeSingleValueEvent(referActivities, DataSnapshotMapper.listOf(com.sassaworks.senseplanner.data.Activity.class))
+            .subscribe(activities -> {
+              for (Category c : activities) {
+                activitiesList.add(c.getName());
+                //moodMap.put(m.getName(), m.getNumValue());
+              }
+              fillCategorySpinner();
+            });
+
+  }
+
+
+  private void fillCategorySpinner()
+  {
+    CategoriesAdapter mActivitiesAdapter = new CategoriesAdapter(getActivity(), activitiesList.toArray(new String[0]));
+    mActivitiesAdapter.setDropDownViewResource(R.layout.item_category);
+    mActivityType.setAdapter(mActivitiesAdapter);
+    mActivityType.setOnItemSelectedListener(onActivityItemSelected);
+    if (mCategoryPosition!=0)
+    {
+      mActivityType.setSelection(mCategoryPosition);
+    }
+  }
+
+  private View.OnClickListener onDateClickListener = new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      dateSelected(v);
+    }
+  };
+
+  public void dateSelected(View v)
+  {
+    final Calendar calendar = Calendar.getInstance();
+
+    DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+      @Override
+      public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        //mDateText.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
+        mDateS.setText(getString(R.string.date_format,String.valueOf(dayOfMonth),String.valueOf(month+1),String.valueOf(year)));
+        mYear = year;
+        mMonth = month;
+        mDayOfMonth = dayOfMonth;
+        mStartTimeInMillis = 0;
+        mFinishTimeInMillis = 0;
+        GetDataHourChart();
+      }
+    },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+
+    dialog.show();
+  }
+
+  public AdapterView.OnItemSelectedListener onActivityItemSelected = new AdapterView.OnItemSelectedListener() {
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+//            if (!isDrawing) {
+      if (pos > 0) {
+        TextView tv = view.findViewById(R.id.item_tv_category);
+        //String selection = getKeyByValue(appealingMap, pos);
+        selectedCategory = tv.getText().toString();
+      } else if (pos == 0) {
+        selectedCategory = "";
+      }
+      GetDataHourChart();
+//            }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+  };
+
+  private CompoundButton.OnCheckedChangeListener onCheckedListener = new CompoundButton.OnCheckedChangeListener() {
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+      if (mAppealingRadio.isChecked())
+      {
+        selectedType = getString(R.string.ref_appealing);
+      }
+      else if (mMoodRadio.isChecked())
+      {
+        selectedType = getString(R.string.ref_mood);
+      }
+      GetDataHourChart();
+    }
+  };
+
+  private void GetDataHourChart() {
+
+    if (mChart.getBarData()!=null){
+      mChart.getBarData().removeDataSet(0);
+      mChart.invalidate();
+    }
+    String order;
+    order = "category";
+
+    Calendar cS = Calendar.getInstance();
+    Calendar cF = Calendar.getInstance();
+
+    if (mStartTimeInMillis!= 0)
+    {
+      cS.setTimeInMillis(mStartTimeInMillis);
+      cF.setTimeInMillis(mFinishTimeInMillis);
+      mYear = cS.get(Calendar.YEAR);
+      mMonth = cS.get(Calendar.MONTH);
+      mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
+      mDateS.setText(getResources().getString(R.string.date_format,String.valueOf(mYear),
+              String.valueOf(mMonth+1),String.valueOf(mDayOfMonth)));
+
+    }
+    else if (!mDateS.getText().toString().equals(""))
+    {
+      cS.set(mYear,mMonth,mDayOfMonth,0,0);
+      cF.set(cF.get(Calendar.YEAR)+10,cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH),23,59);
+    }
+    else {
+      cS.set(cS.get(Calendar.YEAR),cS.get(Calendar.MONTH),cS.get(Calendar.DAY_OF_MONTH), 0,0);
+      cS.add(Calendar.DAY_OF_MONTH,-10);
+      cF.set(cF.get(Calendar.YEAR),cF.get(Calendar.MONTH),cF.get(Calendar.DAY_OF_MONTH),23,59);
+      mYear = cS.get(Calendar.YEAR);
+      mMonth = cS.get(Calendar.MONTH);
+      mDayOfMonth = cS.get(Calendar.DAY_OF_MONTH);
+      mDateS.setText(getResources().getString(R.string.date_format,String.valueOf(mYear),
+              String.valueOf(mMonth+1),String.valueOf(mDayOfMonth)));
+
+    }
+
+    mStartTimeInMillis = cS.getTimeInMillis();
+    mFinishTimeInMillis = cF.getTimeInMillis();
+
+    DatabaseReference ref = baseRef.child(getString(R.string.activity_records));
+    ref.keepSynced(true);
+    Query query = ref.orderByChild(order);
+
+    if (selectedCategory!=null && selectedCategory!="")
+    {
+      query = query.equalTo(selectedCategory);
+    }
+
+    RxFirebaseDatabase.observeSingleValueEvent(query,DataSnapshotMapper.listOf(ActivityRecord.class))
+            .switchIfEmpty((SingleSource<? extends List<ActivityRecord>>) empty->{
+              showEmptyImage();
+            })
+            .subscribe(events -> {
+              eventsList = new ArrayList<>();
+              for (ActivityRecord ac : events)
+              {
+                if (ac.getTimestamp()>=cS.getTimeInMillis() && ac.getTimestamp()<= cF.getTimeInMillis()) {
+                  eventsList.add(ac);
+                }
+              }
+              if (eventsList.size()==0)
+                showEmptyImage();
+              else
+                hideEmptyImage();
+
+              BreakListIntoDatesMap();
+
+            });
+  }
+
+
+  private void showEmptyImage()
+  {
+    mOnboardingHourChart.setVisibility(View.VISIBLE);
+  }
+
+  private void hideEmptyImage()
+  {
+    mOnboardingHourChart.setVisibility(View.GONE);
+  }
+
+  private void BreakListIntoDatesMap() {
+    lables = new HashMap<>();
+    Map<String,List<ActivityRecord>> mappedEvents = new HashMap<>();
+    Calendar cl = Calendar.getInstance();
+    cl.set(mYear,mMonth,mDayOfMonth);
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+    for (int i = 0; i < 11; i++) {
+      lables.put(Float.valueOf(i), sdf.format(cl.getTime()));
+      for (ActivityRecord ac : eventsList) {
+        if (ac.getFormattedDate().equals(sdf.format(cl.getTime()))) {
+          if (mappedEvents.containsKey(sdf.format(cl.getTime()))) {
+            mappedEvents.get(sdf.format(cl.getTime())).add(ac);
+          } else {
+            List<ActivityRecord> list = new ArrayList<>();
+            list.add(ac);
+            mappedEvents.put(sdf.format(cl.getTime()), list);
+          }
         }
-    };
+      }
+      cl.add(Calendar.DAY_OF_MONTH,1);
+    }
+    mappedEvents.size();
+
+    Query referAppealing = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_appealing)).orderByChild("numValue");
+    Query referMood = db.getReference().child(getString(R.string.ref_planner)).child(user.getUid()).child(getString(R.string.ref_mood)).orderByChild("numValue");
+
+    RxFirebaseDatabase.observeSingleValueEvent(referMood, DataSnapshotMapper.listOf(Mood.class))
+            .concatMap(mood->{
+              for(Mood m:mood)
+              {
+                moodMap.put(m.getName(),m.getNumValue());
+              }
+              return RxFirebaseDatabase.observeSingleValueEvent(referAppealing, DataSnapshotMapper.listOf(Appealing.class));
+            }).subscribe(apps->{
+      for(Appealing a:apps)
+      {
+        appealingMap.put(a.getName(),a.getNumValue());
+      }
+      distributeForStackedBarValues(mappedEvents);
+
+    });
+
+  }
+
+  private void distributeForStackedBarValues(Map<String,List<ActivityRecord>> mappedEvents) {
+
+    Calendar cal = Calendar.getInstance();
+    Map<String,float[]> finishedValues = new HashMap<>();
+    Map<String,Integer> categoryMap = mAppealingRadio.isChecked() ? appealingMap : moodMap;
+
+    for (Map.Entry<String, List<ActivityRecord>> entry : mappedEvents.entrySet())  {
+      float[] barValues = new float[categoryMap.size()];
+      finishedValues.put(entry.getKey(),barValues);
+      for (Map.Entry<String,Integer> entryAppealing : categoryMap.entrySet()){
+        barValues[entryAppealing.getValue()-1] = 0f;
+        for (ActivityRecord ac : entry.getValue()) {
+          String type = mAppealingRadio.isChecked() ? ac.getJobAddiction() : ac.getMoodType();
+          if (type.equals(entryAppealing.getKey())) {
+            //cal.setTimeInMillis(ac.getTimestampF() - ac.getTimestamp());
+            double seconds = Float.valueOf(ac.getTimestampF() - ac.getTimestamp())/1000;
+            double hour =  Math.floor(seconds/3600);
+            double minute = Math.ceil(seconds/60)%60;
+
+            //Float minute = Float.valueOf(cal.get(Calendar.MINUTE));
+
+            double minuteToHour = minute / 60;
+            Float totalHour = (float)(hour + minuteToHour);
+            Float val = finishedValues.get(entry.getKey())[entryAppealing.getValue()-1];
+            finishedValues.get(entry.getKey())[entryAppealing.getValue()-1] = val + totalHour;
+          }
+        }
+      }
+    }
+
+    drawHourChart(finishedValues);
+  }
+
+  private void drawHourChart(Map<String, float[]> finishedValues) {
+    List<BarEntry> barEntries = new ArrayList<>();
+
+    for (Map.Entry<Float,String> lable : lables.entrySet())
+    {
+      BarEntry barEntry;
+      if (finishedValues.containsKey(lable.getValue()))
+      {
+        float[] vals = finishedValues.get(lable.getValue());
+        barEntry = new BarEntry(Float.valueOf(lable.getKey()),vals);
+        barEntries.add(barEntry);
+      }
+      else {
+        barEntry = new BarEntry(Float.valueOf(lable.getKey()),0f);
+      }
+    }
+    BarDataSet dataSet = new BarDataSet(barEntries,"Type");
+    dataSet.setColors(new int[] { R.color.Bad, R.color.Average, R.color.High }, getActivity());
+    //dataSet.setValueFormatter(labelFormatter);
+
+    BarData data = new BarData(dataSet);
+    data.setBarWidth(0.5f);
+
+    Legend legend = mChart.getLegend();
+    legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+    legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+
+    LegendEntry legendEntryB = new LegendEntry();
+    legendEntryB.label = mAppealingRadio.isChecked() ? getString(R.string.lb_low) : getString(R.string.lb_bad);
+    legendEntryB.formColor = getActivity().getResources().getColor(R.color.low_mood);
+    LegendEntry legendEntryA = new LegendEntry();
+    legendEntryA.label = getString(R.string.lb_average);
+    legendEntryA.formColor = getActivity().getResources().getColor(R.color.avg_mood);
+    LegendEntry legendEntryH = new LegendEntry();
+    legendEntryH.label = getString(R.string.lb_high);
+    legendEntryH.formColor = getActivity().getResources().getColor(R.color.high_mood);
+    legend.setCustom(Arrays.asList(legendEntryB,legendEntryA,legendEntryH));
+
+    mChart.setFitBars(true);
+    mChart.setData(data);
+    mChart.setExtraOffsets(20, 20, 20, 40);
+    mChart.getDescription().setEnabled(false);
+
+    YAxis leftAxis = mChart.getAxisLeft();
+    leftAxis.setGranularity(1f);
+    leftAxis.setAxisMinimum(0f);
+    //leftAxis.setAxisMaximum(25f);
+    leftAxis.setDrawGridLines(false);
+
+    YAxis rightAxis = mChart.getAxisRight();
+    rightAxis.setEnabled(false);
+
+    XAxis xAxis = mChart.getXAxis();
+    xAxis.setDrawGridLines(false);
+    xAxis.setGranularityEnabled(true);
+    xAxis.setGranularity(1f);
+    xAxis.setAxisMinimum(-0.5f);
+    xAxis.setAvoidFirstLastClipping(true);
+    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+    xAxis.setValueFormatter(formatter);
+    xAxis.setLabelRotationAngle(-45);
+    xAxis.setLabelCount(11,false);
+
+    mChart.setDrawGridBackground(false);
+    mChart.invalidate();
+    isDrawing = false;
+  }
+
+  IAxisValueFormatter formatter = new IAxisValueFormatter() {
+    @Override
+    public String getFormattedValue(float value, AxisBase axis) {
+      return lables.get(value);
+    }
+
+    public int getDecimalDigits() {  return 0; }
+  };
+
+  @Override
+  public void onSaveInstanceState(@NonNull Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putLong(START_DATE,mStartTimeInMillis);
+    outState.putLong(FINISH_DATE,mFinishTimeInMillis);
+    outState.putInt(CATEGORY_POSITION,mActivityType.getSelectedItemPosition());
+    outState.putString(SELECTED_CATEGORY,selectedCategory);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    //getActivity().getSupportFragmentManager().popBackStackImmediate();
+  }
+
+
+  //Format minutes in 60m format
+  IValueFormatter labelFormatter = new IValueFormatter() {
+
+    @Override
+    public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+      return String.valueOf((int)value);
+    }
+  };
 }
